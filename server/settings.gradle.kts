@@ -13,7 +13,6 @@ dependencyResolutionManagement {
     }
 
     versionCatalogs {
-        // Remote catalog. Keep this version in sync with `ktor` in gradle/libs.versions.toml.
         create("ktorLibs") {
             from("io.ktor:ktor-version-catalog:3.4.2")
         }

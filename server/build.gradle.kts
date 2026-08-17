@@ -20,7 +20,7 @@ application {
 jib {
     to {
         image = "btheofil/meeting-server"
-        tags = setOf(version.toString(), "latest")
+        tags = setOf(version.toString())
     }
 }
 
