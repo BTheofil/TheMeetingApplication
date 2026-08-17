@@ -2,6 +2,7 @@ package hu.tb.meet.install
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
+import hu.tb.meet.domain.send.ErrorResponse
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
 import io.ktor.server.auth.authentication
