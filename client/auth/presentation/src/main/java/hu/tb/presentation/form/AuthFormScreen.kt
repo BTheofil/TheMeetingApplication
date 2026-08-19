@@ -47,6 +47,7 @@ import hu.tb.design_system.modifier.clearFocus
 import hu.tb.design_system.modifier.screenPadding
 import hu.tb.design_system.theme.MeetingTheme
 import hu.tb.domain.AuthMode
+import hu.tb.domain.LoginForm
 import hu.tb.domain.ProfileType
 import hu.tb.domain.RegisterForm
 import org.koin.androidx.compose.koinViewModel
@@ -58,8 +59,8 @@ fun AuthFormScreen(
 ) {
     AuthFormScreen(
         mode = mode,
-        onRegister = { viewModel.submitForm(it) },
-        onLogin = { username, password -> viewModel.submitLogin(username, password) }
+        onRegister = { viewModel.register(it) },
+        onLogin = { viewModel.login(it) }
     )
 }
 
@@ -68,7 +69,7 @@ fun AuthFormScreen(
 private fun AuthFormScreen(
     mode: AuthMode,
     onRegister: (RegisterForm) -> Unit,
-    onLogin: (username: String, password: String) -> Unit
+    onLogin: (LoginForm) -> Unit
 ) {
     val nameTFS = remember { TextFieldState() }
     val passwordTFS = remember { TextFieldState() }
@@ -127,8 +128,10 @@ private fun AuthFormScreen(
                     onClick = {
                         when (mode) {
                             AuthMode.LOGIN -> onLogin(
-                                nameTFS.text.toString(),
-                                passwordTFS.text.toString()
+                                LoginForm(
+                                    username = nameTFS.text.toString(),
+                                    password = passwordTFS.text.toString()
+                                )
                             )
 
                             AuthMode.REGISTER -> onRegister(
@@ -356,7 +359,7 @@ private fun AuthScreenRegisterPreview() {
         AuthFormScreen(
             mode = AuthMode.REGISTER,
             onRegister = {},
-            onLogin = { _, _ -> }
+            onLogin = {}
         )
     }
 }
@@ -368,7 +371,7 @@ private fun AuthScreenRegisterDarkPreview() {
         AuthFormScreen(
             mode = AuthMode.REGISTER,
             onRegister = {},
-            onLogin = { _, _ -> }
+            onLogin = {}
         )
     }
 }
@@ -380,7 +383,7 @@ private fun AuthScreenLoginPreview() {
         AuthFormScreen(
             mode = AuthMode.LOGIN,
             onRegister = {},
-            onLogin = { _, _ -> }
+            onLogin = {}
         )
     }
 }
@@ -392,7 +395,7 @@ private fun AuthScreenLoginDarkPreview() {
         AuthFormScreen(
             mode = AuthMode.LOGIN,
             onRegister = {},
-            onLogin = { _, _ -> }
+            onLogin = {}
         )
     }
 }

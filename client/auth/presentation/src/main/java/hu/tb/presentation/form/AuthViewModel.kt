@@ -1,19 +1,19 @@
 package hu.tb.presentation.form
 
 import androidx.lifecycle.ViewModel
+import hu.tb.domain.LoginForm
 import hu.tb.domain.RegisterForm
 
-class AuthViewModel: ViewModel() {
+class AuthViewModel : ViewModel() {
 
-    fun submitForm(
+    fun register(
         form: RegisterForm
     ) {
 
     }
 
-    fun submitLogin(
-        username: String,
-        password: String
+    fun login(
+        form: LoginForm
     ) {
 
     }
