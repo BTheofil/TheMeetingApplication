@@ -1,8 +1,7 @@
-package hu.tb.presentation
+package hu.tb.presentation.form
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,13 +33,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RadialGradientShader
-import androidx.compose.ui.graphics.Shader
-import androidx.compose.ui.graphics.ShaderBrush
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -50,60 +42,57 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.skydoves.compose.stability.runtime.TraceRecomposition
 import hu.tb.design_system.Icons
+import hu.tb.design_system.modifier.authGlowBackground
 import hu.tb.design_system.modifier.clearFocus
 import hu.tb.design_system.modifier.screenPadding
 import hu.tb.design_system.theme.MeetingTheme
+import hu.tb.domain.AuthMode
 import hu.tb.domain.ProfileType
 import hu.tb.domain.RegisterForm
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun AuthScreen(
+fun AuthFormScreen(
+    mode: AuthMode,
     viewModel: AuthViewModel = koinViewModel()
 ) {
-    AuthScreen(
-        onSubmit = { viewModel.submitForm(it) }
+    AuthFormScreen(
+        mode = mode,
+        onRegister = { viewModel.submitForm(it) },
+        onLogin = { username, password -> viewModel.submitLogin(username, password) }
     )
 }
 
 @TraceRecomposition
 @Composable
-private fun AuthScreen(
-    onSubmit: (RegisterForm) -> Unit
+private fun AuthFormScreen(
+    mode: AuthMode,
+    onRegister: (RegisterForm) -> Unit,
+    onLogin: (username: String, password: String) -> Unit
 ) {
     val nameTFS = remember { TextFieldState() }
     val passwordTFS = remember { TextFieldState() }
     val rePasswordTFS = remember { TextFieldState() }
     var profileType by remember { mutableStateOf<ProfileType?>(null) }
 
-    val isFormValid by remember {
+    val isFormValid by remember(mode) {
         derivedStateOf {
-            nameTFS.text.isNotBlank() &&
-                    passwordTFS.text == rePasswordTFS.text &&
-                    profileType != null
+            when (mode) {
+                AuthMode.LOGIN ->
+                    nameTFS.text.isNotBlank() && passwordTFS.text.isNotBlank()
+
+                AuthMode.REGISTER ->
+                    nameTFS.text.isNotBlank() &&
+                            passwordTFS.text == rePasswordTFS.text &&
+                            profileType != null
+            }
         }
     }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface)
-            .background(
-                glowBrush(
-                    color = MaterialTheme.colorScheme.primary,
-                    centerFraction = Offset(0.5f, 0.18f),
-                    radiusFraction = 0.85f,
-                    glowAlpha = 0.28f
-                )
-            )
-            .background(
-                glowBrush(
-                    color = MaterialTheme.colorScheme.secondary,
-                    centerFraction = Offset(0.9f, 0.95f),
-                    radiusFraction = 0.6f,
-                    glowAlpha = 0.22f
-                )
-            )
+            .authGlowBackground()
             .clearFocus(),
         contentAlignment = Alignment.Center
     ) {
@@ -123,8 +112,9 @@ private fun AuthScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                CardHeader()
+                CardHeader(mode = mode)
                 Form(
+                    mode = mode,
                     nameTFS = nameTFS,
                     passwordTFS = passwordTFS,
                     rePasswordTFS = rePasswordTFS,
@@ -135,18 +125,28 @@ private fun AuthScreen(
                         .fillMaxWidth()
                         .height(52.dp),
                     onClick = {
-                        onSubmit(
-                            RegisterForm(
-                                username = nameTFS.text.toString(),
-                                password = passwordTFS.text.toString(),
-                                type = profileType ?: ProfileType.NORMAL
+                        when (mode) {
+                            AuthMode.LOGIN -> onLogin(
+                                nameTFS.text.toString(),
+                                passwordTFS.text.toString()
                             )
-                        )
+
+                            AuthMode.REGISTER -> onRegister(
+                                RegisterForm(
+                                    username = nameTFS.text.toString(),
+                                    password = passwordTFS.text.toString(),
+                                    type = profileType ?: ProfileType.NORMAL
+                                )
+                            )
+                        }
                     },
                     enabled = isFormValid,
                     content = {
                         Text(
-                            text = "Create account",
+                            text = when (mode) {
+                                AuthMode.LOGIN -> "Log in"
+                                AuthMode.REGISTER -> "Create account"
+                            },
                             style = MaterialTheme.typography.labelLarge
                         )
                     },
@@ -157,18 +157,26 @@ private fun AuthScreen(
 }
 
 @Composable
-private fun CardHeader() {
+private fun CardHeader(
+    mode: AuthMode
+) {
     Column(
         verticalArrangement = Arrangement.spacedBy(4.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Create account",
+            text = when (mode) {
+                AuthMode.LOGIN -> "Welcome back"
+                AuthMode.REGISTER -> "Create account"
+            },
             style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.onSurface
         )
         Text(
-            text = "Sign up to get started",
+            text = when (mode) {
+                AuthMode.LOGIN -> "Sign in to continue"
+                AuthMode.REGISTER -> "Sign up to get started"
+            },
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -177,6 +185,7 @@ private fun CardHeader() {
 
 @Composable
 fun Form(
+    mode: AuthMode,
     nameTFS: TextFieldState,
     passwordTFS: TextFieldState,
     rePasswordTFS: TextFieldState,
@@ -214,7 +223,10 @@ fun Form(
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Password,
             autoCorrectEnabled = false,
-            imeAction = ImeAction.Next
+            imeAction = when (mode) {
+                AuthMode.LOGIN -> ImeAction.Done
+                AuthMode.REGISTER -> ImeAction.Next
+            }
         ),
         textObfuscationMode = if (isPasswordVisible) {
             TextObfuscationMode.Visible
@@ -235,86 +247,88 @@ fun Form(
             )
         },
     )
-    OutlinedSecureTextField(
-        modifier = Modifier.fillMaxWidth(),
-        state = rePasswordTFS,
-        keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Password,
-            autoCorrectEnabled = false,
-            imeAction = ImeAction.Done
-        ),
-        textObfuscationMode = if (isRePasswordVisible) {
-            TextObfuscationMode.Visible
-        } else {
-            TextObfuscationMode.RevealLastTyped
-        },
-        isError = passwordsMismatch,
-        label = {
-            Text(
-                text = "Repeat password",
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        },
-        trailingIcon = {
-            VisibilityToggle(
-                isVisible = isRePasswordVisible,
-                onToggle = { isRePasswordVisible = !isRePasswordVisible }
-            )
-        },
-        supportingText = {
-            AnimatedVisibility(visible = passwordsMismatch) {
-                Text(
-                    text = "Passwords do not match",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.error
-                )
-            }
-        }
-    )
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = "I am a",
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        Row(
+    if (mode == AuthMode.REGISTER) {
+        OutlinedSecureTextField(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(
-                space = 12.dp,
-                alignment = Alignment.CenterHorizontally
-            )
-        ) {
-            FilterChip(
-                modifier = Modifier.weight(1f),
-                selected = profileType == ProfileType.COACH,
-                onClick = { onTypeClick(ProfileType.COACH) },
-                label = {
+            state = rePasswordTFS,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password,
+                autoCorrectEnabled = false,
+                imeAction = ImeAction.Done
+            ),
+            textObfuscationMode = if (isRePasswordVisible) {
+                TextObfuscationMode.Visible
+            } else {
+                TextObfuscationMode.RevealLastTyped
+            },
+            isError = passwordsMismatch,
+            label = {
+                Text(
+                    text = "Repeat password",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            },
+            trailingIcon = {
+                VisibilityToggle(
+                    isVisible = isRePasswordVisible,
+                    onToggle = { isRePasswordVisible = !isRePasswordVisible }
+                )
+            },
+            supportingText = {
+                AnimatedVisibility(visible = passwordsMismatch) {
                     Text(
-                        modifier = Modifier.fillMaxWidth(),
-                        text = "Coach",
-                        style = MaterialTheme.typography.bodyMedium,
-                        textAlign = TextAlign.Center
+                        text = "Passwords do not match",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error
                     )
                 }
+            }
+        )
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "I am a",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
-            FilterChip(
-                modifier = Modifier.weight(1f),
-                selected = profileType == ProfileType.NORMAL,
-                onClick = { onTypeClick(ProfileType.NORMAL) },
-                label = {
-                    Text(
-                        modifier = Modifier.fillMaxWidth(),
-                        text = "Normal",
-                        style = MaterialTheme.typography.bodyMedium,
-                        textAlign = TextAlign.Center
-                    )
-                },
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(
+                    space = 12.dp,
+                    alignment = Alignment.CenterHorizontally
+                )
+            ) {
+                FilterChip(
+                    modifier = Modifier.weight(1f),
+                    selected = profileType == ProfileType.COACH,
+                    onClick = { onTypeClick(ProfileType.COACH) },
+                    label = {
+                        Text(
+                            modifier = Modifier.fillMaxWidth(),
+                            text = "Coach",
+                            style = MaterialTheme.typography.bodyMedium,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                )
+                FilterChip(
+                    modifier = Modifier.weight(1f),
+                    selected = profileType == ProfileType.NORMAL,
+                    onClick = { onTypeClick(ProfileType.NORMAL) },
+                    label = {
+                        Text(
+                            modifier = Modifier.fillMaxWidth(),
+                            text = "Normal",
+                            style = MaterialTheme.typography.bodyMedium,
+                            textAlign = TextAlign.Center
+                        )
+                    },
+                )
+            }
         }
     }
 }
@@ -335,42 +349,50 @@ private fun VisibilityToggle(
     }
 }
 
-@Composable
-private fun glowBrush(
-    color: Color,
-    centerFraction: Offset,
-    radiusFraction: Float,
-    glowAlpha: Float
-): Brush = remember(color, centerFraction, radiusFraction, glowAlpha) {
-    object : ShaderBrush() {
-        override fun createShader(size: Size): Shader =
-            RadialGradientShader(
-                center = Offset(
-                    x = size.width * centerFraction.x,
-                    y = size.height * centerFraction.y
-                ),
-                radius = size.maxDimension * radiusFraction,
-                colors = listOf(color.copy(alpha = glowAlpha), Color.Transparent)
-            )
-    }
-}
-
 @Preview(showBackground = true)
 @Composable
-private fun AuthScreenPreview() {
+private fun AuthScreenRegisterPreview() {
     MeetingTheme {
-        AuthScreen(
-            onSubmit = {}
+        AuthFormScreen(
+            mode = AuthMode.REGISTER,
+            onRegister = {},
+            onLogin = { _, _ -> }
         )
     }
 }
 
 @Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
 @Composable
-private fun AuthScreenDarkPreview() {
+private fun AuthScreenRegisterDarkPreview() {
     MeetingTheme {
-        AuthScreen(
-            onSubmit = {}
+        AuthFormScreen(
+            mode = AuthMode.REGISTER,
+            onRegister = {},
+            onLogin = { _, _ -> }
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun AuthScreenLoginPreview() {
+    MeetingTheme {
+        AuthFormScreen(
+            mode = AuthMode.LOGIN,
+            onRegister = {},
+            onLogin = { _, _ -> }
+        )
+    }
+}
+
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
+@Composable
+private fun AuthScreenLoginDarkPreview() {
+    MeetingTheme {
+        AuthFormScreen(
+            mode = AuthMode.LOGIN,
+            onRegister = {},
+            onLogin = { _, _ -> }
         )
     }
 }

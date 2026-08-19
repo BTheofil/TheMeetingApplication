@@ -10,7 +10,6 @@ android {
 dependencies {
     implementation(projects.auth.domain)
     implementation(projects.designSystem)
-    implementation(projects.navigator)
     
     implementation(libs.bundles.koin)
 }
