@@ -25,4 +25,6 @@ dependencies {
     implementation(projects.navigator)
     implementation(projects.designSystem)
     implementation(projects.auth.presentation)
+
+    implementation(libs.koin)
 }

@@ -8,7 +8,10 @@ android {
 }
 
 dependencies {
-    // `api`, not `implementation`: this module's public surface *is* nav3 -- consumers
-    // declare their own NavKeys and entry providers against these types.
+    implementation(projects.auth.presentation)
+    implementation(projects.auth.domain)
+
+    implementation(libs.koin.compose)
+    implementation(libs.koin.navigation)
     api(libs.bundles.nav3)
 }
