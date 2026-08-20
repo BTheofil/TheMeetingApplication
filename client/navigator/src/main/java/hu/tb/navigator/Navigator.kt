@@ -1,7 +1,8 @@
 package hu.tb.navigator
 
-import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection
-import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
@@ -47,14 +48,19 @@ fun Navigator() {
 
     NavDisplay(
         backStack = graphStack,
-        transitionSpec = { fadeIn() togetherWith fadeOut() },
-        popTransitionSpec = { fadeIn() togetherWith fadeOut() },
         entryProvider = entryProvider {
             entry<Destination.AuthRoot> {
                 NavDisplay(
                     backStack = authStack,
                     transitionSpec = {
-                        fadeIn() togetherWith ExitTransition.KeepUntilTransitionsFinished
+                        fadeIn(tween(easing = LinearEasing), initialAlpha = .4f) togetherWith
+                                fadeOut(tween(easing = LinearEasing))
+                    },
+                    popTransitionSpec = {
+                        EnterTransition.None togetherWith fadeOut(tween(easing = LinearEasing))
+                    },
+                    predictivePopTransitionSpec = { _ ->
+                        EnterTransition.None togetherWith fadeOut(tween())
                     },
                     entryProvider = entryProvider {
                         entry<Destination.AuthGraph.Welcome> {
@@ -71,14 +77,6 @@ fun Navigator() {
             entry<Destination.DashboardRoot> {
                 NavDisplay(
                     backStack = dashboardStack,
-                    transitionSpec = {
-                        slideIntoContainer(SlideDirection.Left) togetherWith
-                                slideOutOfContainer(SlideDirection.Left)
-                    },
-                    popTransitionSpec = {
-                        slideIntoContainer(SlideDirection.Right) togetherWith
-                                slideOutOfContainer(SlideDirection.Right)
-                    },
                     entryProvider = entryProvider {
                         entry<Destination.DashboardGraph.Calendar> { }
                     }
