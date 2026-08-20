@@ -10,12 +10,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import hu.tb.domain.AuthMode
 import hu.tb.presentation.form.AuthFormScreen
 import hu.tb.presentation.welcome.WelcomeScreen
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Stable
 sealed interface Destination : NavKey {
@@ -52,6 +56,10 @@ fun Navigator() {
             entry<Destination.AuthRoot> {
                 NavDisplay(
                     backStack = authStack,
+                    entryDecorators = listOf(
+                        rememberSaveableStateHolderNavEntryDecorator(),
+                        rememberViewModelStoreNavEntryDecorator()
+                    ),
                     transitionSpec = {
                         fadeIn(tween(easing = LinearEasing), initialAlpha = .4f) togetherWith
                                 fadeOut(tween(easing = LinearEasing))
@@ -69,7 +77,12 @@ fun Navigator() {
                             )
                         }
                         entry<Destination.AuthGraph.Form> { key ->
-                            AuthFormScreen(mode = key.mode)
+                            AuthFormScreen(
+                                viewModel = koinViewModel { parametersOf(key.mode) },
+                                navigationRequest = {
+                                    graphStack.add(Destination.DashboardRoot)
+                                    graphStack.remove(Destination.AuthRoot)
+                                })
                         }
                     }
                 )

@@ -11,5 +11,7 @@ dependencies {
     implementation(projects.auth.presentation)
     implementation(projects.auth.domain)
 
+    implementation(libs.koin.compose)
+    implementation(libs.koin.navigation)
     api(libs.bundles.nav3)
 }

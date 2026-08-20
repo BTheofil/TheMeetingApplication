@@ -24,8 +24,12 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedSecureTextField
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,6 +37,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -40,8 +45,12 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.skydoves.compose.stability.runtime.TraceRecomposition
 import hu.tb.design_system.Icons
+import hu.tb.design_system.component.CountdownSnackbar
+import hu.tb.design_system.component.CountdownSnackbarVisuals
+import hu.tb.design_system.component.LoadingDialog
 import hu.tb.design_system.modifier.authGlowBackground
 import hu.tb.design_system.modifier.clearFocus
 import hu.tb.design_system.modifier.screenPadding
@@ -50,35 +59,58 @@ import hu.tb.domain.AuthMode
 import hu.tb.domain.LoginForm
 import hu.tb.domain.ProfileType
 import hu.tb.domain.RegisterForm
+import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun AuthFormScreen(
-    mode: AuthMode,
-    viewModel: AuthViewModel = koinViewModel()
+    viewModel: AuthFormViewModel = koinViewModel(),
+    navigationRequest: () -> Unit
 ) {
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(Unit) {
+        viewModel.event.collectLatest {
+            when (it) {
+                is AuthFormEvent.Failed ->
+                    snackbarHostState.showSnackbar(
+                        visuals = CountdownSnackbarVisuals(
+                            message = it.cause
+                        )
+                    )
+
+                AuthFormEvent.Success -> navigationRequest()
+            }
+        }
+    }
+
     AuthFormScreen(
-        mode = mode,
-        onRegister = { viewModel.register(it) },
-        onLogin = { viewModel.login(it) }
+        snackbarHostState = snackbarHostState,
+        state = viewModel.state.collectAsStateWithLifecycle().value,
+        action = {
+            when (it) {
+                is AuthFormAction.OnLogin -> viewModel.login(it.form)
+                is AuthFormAction.OnRegister -> viewModel.register(it.form)
+            }
+        }
     )
 }
 
 @TraceRecomposition
 @Composable
 private fun AuthFormScreen(
-    mode: AuthMode,
-    onRegister: (RegisterForm) -> Unit,
-    onLogin: (LoginForm) -> Unit
+    snackbarHostState: SnackbarHostState,
+    state: AuthFormState,
+    action: (AuthFormAction) -> Unit
 ) {
     val nameTFS = remember { TextFieldState() }
     val passwordTFS = remember { TextFieldState() }
     val rePasswordTFS = remember { TextFieldState() }
     var profileType by remember { mutableStateOf<ProfileType?>(null) }
 
-    val isFormValid by remember(mode) {
+    val isFormValid by remember(state.mode) {
         derivedStateOf {
-            when (mode) {
+            when (state.mode) {
                 AuthMode.LOGIN ->
                     nameTFS.text.isNotBlank() && passwordTFS.text.isNotBlank()
 
@@ -94,65 +126,92 @@ private fun AuthFormScreen(
         modifier = Modifier
             .fillMaxSize()
             .authGlowBackground()
-            .clearFocus(),
-        contentAlignment = Alignment.Center
     ) {
-        ElevatedCard(
-            modifier = Modifier
-                .fillMaxWidth()
-                .screenPadding()
-                .padding(horizontal = 8.dp),
-            shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.85f)
-            ),
-            elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
-        ) {
-            Column(
-                modifier = Modifier.padding(24.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+        Scaffold(
+            containerColor = Color.Transparent,
+            snackbarHost = {
+                SnackbarHost(hostState = snackbarHostState) { data ->
+                    CountdownSnackbar(snackbarData = data)
+                }
+            }
+        ) { innerPadding ->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .clearFocus(),
+                contentAlignment = Alignment.Center
             ) {
-                CardHeader(mode = mode)
-                Form(
-                    mode = mode,
-                    nameTFS = nameTFS,
-                    passwordTFS = passwordTFS,
-                    rePasswordTFS = rePasswordTFS,
-                    profileType = profileType,
-                    onTypeClick = { profileType = it })
-                Button(
+                ElevatedCard(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(52.dp),
-                    onClick = {
-                        when (mode) {
-                            AuthMode.LOGIN -> onLogin(
-                                LoginForm(
-                                    username = nameTFS.text.toString(),
-                                    password = passwordTFS.text.toString()
-                                )
-                            )
+                        .screenPadding()
+                        .padding(horizontal = 8.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.85f)
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(24.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        CardHeader(mode = state.mode)
+                        Form(
+                            mode = state.mode,
+                            nameTFS = nameTFS,
+                            passwordTFS = passwordTFS,
+                            rePasswordTFS = rePasswordTFS,
+                            profileType = profileType,
+                            onTypeClick = { profileType = it })
+                        Button(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(52.dp),
+                            onClick = {
+                                when (state.mode) {
+                                    AuthMode.LOGIN -> action(
+                                        AuthFormAction.OnLogin(
+                                            LoginForm(
+                                                username = nameTFS.text.toString(),
+                                                password = passwordTFS.text.toString()
+                                            )
+                                        )
+                                    )
 
-                            AuthMode.REGISTER -> onRegister(
-                                RegisterForm(
-                                    username = nameTFS.text.toString(),
-                                    password = passwordTFS.text.toString(),
-                                    type = profileType ?: ProfileType.NORMAL
-                                )
-                            )
-                        }
-                    },
-                    enabled = isFormValid,
-                    content = {
-                        Text(
-                            text = when (mode) {
-                                AuthMode.LOGIN -> "Log in"
-                                AuthMode.REGISTER -> "Create account"
+                                    AuthMode.REGISTER -> action(
+                                        AuthFormAction.OnRegister(
+                                            RegisterForm(
+                                                username = nameTFS.text.toString(),
+                                                password = passwordTFS.text.toString(),
+                                                type = profileType ?: ProfileType.NORMAL
+                                            )
+                                        )
+                                    )
+                                }
                             },
-                            style = MaterialTheme.typography.labelLarge
+                            enabled = isFormValid,
+                            content = {
+                                Text(
+                                    text = when (state.mode) {
+                                        AuthMode.LOGIN -> "Log in"
+                                        AuthMode.REGISTER -> "Create account"
+                                    },
+                                    style = MaterialTheme.typography.labelLarge
+                                )
+                            },
                         )
-                    },
+                    }
+                }
+            }
+            if (state.isLoading) {
+                LoadingDialog(
+                    text = when (state.mode) {
+                        AuthMode.LOGIN -> "Signing in…"
+                        AuthMode.REGISTER -> "Creating account…"
+                    }
                 )
             }
         }
@@ -244,7 +303,7 @@ fun Form(
             )
         },
         trailingIcon = {
-            VisibilityToggle(
+            PasswordVisibilityIcon(
                 isVisible = isPasswordVisible,
                 onToggle = { isPasswordVisible = !isPasswordVisible }
             )
@@ -273,7 +332,7 @@ fun Form(
                 )
             },
             trailingIcon = {
-                VisibilityToggle(
+                PasswordVisibilityIcon(
                     isVisible = isRePasswordVisible,
                     onToggle = { isRePasswordVisible = !isRePasswordVisible }
                 )
@@ -337,7 +396,7 @@ fun Form(
 }
 
 @Composable
-private fun VisibilityToggle(
+private fun PasswordVisibilityIcon(
     isVisible: Boolean,
     onToggle: () -> Unit
 ) {
@@ -357,9 +416,9 @@ private fun VisibilityToggle(
 private fun AuthScreenRegisterPreview() {
     MeetingTheme {
         AuthFormScreen(
-            mode = AuthMode.REGISTER,
-            onRegister = {},
-            onLogin = {}
+            snackbarHostState = SnackbarHostState(),
+            state = AuthFormState(),
+            action = {}
         )
     }
 }
@@ -369,9 +428,9 @@ private fun AuthScreenRegisterPreview() {
 private fun AuthScreenRegisterDarkPreview() {
     MeetingTheme {
         AuthFormScreen(
-            mode = AuthMode.REGISTER,
-            onRegister = {},
-            onLogin = {}
+            snackbarHostState = SnackbarHostState(),
+            state = AuthFormState(),
+            action = {}
         )
     }
 }
@@ -381,9 +440,9 @@ private fun AuthScreenRegisterDarkPreview() {
 private fun AuthScreenLoginPreview() {
     MeetingTheme {
         AuthFormScreen(
-            mode = AuthMode.LOGIN,
-            onRegister = {},
-            onLogin = {}
+            snackbarHostState = SnackbarHostState(),
+            state = AuthFormState(mode = AuthMode.LOGIN),
+            action = {}
         )
     }
 }
@@ -393,9 +452,21 @@ private fun AuthScreenLoginPreview() {
 private fun AuthScreenLoginDarkPreview() {
     MeetingTheme {
         AuthFormScreen(
-            mode = AuthMode.LOGIN,
-            onRegister = {},
-            onLogin = {}
+            snackbarHostState = SnackbarHostState(),
+            state = AuthFormState(mode = AuthMode.LOGIN),
+            action = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun AuthScreenLoadingPreview() {
+    MeetingTheme {
+        AuthFormScreen(
+            snackbarHostState = SnackbarHostState(),
+            state = AuthFormState(mode = AuthMode.LOGIN, isLoading = true),
+            action = {}
         )
     }
 }
