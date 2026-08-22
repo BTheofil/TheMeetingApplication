@@ -11,7 +11,7 @@ import org.koin.logger.slf4jLogger
 fun Application.configureKoin() {
     val configAudience = environment.config.property("jwt.audience").getString()
     val configIssuer = environment.config.property("jwt.issuer").getString()
-    val configSecret = environment.config.propertyOrNull("jwt.secret")?.getString() ?: "debug_build"
+    val configSecret = environment.config.propertyOrNull("jwt.secret.meeting")?.getString() ?: "debug_build"
 
     install(Koin) {
         slf4jLogger()
