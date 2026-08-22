@@ -1,18 +1,27 @@
 package hu.tb.meet.install
 
-import io.ktor.http.*
-import io.ktor.server.application.*
-import io.ktor.server.plugins.statuspages.*
-import io.ktor.server.response.*
+import hu.tb.meet.domain.send.ErrorResponse
+import io.ktor.http.HttpStatusCode
+import io.ktor.server.application.Application
+import io.ktor.server.application.install
+import io.ktor.server.plugins.BadRequestException
+import io.ktor.server.plugins.statuspages.StatusPages
+import io.ktor.server.response.respond
+import kotlinx.serialization.SerializationException
 
 fun Application.configureStatusPages() {
     install(StatusPages) {
+        exception<BadRequestException> { call, _ ->
+            call.respond(HttpStatusCode.BadRequest, ErrorResponse("Malformed request body"))
+        }
+        exception<SerializationException> { call, _ ->
+            call.respond(HttpStatusCode.BadRequest, ErrorResponse("Malformed request body"))
+        }
         exception<Throwable> { call, cause ->
-            call.respondText(text = "500: $cause", status = HttpStatusCode.InternalServerError)
+            call.respond(HttpStatusCode.InternalServerError, ErrorResponse("Internal error: $cause"))
         }
         status(HttpStatusCode.NotFound) { call, status ->
-            call.respondText(text = "404: Page Not Found", status = status)
+            call.respond(status, ErrorResponse("Page not found"))
         }
-        statusFile(HttpStatusCode.Unauthorized, HttpStatusCode.PaymentRequired, filePattern = "error#.html")
     }
 }

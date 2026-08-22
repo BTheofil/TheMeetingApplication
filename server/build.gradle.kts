@@ -45,4 +45,13 @@ dependencies {
     implementation(libs.bundles.koin)
     implementation(libs.bundles.exposed)
     implementation(libs.sqlite)
+    implementation(libs.bcrypt)
+
+    testImplementation(ktorLibs.server.testHost)
+    testImplementation(ktorLibs.client.contentNegotiation)
+    testImplementation(kotlin("test"))
+}
+
+tasks.test {
+    useJUnitPlatform()
 }

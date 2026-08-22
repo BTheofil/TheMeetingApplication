@@ -1,10 +1,10 @@
-package hu.tb.meet.domain.get
+package hu.tb.meet.domain.receive
 
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class LoginReceive(
+data class AuthReceive(
     val username: String,
     val password: String,
-    val type: String
+    val type: AccountType
 )
