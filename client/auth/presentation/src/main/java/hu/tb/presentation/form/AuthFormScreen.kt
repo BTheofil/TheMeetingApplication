@@ -55,10 +55,9 @@ import hu.tb.design_system.modifier.authGlowBackground
 import hu.tb.design_system.modifier.clearFocus
 import hu.tb.design_system.modifier.screenPadding
 import hu.tb.design_system.theme.MeetingTheme
-import hu.tb.domain.AuthMode
 import hu.tb.domain.AuthForm
+import hu.tb.domain.AuthMode
 import hu.tb.domain.ProfileType
-import hu.tb.presentation.util.asUiText
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
 
@@ -74,9 +73,7 @@ fun AuthFormScreen(
             when (it) {
                 is AuthFormEvent.Failed ->
                     snackbarHostState.showSnackbar(
-                        visuals = CountdownSnackbarVisuals(
-                            message = it.error.asUiText()
-                        )
+                        visuals = CountdownSnackbarVisuals(message = it.errorMessage)
                     )
 
                 AuthFormEvent.Success -> navigationRequest()

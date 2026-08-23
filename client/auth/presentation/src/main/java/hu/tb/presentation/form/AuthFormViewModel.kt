@@ -28,13 +28,18 @@ class AuthFormViewModel(
 
         _state.update { it.copy(isLoading = true) }
         viewModelScope.launch {
-            val error = authRepository.authenticate(
+            val result = authRepository.authenticate(
                 mode = mode,
                 form = form
             )
             _state.update { it.copy(isLoading = false) }
 
-            _event.send(if (error == null) AuthFormEvent.Success else AuthFormEvent.Failed(error))
+            _event.send(
+                if (result.token != null) AuthFormEvent.Success
+                else AuthFormEvent.Failed(
+                    result.errorMessage ?: "Something went wrong. Please try again."
+                )
+            )
         }
     }
 }

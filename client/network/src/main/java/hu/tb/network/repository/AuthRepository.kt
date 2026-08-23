@@ -5,15 +5,16 @@ import hu.tb.data.auth.dto.AuthSend
 import hu.tb.data.auth.dto.ErrorResponse
 import hu.tb.domain.AuthForm
 import hu.tb.domain.AuthMode
+import hu.tb.domain.AuthResults
 import hu.tb.network.ApiResult
 import hu.tb.network.DataError
+import hu.tb.network.asText
 import hu.tb.network.safeCall
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
-import kotlinx.coroutines.CancellationException
 
 class AuthRepository(
     private val httpClient: HttpClient
@@ -21,7 +22,7 @@ class AuthRepository(
     suspend fun authenticate(
         mode: AuthMode,
         form: AuthForm,
-    ): DataError? {
+    ): AuthResults {
         val path = when (mode) {
             AuthMode.LOGIN -> "/login"
             AuthMode.REGISTER -> "/register"
@@ -41,23 +42,25 @@ class AuthRepository(
 
         return when (result) {
             is ApiResult.Ok -> result.body.toDataError()
-            is ApiResult.Fail -> result.dataError
+            is ApiResult.Fail -> AuthResults(errorMessage = result.dataError.asText())
         }
     }
 
-    private suspend fun HttpResponse.toDataError(): DataError? =
+    private suspend fun HttpResponse.toDataError(): AuthResults =
         when (status.value) {
             in 200..299 -> try {
-                body<AuthResponse>()
-                null
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Throwable) {
+                val token = body<AuthResponse>().token
+                AuthResults(token = token)
+            } catch (e: Exception) {
                 e.printStackTrace()
-                DataError.UNKNOWN
+                AuthResults(errorMessage = DataError.UNKNOWN.asText())
             }
 
-            401, 409 -> body<ErrorResponse>().message
-            else -> DataError.UNKNOWN
+            401, 409 -> {
+                val message = body<ErrorResponse>().message
+                AuthResults(errorMessage = message)
+            }
+
+            else -> AuthResults(errorMessage = DataError.UNKNOWN.asText())
         }
 }
