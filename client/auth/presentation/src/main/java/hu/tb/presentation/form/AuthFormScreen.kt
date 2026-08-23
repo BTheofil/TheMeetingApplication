@@ -56,9 +56,9 @@ import hu.tb.design_system.modifier.clearFocus
 import hu.tb.design_system.modifier.screenPadding
 import hu.tb.design_system.theme.MeetingTheme
 import hu.tb.domain.AuthMode
-import hu.tb.domain.LoginForm
+import hu.tb.domain.AuthForm
 import hu.tb.domain.ProfileType
-import hu.tb.domain.RegisterForm
+import hu.tb.presentation.util.asUiText
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
 
@@ -75,7 +75,7 @@ fun AuthFormScreen(
                 is AuthFormEvent.Failed ->
                     snackbarHostState.showSnackbar(
                         visuals = CountdownSnackbarVisuals(
-                            message = it.cause
+                            message = it.error.asUiText()
                         )
                     )
 
@@ -89,8 +89,7 @@ fun AuthFormScreen(
         state = viewModel.state.collectAsStateWithLifecycle().value,
         action = {
             when (it) {
-                is AuthFormAction.OnLogin -> viewModel.login(it.form)
-                is AuthFormAction.OnRegister -> viewModel.register(it.form)
+                is AuthFormAction.OnSubmit -> viewModel.submit(it.authMode, it.form)
             }
         }
     )
@@ -110,14 +109,17 @@ private fun AuthFormScreen(
 
     val isFormValid by remember(state.mode) {
         derivedStateOf {
+            val isNameValid = nameTFS.text.isNotBlank()
+            val isPasswordValid = passwordTFS.text.isNotBlank()
+            val isTypeSelected = profileType != null
+
             when (state.mode) {
                 AuthMode.LOGIN ->
-                    nameTFS.text.isNotBlank() && passwordTFS.text.isNotBlank()
+                    isNameValid && isPasswordValid && isTypeSelected
 
                 AuthMode.REGISTER ->
-                    nameTFS.text.isNotBlank() &&
-                            passwordTFS.text == rePasswordTFS.text &&
-                            profileType != null
+                    isNameValid && isPasswordValid && isTypeSelected &&
+                            passwordTFS.text.contentEquals(rePasswordTFS.text)
             }
         }
     }
@@ -171,28 +173,18 @@ private fun AuthFormScreen(
                                 .fillMaxWidth()
                                 .height(52.dp),
                             onClick = {
-                                when (state.mode) {
-                                    AuthMode.LOGIN -> action(
-                                        AuthFormAction.OnLogin(
-                                            LoginForm(
-                                                username = nameTFS.text.toString(),
-                                                password = passwordTFS.text.toString()
-                                            )
+                                action(
+                                    AuthFormAction.OnSubmit(
+                                        authMode = state.mode,
+                                        form = AuthForm(
+                                            username = nameTFS.text.toString(),
+                                            password = passwordTFS.text.toString(),
+                                            type = profileType ?: ProfileType.NORMAL
                                         )
                                     )
-
-                                    AuthMode.REGISTER -> action(
-                                        AuthFormAction.OnRegister(
-                                            RegisterForm(
-                                                username = nameTFS.text.toString(),
-                                                password = passwordTFS.text.toString(),
-                                                type = profileType ?: ProfileType.NORMAL
-                                            )
-                                        )
-                                    )
-                                }
+                                )
                             },
-                            enabled = isFormValid,
+                            enabled = isFormValid && !state.isLoading,
                             content = {
                                 Text(
                                     text = when (state.mode) {
@@ -347,50 +339,50 @@ fun Form(
                 }
             }
         )
-        Column(
+    }
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "I am a",
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Row(
             modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = "I am a",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+            horizontalArrangement = Arrangement.spacedBy(
+                space = 12.dp,
+                alignment = Alignment.CenterHorizontally
             )
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(
-                    space = 12.dp,
-                    alignment = Alignment.CenterHorizontally
-                )
-            ) {
-                FilterChip(
-                    modifier = Modifier.weight(1f),
-                    selected = profileType == ProfileType.COACH,
-                    onClick = { onTypeClick(ProfileType.COACH) },
-                    label = {
-                        Text(
-                            modifier = Modifier.fillMaxWidth(),
-                            text = "Coach",
-                            style = MaterialTheme.typography.bodyMedium,
-                            textAlign = TextAlign.Center
-                        )
-                    }
-                )
-                FilterChip(
-                    modifier = Modifier.weight(1f),
-                    selected = profileType == ProfileType.NORMAL,
-                    onClick = { onTypeClick(ProfileType.NORMAL) },
-                    label = {
-                        Text(
-                            modifier = Modifier.fillMaxWidth(),
-                            text = "Normal",
-                            style = MaterialTheme.typography.bodyMedium,
-                            textAlign = TextAlign.Center
-                        )
-                    },
-                )
-            }
+        ) {
+            FilterChip(
+                modifier = Modifier.weight(1f),
+                selected = profileType == ProfileType.COACH,
+                onClick = { onTypeClick(ProfileType.COACH) },
+                label = {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = "Coach",
+                        style = MaterialTheme.typography.bodyMedium,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            )
+            FilterChip(
+                modifier = Modifier.weight(1f),
+                selected = profileType == ProfileType.NORMAL,
+                onClick = { onTypeClick(ProfileType.NORMAL) },
+                label = {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = "Normal",
+                        style = MaterialTheme.typography.bodyMedium,
+                        textAlign = TextAlign.Center
+                    )
+                },
+            )
         }
     }
 }

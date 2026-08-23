@@ -1,7 +1,9 @@
 package hu.tb.meeting
 
 import android.app.Application
+import hu.tb.network.di.networkModule
 import hu.tb.presentation.di.authModule
+import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
 
@@ -11,7 +13,9 @@ class MeetingApplication : Application() {
 
         startKoin {
             androidLogger()
+            androidContext(this@MeetingApplication)
             modules(
+                networkModule,
                 authModule
             )
         }

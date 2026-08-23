@@ -1,6 +1,6 @@
 package hu.tb.domain
 
-data class RegisterForm(
+data class AuthForm(
     val username: String,
     val password: String,
     val type: ProfileType
