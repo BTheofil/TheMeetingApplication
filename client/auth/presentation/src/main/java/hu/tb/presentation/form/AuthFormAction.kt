@@ -1,9 +1,8 @@
 package hu.tb.presentation.form
 
-import hu.tb.domain.LoginForm
-import hu.tb.domain.RegisterForm
+import hu.tb.domain.AuthForm
+import hu.tb.domain.AuthMode
 
 sealed interface AuthFormAction {
-    data class OnRegister(val form: RegisterForm): AuthFormAction
-    data class OnLogin(val form: LoginForm): AuthFormAction
+    data class OnSubmit(val authMode: AuthMode, val form: AuthForm) : AuthFormAction
 }
