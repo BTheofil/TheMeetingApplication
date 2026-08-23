@@ -13,7 +13,7 @@ internal inline fun safeCall(
         throw e
     } catch (_: IOException) {
         return ApiResult.Fail(DataError.NO_INTERNET)
-    } catch (e: Throwable) {
+    } catch (e: Exception) {
         e.printStackTrace()
         return ApiResult.Fail(DataError.UNKNOWN)
     }
