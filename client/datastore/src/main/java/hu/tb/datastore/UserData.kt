@@ -1,0 +1,14 @@
+package hu.tb.datastore
+
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class UserData(
+    val name: String = "",
+    val password: String = "",
+    val profileType: String = "",
+    val token: String = "",
+    val tokenRefreshDate: Long = 0L
+) {
+    val isLoggedIn: Boolean get() = token.isNotBlank()
+}

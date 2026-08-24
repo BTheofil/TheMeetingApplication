@@ -1,6 +1,8 @@
 package hu.tb.meeting
 
 import android.app.Application
+import hu.tb.datastore.di.datastoreModule
+import hu.tb.navigator.di.navigatorModule
 import hu.tb.network.di.networkModule
 import hu.tb.presentation.di.authModule
 import org.koin.android.ext.koin.androidContext
@@ -16,7 +18,9 @@ class MeetingApplication : Application() {
             androidContext(this@MeetingApplication)
             modules(
                 networkModule,
-                authModule
+                datastoreModule,
+                authModule,
+                navigatorModule
             )
         }
     }

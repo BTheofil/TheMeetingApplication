@@ -3,5 +3,8 @@ plugins {
 }
 
 android {
-    namespace = "hu.tb.design_system"
+    namespace = "hu.tb.dashboard.presentation"
+}
+
+dependencies {
 }

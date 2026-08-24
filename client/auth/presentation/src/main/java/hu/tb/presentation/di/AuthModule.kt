@@ -11,7 +11,8 @@ val authModule = module {
     viewModel { (mode: AuthMode) ->
         AuthFormViewModel(
             mode = mode,
-            authRepository = get()
+            authRepository = get(),
+            userDatastoreRepository = get()
         )
     }
 }
