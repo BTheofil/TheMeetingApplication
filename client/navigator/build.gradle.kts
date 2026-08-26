@@ -1,5 +1,4 @@
 plugins {
-    alias(libs.plugins.meet.android.library)
     alias(libs.plugins.meet.android.library.compose)
 }
 
@@ -10,6 +9,10 @@ android {
 dependencies {
     implementation(projects.auth.presentation)
     implementation(projects.auth.domain)
+    implementation(projects.dashboard.presentation)
+    implementation(projects.datastore)
+    implementation(projects.designSystem)
+    implementation(projects.network)
 
     implementation(libs.koin.compose)
     implementation(libs.koin.navigation)

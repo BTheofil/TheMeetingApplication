@@ -3,6 +3,7 @@ package hu.tb.network.repository
 import hu.tb.data.auth.dto.AuthResponse
 import hu.tb.data.auth.dto.AuthSend
 import hu.tb.data.auth.dto.ErrorResponse
+import hu.tb.domain.AuthError
 import hu.tb.domain.AuthForm
 import hu.tb.domain.AuthMode
 import hu.tb.domain.AuthResults
@@ -42,7 +43,10 @@ class AuthRepository(
 
         return when (result) {
             is ApiResult.Ok -> result.body.toDataError()
-            is ApiResult.Fail -> AuthResults(errorMessage = result.dataError.asText())
+            is ApiResult.Fail -> AuthResults(
+                errorMessage = result.dataError.asText(),
+                error = result.dataError.asAuthError()
+            )
         }
     }
 
@@ -53,14 +57,30 @@ class AuthRepository(
                 AuthResults(token = token)
             } catch (e: Exception) {
                 e.printStackTrace()
-                AuthResults(errorMessage = DataError.UNKNOWN.asText())
+                AuthResults(
+                    errorMessage = DataError.UNKNOWN.asText(),
+                    error = AuthError.UNKNOWN
+                )
             }
 
             401, 409 -> {
                 val message = body<ErrorResponse>().message
-                AuthResults(errorMessage = message)
+                AuthResults(
+                    errorMessage = message,
+                    error = if (status.value == 401) AuthError.UNAUTHORIZED else AuthError.CONFLICT
+                )
             }
 
-            else -> AuthResults(errorMessage = DataError.UNKNOWN.asText())
+            else -> AuthResults(
+                errorMessage = DataError.UNKNOWN.asText(),
+                error = AuthError.UNKNOWN
+            )
         }
+
+    private fun DataError.asAuthError(): AuthError = when (this) {
+        DataError.NO_INTERNET -> AuthError.NO_INTERNET
+        DataError.UNAUTHORIZED -> AuthError.UNAUTHORIZED
+        DataError.CONFLICT -> AuthError.CONFLICT
+        DataError.UNKNOWN -> AuthError.UNKNOWN
+    }
 }

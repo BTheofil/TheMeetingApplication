@@ -7,15 +7,20 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import hu.tb.design_system.component.SessionExpiredDialog
 import hu.tb.domain.AuthMode
+import hu.tb.presentation.DashboardScreen
 import hu.tb.presentation.form.AuthFormScreen
 import hu.tb.presentation.welcome.WelcomeScreen
 import org.koin.compose.viewmodel.koinViewModel
@@ -39,16 +44,21 @@ sealed interface Destination : NavKey {
 }
 
 @Composable
-fun Navigator() {
+fun Navigator(viewModel: NavigatorViewModel) {
+    val sessionState by viewModel.session.collectAsStateWithLifecycle()
+
+    if (sessionState is SessionState.Init) return
+
     val graphStack = remember {
-        mutableStateListOf<Destination>(Destination.AuthRoot)
+        mutableStateListOf(
+            if (viewModel.session.value is SessionState.NoUserSavedData) Destination.AuthRoot
+            else Destination.DashboardRoot
+        )
     }
-    val authStack = remember {
-        mutableStateListOf<Destination.AuthGraph>(Destination.AuthGraph.Welcome)
-    }
-    val dashboardStack = remember {
-        mutableStateListOf<Destination.DashboardGraph>(Destination.DashboardGraph.Calendar)
-    }
+    val authStack =
+        remember { mutableStateListOf<Destination.AuthGraph>(Destination.AuthGraph.Welcome) }
+    val dashboardStack =
+        remember { mutableStateListOf<Destination.DashboardGraph>(Destination.DashboardGraph.Calendar) }
 
     NavDisplay(
         backStack = graphStack,
@@ -88,12 +98,27 @@ fun Navigator() {
                 )
             }
             entry<Destination.DashboardRoot> {
+                LaunchedEffect(Unit) { viewModel.refreshToken() }
+
                 NavDisplay(
                     backStack = dashboardStack,
                     entryProvider = entryProvider {
-                        entry<Destination.DashboardGraph.Calendar> { }
+                        entry<Destination.DashboardGraph.Calendar> { DashboardScreen() }
                     }
                 )
+
+                if (sessionState is SessionState.Expired) {
+                    SessionExpiredDialog(
+                        onConfirm = {
+                            viewModel.onExpiredConfirmed()
+                            graphStack.add(Destination.AuthRoot)
+                            graphStack.remove(Destination.DashboardRoot)
+                            authStack.clear()
+                            authStack.add(Destination.AuthGraph.Welcome)
+                            authStack.add(Destination.AuthGraph.Form(AuthMode.LOGIN))
+                        }
+                    )
+                }
             }
         }
     )

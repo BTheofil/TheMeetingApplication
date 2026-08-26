@@ -4,8 +4,6 @@ plugins {
 
 group = "hu.tb.buildlogic"
 
-// Pin the JDK the convention plugins themselves compile against, matching JDK_VERSION
-// in hu/tb/Kotlin.kt.
 kotlin {
     jvmToolchain(17)
 }
