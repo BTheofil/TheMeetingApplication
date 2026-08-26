@@ -23,6 +23,7 @@ import hu.tb.domain.AuthMode
 import hu.tb.presentation.DashboardScreen
 import hu.tb.presentation.form.AuthFormScreen
 import hu.tb.presentation.welcome.WelcomeScreen
+import hu.tb.profile.presentation.ProfileScreen
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -40,6 +41,7 @@ sealed interface Destination : NavKey {
     @Stable
     sealed interface DashboardGraph : NavKey {
         data object Calendar : DashboardGraph
+        data object Profile : DashboardGraph
     }
 }
 
@@ -102,15 +104,41 @@ fun Navigator(viewModel: NavigatorViewModel) {
 
                 NavDisplay(
                     backStack = dashboardStack,
+                    entryDecorators = listOf(
+                        rememberSaveableStateHolderNavEntryDecorator(),
+                        rememberViewModelStoreNavEntryDecorator()
+                    ),
                     entryProvider = entryProvider {
-                        entry<Destination.DashboardGraph.Calendar> { DashboardScreen() }
+                        entry<Destination.DashboardGraph.Calendar> {
+                            DashboardScreen(
+                                onProfileClick = {
+                                    dashboardStack.add(Destination.DashboardGraph.Profile)
+                                }
+                            )
+                        }
+                        entry<Destination.DashboardGraph.Profile> {
+                            ProfileScreen(
+                                onBack = {
+                                    dashboardStack.remove(Destination.DashboardGraph.Profile)
+                                },
+                                onDeleted = {
+                                    viewModel.clearUserData()
+                                    graphStack.add(Destination.AuthRoot)
+                                    graphStack.remove(Destination.DashboardRoot)
+                                    dashboardStack.clear()
+                                    dashboardStack.add(Destination.DashboardGraph.Calendar)
+                                    authStack.clear()
+                                    authStack.add(Destination.AuthGraph.Welcome)
+                                }
+                            )
+                        }
                     }
                 )
 
                 if (sessionState is SessionState.Expired) {
                     SessionExpiredDialog(
                         onConfirm = {
-                            viewModel.onExpiredConfirmed()
+                            viewModel.clearUserData()
                             graphStack.add(Destination.AuthRoot)
                             graphStack.remove(Destination.DashboardRoot)
                             authStack.clear()

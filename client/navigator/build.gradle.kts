@@ -10,6 +10,7 @@ dependencies {
     implementation(projects.auth.presentation)
     implementation(projects.auth.domain)
     implementation(projects.dashboard.presentation)
+    implementation(projects.profile.presentation)
     implementation(projects.datastore)
     implementation(projects.designSystem)
     implementation(projects.network)
