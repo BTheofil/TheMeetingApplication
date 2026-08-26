@@ -13,34 +13,27 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
-sealed interface SessionState {
-    data object Init : SessionState
-    data object NoUserSavedData : SessionState
-    data object LoggedIn : SessionState
-    data object Expired : SessionState
-}
-
 class NavigatorViewModel(
     private val userDatastoreRepository: UserDatastoreRepository,
     private val authRepository: AuthRepository
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow<SessionState>(SessionState.Init)
-    val state = _state.asStateFlow()
+    private val _session = MutableStateFlow<SessionState>(SessionState.Init)
+    val session = _session.asStateFlow()
 
-    private var hasRefreshed = false
+    private var isTokenRefreshed = false
 
     init {
         viewModelScope.launch {
             val userData = userDatastoreRepository.userdataFlow().first()
-            _state.value =
+            _session.value =
                 if (userData.isLoggedIn) SessionState.LoggedIn else SessionState.NoUserSavedData
         }
     }
 
     fun refreshToken() {
-        if (hasRefreshed) return
-        hasRefreshed = true
+        if (isTokenRefreshed) return
+        isTokenRefreshed = true
 
         viewModelScope.launch {
             val userData = userDatastoreRepository.userdataFlow().first()
@@ -56,7 +49,7 @@ class NavigatorViewModel(
                     token = result.token,
                     tokenRefreshDate = System.currentTimeMillis()
                 )
-                else -> _state.value = SessionState.Expired
+                else -> _session.value = SessionState.Expired
             }
         }
     }
@@ -64,7 +57,7 @@ class NavigatorViewModel(
     fun onExpiredConfirmed() {
         viewModelScope.launch {
             userDatastoreRepository.clearUserData()
-            _state.value = SessionState.NoUserSavedData
+            _session.value = SessionState.NoUserSavedData
         }
     }
 

@@ -40,7 +40,7 @@ object CryptoSerializer : Serializer<UserData> {
                 val cipher = Cipher.getInstance(TRANSFORMATION).apply {
                     init(
                         Cipher.DECRYPT_MODE,
-                        secretKey(),
+                        secretKey,
                         GCMParameterSpec(TAG_SIZE_BITS, bytes, 0, IV_SIZE)
                     )
                 }
@@ -55,17 +55,18 @@ object CryptoSerializer : Serializer<UserData> {
             }
         }
 
-    override suspend fun writeTo(t: UserData, output: OutputStream) {
+    override suspend fun writeTo(t: UserData, output: OutputStream) =
         withContext(Dispatchers.IO) {
             val cipher = Cipher.getInstance(TRANSFORMATION).apply {
-                init(Cipher.ENCRYPT_MODE, secretKey())
+                init(Cipher.ENCRYPT_MODE, secretKey)
             }
             output.write(cipher.iv)
             output.write(cipher.doFinal(Json.encodeToString(t).encodeToByteArray()))
         }
-    }
 
-    private fun secretKey(): SecretKey {
+    private val secretKey: SecretKey by lazy { loadOrCreateKey() }
+
+    private fun loadOrCreateKey(): SecretKey {
         val keyStore = KeyStore.getInstance(KEYSTORE).apply { load(null) }
         val existing = keyStore.getEntry(KEY_ALIAS, null) as? KeyStore.SecretKeyEntry
         if (existing != null) return existing.secretKey

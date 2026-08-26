@@ -45,13 +45,13 @@ sealed interface Destination : NavKey {
 
 @Composable
 fun Navigator(viewModel: NavigatorViewModel) {
-    val sessionState by viewModel.state.collectAsStateWithLifecycle()
+    val sessionState by viewModel.session.collectAsStateWithLifecycle()
 
     if (sessionState is SessionState.Init) return
 
     val graphStack = remember {
         mutableStateListOf(
-            if (viewModel.state.value is SessionState.NoUserSavedData) Destination.AuthRoot
+            if (viewModel.session.value is SessionState.NoUserSavedData) Destination.AuthRoot
             else Destination.DashboardRoot
         )
     }

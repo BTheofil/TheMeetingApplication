@@ -19,7 +19,7 @@ class MainActivity : ComponentActivity() {
         val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
         splashScreen.setKeepOnScreenCondition {
-            navigatorViewModel.state.value is SessionState.Init
+            navigatorViewModel.session.value is SessionState.Init
         }
         enableEdgeToEdge()
         setContent {
