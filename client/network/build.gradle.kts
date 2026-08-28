@@ -9,6 +9,7 @@ android {
 dependencies {
     implementation(projects.network.data)
     api(projects.auth.domain)
+    api(projects.profile.domain)
 
     api(libs.bundles.ktor)
 

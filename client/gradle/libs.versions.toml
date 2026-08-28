@@ -8,7 +8,7 @@ koin = "4.2.2"
 kotlin = "2.4.10"
 composeBom = "2026.08.00"
 composeAnalyzer = "0.13.0"
-nav3Core = "1.1.6"
+nav3Core = "1.1.7"
 lifecycleViewmodelNav3 = "2.11.0"
 ktor = "3.5.2"
 kotlinxSerialization = "1.11.0"
@@ -67,7 +67,6 @@ meet-android-library-compose = { id = "meet.android.library.compose" }
 meet-jvm-library = { id = "meet.jvm.library" }
 
 [bundles]
-
 koin = [
     "koin", "koin-compose"
 ]

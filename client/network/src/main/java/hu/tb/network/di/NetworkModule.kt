@@ -1,6 +1,7 @@
 package hu.tb.network.di
 
 import hu.tb.network.repository.AuthRepository
+import hu.tb.network.repository.ProfileRepository
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
@@ -32,4 +33,5 @@ val networkModule = module {
     }
 
     singleOf(::AuthRepository)
+    singleOf(::ProfileRepository)
 }

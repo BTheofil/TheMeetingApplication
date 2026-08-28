@@ -54,9 +54,10 @@ class NavigatorViewModel(
         }
     }
 
-    fun onExpiredConfirmed() {
+    fun clearUserData() {
         viewModelScope.launch {
             userDatastoreRepository.clearUserData()
+            isTokenRefreshed = false
             _session.value = SessionState.NoUserSavedData
         }
     }
@@ -64,6 +65,6 @@ class NavigatorViewModel(
     private fun UserData.toAuthForm(): AuthForm = AuthForm(
         username = name,
         password = password,
-        type = ProfileType.entries.firstOrNull { it.value == profileType } ?: ProfileType.NORMAL
+        type = ProfileType.fromValue(profileType)
     )
 }
