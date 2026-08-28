@@ -1,6 +1,7 @@
 package hu.tb.meet.install
 
 import hu.tb.meet.route.auth
+import hu.tb.meet.route.profile
 import hu.tb.meet.route.status
 import hu.tb.meet.route.swagger
 import io.ktor.server.application.*
@@ -11,5 +12,6 @@ fun Application.setupRoute() {
         status()
         swagger()
         auth()
+        profile()
     }
 }

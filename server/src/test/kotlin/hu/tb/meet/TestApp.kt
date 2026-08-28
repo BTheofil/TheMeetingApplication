@@ -10,11 +10,6 @@ import java.io.File
 
 private const val TEST_DB_DIR = "build/test-db"
 
-/**
- * Boots the real application module against the throwaway database declared in
- * `src/test/resources/application-test.conf`, with a JSON-aware client.
- * The database file is deleted first so every test starts from an empty schema.
- */
 fun withTestApp(block: suspend ApplicationTestBuilder.(client: HttpClient) -> Unit) = testApplication {
     resetTestDatabase()
 
