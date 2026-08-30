@@ -48,7 +48,7 @@ class ProfileViewModel(
             _state.update { it.copy(isDeleting = false) }
 
             _event.send(
-                if (result.isSuccess) ProfileEvent.Deleted
+                if (result.isSuccess && result.errorMessage == null) ProfileEvent.Deleted
                 else ProfileEvent.Failed(
                     result.errorMessage ?: "Something went wrong. Please try again."
                 )
