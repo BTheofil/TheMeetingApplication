@@ -42,7 +42,7 @@ class AuthRepository(
         }
 
         return when (result) {
-            is ApiResult.Ok -> result.body.toDataError()
+            is ApiResult.Ok -> result.httpResponse.toDataError()
             is ApiResult.Fail -> AuthResults(
                 errorMessage = result.dataError.asText(),
                 error = result.dataError.asAuthError()
