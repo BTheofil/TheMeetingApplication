@@ -5,6 +5,7 @@ import hu.tb.dashboard.presentation.model.CalendarDay
 import hu.tb.dashboard.presentation.model.CoachItem
 import hu.tb.dashboard.presentation.model.OpenSlot
 import hu.tb.dashboard.presentation.model.SessionItem
+import hu.tb.dashboard.presentation.util.currentDate
 import hu.tb.domain.ProfileType
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.YearMonth

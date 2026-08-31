@@ -23,9 +23,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import hu.tb.dashboard.presentation.SampleData
-import hu.tb.dashboard.presentation.formatTime
+import hu.tb.dashboard.presentation.component.common.AvailableRing
+import hu.tb.dashboard.presentation.component.common.DashboardCard
 import hu.tb.dashboard.presentation.model.OpenSlot
+import hu.tb.dashboard.presentation.preview.SampleData
+import hu.tb.dashboard.presentation.util.formatTime
 import hu.tb.design_system.Icons
 import hu.tb.design_system.theme.MeetingTheme
 

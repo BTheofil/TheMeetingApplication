@@ -1,4 +1,4 @@
-package hu.tb.dashboard.presentation
+package hu.tb.dashboard.presentation.util
 
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.DayOfWeek

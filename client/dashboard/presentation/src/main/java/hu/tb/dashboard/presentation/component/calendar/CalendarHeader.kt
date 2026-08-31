@@ -1,4 +1,4 @@
-package hu.tb.dashboard.presentation.component
+package hu.tb.dashboard.presentation.component.calendar
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -15,7 +15,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import hu.tb.dashboard.presentation.formatMonthLabel
+import hu.tb.dashboard.presentation.util.formatMonthLabel
 import hu.tb.design_system.Icons
 import hu.tb.design_system.theme.MeetingTheme
 import kotlinx.datetime.YearMonth

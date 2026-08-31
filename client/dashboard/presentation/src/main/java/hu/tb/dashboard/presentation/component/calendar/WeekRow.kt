@@ -1,4 +1,4 @@
-package hu.tb.dashboard.presentation.component
+package hu.tb.dashboard.presentation.component.calendar
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -6,7 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import hu.tb.dashboard.presentation.DashboardState
-import hu.tb.dashboard.presentation.SampleData
+import hu.tb.dashboard.presentation.preview.SampleData
 import hu.tb.design_system.theme.MeetingTheme
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate

@@ -1,4 +1,4 @@
-package hu.tb.dashboard.presentation.component
+package hu.tb.dashboard.presentation.component.calendar
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,7 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import hu.tb.dashboard.presentation.DashboardState
-import hu.tb.dashboard.presentation.SampleData
+import hu.tb.dashboard.presentation.preview.SampleData
 import hu.tb.design_system.theme.MeetingTheme
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate

@@ -1,9 +1,11 @@
-package hu.tb.dashboard.presentation
+package hu.tb.dashboard.presentation.preview
 
+import hu.tb.dashboard.presentation.DashboardState
 import hu.tb.dashboard.presentation.model.CalendarDay
 import hu.tb.dashboard.presentation.model.CoachItem
 import hu.tb.dashboard.presentation.model.OpenSlot
 import hu.tb.dashboard.presentation.model.SessionItem
+import hu.tb.dashboard.presentation.util.currentDate
 import hu.tb.domain.ProfileType
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate

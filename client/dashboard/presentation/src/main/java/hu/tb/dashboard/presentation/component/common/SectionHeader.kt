@@ -1,4 +1,4 @@
-package hu.tb.dashboard.presentation.component
+package hu.tb.dashboard.presentation.component.common
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row

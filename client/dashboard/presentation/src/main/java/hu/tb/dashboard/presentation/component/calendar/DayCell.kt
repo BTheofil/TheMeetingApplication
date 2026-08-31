@@ -1,4 +1,4 @@
-package hu.tb.dashboard.presentation.component
+package hu.tb.dashboard.presentation.component.calendar
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
@@ -24,6 +24,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import hu.tb.dashboard.presentation.component.common.AvailableRing
+import hu.tb.dashboard.presentation.component.common.BookedDot
+import hu.tb.dashboard.presentation.component.common.IndicatorSize
 import hu.tb.dashboard.presentation.model.CalendarDay
 import hu.tb.design_system.theme.MeetingTheme
 import kotlinx.datetime.LocalDate
@@ -106,38 +109,6 @@ private fun Indicators(
             AvailableRing(alpha = dimAlpha)
         }
     }
-}
-
-internal val IndicatorSize = 7.dp
-
-@Composable
-internal fun BookedDot(
-    modifier: Modifier = Modifier,
-    alpha: Float = 1f
-) {
-    Box(
-        modifier = modifier
-            .size(IndicatorSize)
-            .padding(1.dp)
-            .clip(CircleShape)
-            .background(MaterialTheme.colorScheme.primary.copy(alpha = alpha))
-    )
-}
-
-@Composable
-internal fun AvailableRing(
-    modifier: Modifier = Modifier,
-    alpha: Float = 1f
-) {
-    Box(
-        modifier = modifier
-            .size(IndicatorSize)
-            .border(
-                width = 1.5.dp,
-                color = MaterialTheme.colorScheme.tertiary.copy(alpha = alpha),
-                shape = CircleShape
-            )
-    )
 }
 
 @Preview(showBackground = true)

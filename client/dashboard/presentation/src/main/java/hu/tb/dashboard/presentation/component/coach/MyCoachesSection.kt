@@ -1,4 +1,4 @@
-package hu.tb.dashboard.presentation.component
+package hu.tb.dashboard.presentation.component.coach
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.background
@@ -22,8 +22,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import hu.tb.dashboard.presentation.SampleData
+import hu.tb.dashboard.presentation.component.common.AvailableRing
+import hu.tb.dashboard.presentation.component.common.DashboardCard
+import hu.tb.dashboard.presentation.component.common.SectionHeader
 import hu.tb.dashboard.presentation.model.CoachItem
+import hu.tb.dashboard.presentation.preview.SampleData
 import hu.tb.design_system.theme.MeetingTheme
 
 @Composable
