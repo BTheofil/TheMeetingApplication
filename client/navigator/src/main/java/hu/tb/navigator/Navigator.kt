@@ -18,9 +18,9 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import hu.tb.dashboard.presentation.DashboardScreen
 import hu.tb.design_system.component.SessionExpiredDialog
 import hu.tb.domain.AuthMode
-import hu.tb.presentation.DashboardScreen
 import hu.tb.presentation.form.AuthFormScreen
 import hu.tb.presentation.welcome.WelcomeScreen
 import hu.tb.profile.presentation.ProfileScreen

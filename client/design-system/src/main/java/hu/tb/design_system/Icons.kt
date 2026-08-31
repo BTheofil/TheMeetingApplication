@@ -5,4 +5,9 @@ object Icons {
     val visibility_off = R.drawable.visibility_off
     val person = R.drawable.person
     val arrow_back = R.drawable.arrow_back
+    val calendar = R.drawable.calendar
+    val chevron_left = R.drawable.chevron_left
+    val chevron_right = R.drawable.chevron_right
+    val expand = R.drawable.expand
+    val schedule = R.drawable.schedule
 }
