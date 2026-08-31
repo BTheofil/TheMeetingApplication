@@ -1,8 +1,14 @@
 package hu.tb.dashboard.presentation.model
 
 import androidx.compose.runtime.Immutable
-import java.time.LocalDate
-import java.time.LocalTime
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalTime
+
+private const val SECONDS_PER_MINUTE = 60
+private const val SECONDS_PER_DAY = 24 * 60 * 60
+
+private fun LocalTime.plusMinutes(minutes: Int): LocalTime =
+    LocalTime.fromSecondOfDay((toSecondOfDay() + minutes * SECONDS_PER_MINUTE).mod(SECONDS_PER_DAY))
 
 @Immutable
 data class SessionItem(
@@ -14,7 +20,7 @@ data class SessionItem(
     val durationMinutes: Int,
     val isNext: Boolean = false
 ) {
-    val end: LocalTime get() = start.plusMinutes(durationMinutes.toLong())
+    val end: LocalTime get() = start.plusMinutes(durationMinutes)
 }
 
 @Immutable
@@ -25,7 +31,7 @@ data class OpenSlot(
     val start: LocalTime,
     val durationMinutes: Int
 ) {
-    val end: LocalTime get() = start.plusMinutes(durationMinutes.toLong())
+    val end: LocalTime get() = start.plusMinutes(durationMinutes)
 }
 
 @Immutable

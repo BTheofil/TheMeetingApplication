@@ -1,6 +1,6 @@
 package hu.tb.dashboard.presentation
 
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
 
 sealed interface DashboardAction {
     data object OnProfileClick : DashboardAction

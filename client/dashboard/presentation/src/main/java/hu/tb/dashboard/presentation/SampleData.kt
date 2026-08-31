@@ -5,13 +5,15 @@ import hu.tb.dashboard.presentation.model.CoachItem
 import hu.tb.dashboard.presentation.model.OpenSlot
 import hu.tb.dashboard.presentation.model.SessionItem
 import hu.tb.domain.ProfileType
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.YearMonth
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalTime
+import kotlinx.datetime.plus
+import kotlinx.datetime.yearMonth
 
 internal object SampleData {
 
-    private val today: LocalDate get() = LocalDate.now()
+    private val today: LocalDate get() = currentDate()
 
     private val coachNames = mapOf(
         "coach-anna" to "Anna Kovács",
@@ -27,7 +29,7 @@ internal object SampleData {
                 title = "Leg day",
                 counterpartName = "Anna Kovács",
                 date = base,
-                start = LocalTime.of(9, 0),
+                start = LocalTime(9, 0),
                 durationMinutes = 60,
                 isNext = true
             ),
@@ -36,31 +38,31 @@ internal object SampleData {
                 title = "Mobility",
                 counterpartName = "Júlia Papp",
                 date = base,
-                start = LocalTime.of(17, 30),
+                start = LocalTime(17, 30),
                 durationMinutes = 45
             ),
             SessionItem(
                 id = "s3",
                 title = "Cardio intervals",
                 counterpartName = "Márk Szabó",
-                date = base.plusDays(1),
-                start = LocalTime.of(18, 30),
+                date = base.plus(1, DateTimeUnit.DAY),
+                start = LocalTime(18, 30),
                 durationMinutes = 45
             ),
             SessionItem(
                 id = "s4",
                 title = "Upper body",
                 counterpartName = "Anna Kovács",
-                date = base.plusDays(4),
-                start = LocalTime.of(8, 0),
+                date = base.plus(4, DateTimeUnit.DAY),
+                start = LocalTime(8, 0),
                 durationMinutes = 60
             ),
             SessionItem(
                 id = "s5",
                 title = "Progress check",
                 counterpartName = "Júlia Papp",
-                date = base.plusDays(9),
-                start = LocalTime.of(11, 0),
+                date = base.plus(9, DateTimeUnit.DAY),
+                start = LocalTime(11, 0),
                 durationMinutes = 30
             )
         )
@@ -74,7 +76,7 @@ internal object SampleData {
                 title = "Leg day",
                 counterpartName = "Theo B.",
                 date = base,
-                start = LocalTime.of(9, 0),
+                start = LocalTime(9, 0),
                 durationMinutes = 60,
                 isNext = true
             ),
@@ -83,7 +85,7 @@ internal object SampleData {
                 title = "Intro session",
                 counterpartName = "Márk S.",
                 date = base,
-                start = LocalTime.of(11, 0),
+                start = LocalTime(11, 0),
                 durationMinutes = 30
             ),
             SessionItem(
@@ -91,31 +93,31 @@ internal object SampleData {
                 title = "Mobility",
                 counterpartName = "Júlia P.",
                 date = base,
-                start = LocalTime.of(17, 30),
+                start = LocalTime(17, 30),
                 durationMinutes = 45
             ),
             SessionItem(
                 id = "c4",
                 title = "Cardio intervals",
                 counterpartName = "Theo B.",
-                date = base.plusDays(1),
-                start = LocalTime.of(18, 30),
+                date = base.plus(1, DateTimeUnit.DAY),
+                start = LocalTime(18, 30),
                 durationMinutes = 45
             ),
             SessionItem(
                 id = "c5",
                 title = "Strength block",
                 counterpartName = "Márk S.",
-                date = base.plusDays(3),
-                start = LocalTime.of(7, 30),
+                date = base.plus(3, DateTimeUnit.DAY),
+                start = LocalTime(7, 30),
                 durationMinutes = 60
             ),
             SessionItem(
                 id = "c6",
                 title = "Progress check",
                 counterpartName = "Júlia P.",
-                date = base.plusDays(9),
-                start = LocalTime.of(11, 0),
+                date = base.plus(9, DateTimeUnit.DAY),
+                start = LocalTime(11, 0),
                 durationMinutes = 30
             )
         )
@@ -124,14 +126,14 @@ internal object SampleData {
     fun openSlots(): List<OpenSlot> {
         val base = today
         return listOf(
-            OpenSlot("o0", "coach-anna", base, LocalTime.of(15, 0), 45),
-            OpenSlot("o1", "coach-anna", base.plusDays(2), LocalTime.of(10, 0), 60),
-            OpenSlot("o2", "coach-anna", base.plusDays(2), LocalTime.of(14, 0), 45),
-            OpenSlot("o3", "coach-anna", base.plusDays(5), LocalTime.of(8, 30), 60),
-            OpenSlot("o4", "coach-mark", base.plusDays(6), LocalTime.of(16, 0), 30),
-            OpenSlot("o5", "coach-mark", base.plusDays(11), LocalTime.of(9, 15), 60),
-            OpenSlot("o6", "coach-mark", base.plusDays(11), LocalTime.of(13, 0), 45),
-            OpenSlot("o7", "coach-mark", base.plusDays(12), LocalTime.of(7, 45), 60)
+            OpenSlot("o0", "coach-anna", base, LocalTime(15, 0), 45),
+            OpenSlot("o1", "coach-anna", base.plus(2, DateTimeUnit.DAY), LocalTime(10, 0), 60),
+            OpenSlot("o2", "coach-anna", base.plus(2, DateTimeUnit.DAY), LocalTime(14, 0), 45),
+            OpenSlot("o3", "coach-anna", base.plus(5, DateTimeUnit.DAY), LocalTime(8, 30), 60),
+            OpenSlot("o4", "coach-mark", base.plus(6, DateTimeUnit.DAY), LocalTime(16, 0), 30),
+            OpenSlot("o5", "coach-mark", base.plus(11, DateTimeUnit.DAY), LocalTime(9, 15), 60),
+            OpenSlot("o6", "coach-mark", base.plus(11, DateTimeUnit.DAY), LocalTime(13, 0), 45),
+            OpenSlot("o7", "coach-mark", base.plus(12, DateTimeUnit.DAY), LocalTime(7, 45), 60)
         )
     }
 
@@ -178,14 +180,14 @@ internal object SampleData {
         sessions: List<SessionItem>,
         slots: List<OpenSlot>,
         coaches: List<CoachItem>,
-        selectedDate: LocalDate = LocalDate.now()
+        selectedDate: LocalDate = currentDate()
     ): DashboardState {
-        val base = LocalDate.now()
+        val base = currentDate()
         return DashboardState(
             profileType = profileType,
             today = base,
             selectedDate = selectedDate,
-            visibleMonth = YearMonth.from(selectedDate),
+            visibleMonth = selectedDate.yearMonth,
             days = buildDays(sessions, slots),
             sessionsOnSelectedDay = sessions
                 .filter { it.date == selectedDate }

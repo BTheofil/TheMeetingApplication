@@ -40,7 +40,9 @@ import hu.tb.design_system.modifier.authGlowBackground
 import hu.tb.design_system.modifier.screenPadding
 import hu.tb.design_system.theme.MeetingTheme
 import hu.tb.domain.ProfileType
-import java.time.YearMonth
+import kotlinx.datetime.minusMonth
+import kotlinx.datetime.plusMonth
+import kotlinx.datetime.yearMonth
 
 @Composable
 fun DashboardScreen(
@@ -63,10 +65,10 @@ fun DashboardScreen(
                 )
 
                 DashboardAction.OnPreviousMonth ->
-                    state = state.copy(visibleMonth = state.visibleMonth.minusMonths(1))
+                    state = state.copy(visibleMonth = state.visibleMonth.minusMonth())
 
                 DashboardAction.OnNextMonth ->
-                    state = state.copy(visibleMonth = state.visibleMonth.plusMonths(1))
+                    state = state.copy(visibleMonth = state.visibleMonth.plusMonth())
 
                 // TODO(nav): open the session detail screen
                 is DashboardAction.OnSessionClick -> Unit
@@ -142,7 +144,7 @@ private fun RoleSection(
     when (state.profileType) {
         ProfileType.COACH -> CoachOpenHoursCard(
             openSlotCount = state.availableSlots.count {
-                YearMonth.from(it.date) == state.visibleMonth
+                it.date.yearMonth == state.visibleMonth
             },
             onCreateOpenHours = { action(DashboardAction.OnCreateOpenHoursClick) }
         )

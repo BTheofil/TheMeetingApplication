@@ -6,10 +6,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.text.style.TextAlign
-import java.time.DayOfWeek
-import java.time.format.TextStyle
+import hu.tb.dashboard.presentation.narrowLabel
+import kotlinx.datetime.DayOfWeek
 
 internal val WeekDays: List<DayOfWeek> = listOf(
     DayOfWeek.MONDAY,
@@ -29,9 +28,7 @@ internal fun WeekdayLabels(
         WeekDays.forEach { dayOfWeek ->
             Text(
                 modifier = Modifier.weight(1f),
-                text = dayOfWeek
-                    .getDisplayName(TextStyle.NARROW, LocalLocale.current.platformLocale)
-                    .uppercase(),
+                text = dayOfWeek.narrowLabel(),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center

@@ -8,8 +8,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import hu.tb.dashboard.presentation.DashboardState
 import hu.tb.dashboard.presentation.SampleData
 import hu.tb.design_system.theme.MeetingTheme
-import java.time.LocalDate
-import java.time.temporal.TemporalAdjusters
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.plus
+import kotlinx.datetime.previousOrSame
 
 @Composable
 internal fun WeekRow(
@@ -18,11 +20,11 @@ internal fun WeekRow(
     onDateSelect: (LocalDate) -> Unit
 ) {
     val firstDayOfWeek = state.selectedDate
-        .with(TemporalAdjusters.previousOrSame(WeekDays.first()))
+        .previousOrSame(WeekDays.first())
 
     Row(modifier = modifier.fillMaxWidth()) {
         repeat(WeekDays.size) { index ->
-            val date = firstDayOfWeek.plusDays(index.toLong())
+            val date = firstDayOfWeek.plus(index, DateTimeUnit.DAY)
             DayCell(
                 modifier = Modifier.weight(1f),
                 day = state.dayOf(date),

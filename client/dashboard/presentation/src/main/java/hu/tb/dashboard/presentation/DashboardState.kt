@@ -6,15 +6,16 @@ import hu.tb.dashboard.presentation.model.CoachItem
 import hu.tb.dashboard.presentation.model.OpenSlot
 import hu.tb.dashboard.presentation.model.SessionItem
 import hu.tb.domain.ProfileType
-import java.time.LocalDate
-import java.time.YearMonth
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.YearMonth
+import kotlinx.datetime.yearMonth
 
 @Immutable
 data class DashboardState(
     val profileType: ProfileType = ProfileType.NORMAL,
-    val today: LocalDate = LocalDate.now(),
+    val today: LocalDate = currentDate(),
     val selectedDate: LocalDate = today,
-    val visibleMonth: YearMonth = YearMonth.from(today),
+    val visibleMonth: YearMonth = today.yearMonth,
     val days: List<CalendarDay> = emptyList(),
     val sessionsOnSelectedDay: List<SessionItem> = emptyList(),
     val openSlotsOnSelectedDay: List<OpenSlot> = emptyList(),

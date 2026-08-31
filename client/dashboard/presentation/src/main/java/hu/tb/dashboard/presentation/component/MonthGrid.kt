@@ -11,9 +11,11 @@ import androidx.compose.ui.unit.dp
 import hu.tb.dashboard.presentation.DashboardState
 import hu.tb.dashboard.presentation.SampleData
 import hu.tb.design_system.theme.MeetingTheme
-import java.time.LocalDate
-import java.time.YearMonth
-import java.time.temporal.TemporalAdjusters
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.plus
+import kotlinx.datetime.previousOrSame
+import kotlinx.datetime.yearMonth
 
 private const val WEEKS_IN_GRID = 6
 
@@ -24,8 +26,8 @@ internal fun MonthGrid(
     onDateSelect: (LocalDate) -> Unit
 ) {
     val gridStart = state.visibleMonth
-        .atDay(1)
-        .with(TemporalAdjusters.previousOrSame(WeekDays.first()))
+        .firstDay
+        .previousOrSame(WeekDays.first())
 
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -34,13 +36,13 @@ internal fun MonthGrid(
         repeat(WEEKS_IN_GRID) { week ->
             Row(modifier = Modifier.fillMaxWidth()) {
                 repeat(WeekDays.size) { dayIndex ->
-                    val date = gridStart.plusDays((week * WeekDays.size + dayIndex).toLong())
+                    val date = gridStart.plus(week * WeekDays.size + dayIndex, DateTimeUnit.DAY)
                     DayCell(
                         modifier = Modifier.weight(1f),
                         day = state.dayOf(date),
                         isSelected = date == state.selectedDate,
                         isToday = date == state.today,
-                        isInVisibleMonth = YearMonth.from(date) == state.visibleMonth,
+                        isInVisibleMonth = date.yearMonth == state.visibleMonth,
                         onClick = { onDateSelect(date) }
                     )
                 }

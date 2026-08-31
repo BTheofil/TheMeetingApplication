@@ -12,6 +12,7 @@ nav3Core = "1.1.7"
 lifecycleViewmodelNav3 = "2.11.0"
 ktor = "3.5.2"
 kotlinxSerialization = "1.11.0"
+kotlinxDatetime = "0.8.0"
 datastoreVersion = "1.2.1"
 coreSplashscreen = "1.2.0"
 
@@ -38,6 +39,7 @@ koin-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = 
 koin-navigation = { module = "io.insert-koin:koin-compose-navigation3", version.ref = "koin" }
 datastore = { group = "androidx.datastore", name = "datastore", version.ref = "datastoreVersion" }
 androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "coreSplashscreen" }
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 
 # Network
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }

@@ -15,11 +15,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import hu.tb.dashboard.presentation.formatMonthLabel
 import hu.tb.design_system.Icons
 import hu.tb.design_system.theme.MeetingTheme
-import java.time.YearMonth
-import java.time.format.TextStyle
-import java.util.Locale
+import kotlinx.datetime.YearMonth
 
 @Composable
 internal fun CalendarHeader(
@@ -43,7 +42,7 @@ internal fun CalendarHeader(
         )
         Text(
             modifier = Modifier.weight(1f),
-            text = visibleMonth.monthLabel(),
+            text = visibleMonth.formatMonthLabel(),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onSurface
@@ -74,19 +73,12 @@ internal fun CalendarHeader(
     }
 }
 
-private fun YearMonth.monthLabel(): String {
-    val locale = Locale.getDefault()
-    val month = month.getDisplayName(TextStyle.FULL, locale)
-        .replaceFirstChar { if (it.isLowerCase()) it.titlecase(locale) else it.toString() }
-    return "$month $year"
-}
-
 @Preview(showBackground = true)
 @Composable
 private fun CalendarHeaderPreview() {
     MeetingTheme {
         CalendarHeader(
-            visibleMonth = YearMonth.of(2026, 8),
+            visibleMonth = YearMonth(2026, 8),
             isExpanded = false,
             onPreviousMonth = {},
             onNextMonth = {},
