@@ -30,8 +30,8 @@ import hu.tb.design_system.theme.MeetingTheme
 
 @Composable
 internal fun CollapsibleCalendar(
-    state: DashboardState,
     modifier: Modifier = Modifier,
+    state: DashboardState,
     action: (DashboardAction) -> Unit
 ) {
     var isCalendarExpanded by remember { mutableStateOf(false) }

@@ -46,7 +46,7 @@ internal fun SessionCard(
                         Modifier.border(
                             width = 4.dp,
                             color = MaterialTheme.colorScheme.primary.copy(alpha = .7f),
-                            shape = RoundedCornerShape(DashboardCardCornerSize)
+                            shape = RoundedCornerShape(DashboardCardCornerSize.dp)
                         )
                     } else Modifier
                 )
