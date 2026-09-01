@@ -16,6 +16,5 @@ dependencies {
     implementation(projects.network)
 
     implementation(libs.koin.compose)
-    implementation(libs.koin.navigation)
     api(libs.bundles.nav3)
 }

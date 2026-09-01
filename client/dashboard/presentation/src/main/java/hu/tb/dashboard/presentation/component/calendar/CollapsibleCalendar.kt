@@ -27,15 +27,11 @@ import hu.tb.dashboard.presentation.DashboardState
 import hu.tb.dashboard.presentation.component.common.AvailableRing
 import hu.tb.dashboard.presentation.component.common.BookedDot
 import hu.tb.dashboard.presentation.component.common.DashboardCard
-import hu.tb.dashboard.presentation.model.OpenSlot
-import hu.tb.dashboard.presentation.model.SessionItem
-import hu.tb.dashboard.presentation.util.currentDate
+import hu.tb.dashboard.presentation.model.buildCalendarMonth
+import hu.tb.dashboard.presentation.model.buildCalendarWeek
 import hu.tb.design_system.theme.MeetingTheme
-import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.LocalTime
 import kotlinx.datetime.minusMonth
-import kotlinx.datetime.plus
 import kotlinx.datetime.plusMonth
 import kotlinx.datetime.yearMonth
 
@@ -48,6 +44,16 @@ internal fun CollapsibleCalendar(
     var isCalendarExpanded by remember { mutableStateOf(false) }
     var currentMonth by remember { mutableStateOf(state.today.yearMonth) }
 
+    val month = remember(state.sessions, state.openSlots, currentMonth) {
+        state.buildCalendarMonth(currentMonth)
+    }
+    val week = remember(state.sessions, state.openSlots, state.selectedDate) {
+        state.buildCalendarWeek(state.selectedDate)
+    }
+    val onDateSelect: (LocalDate) -> Unit = remember(action) {
+        { date -> action(DashboardAction.OnDateSelect(date)) }
+    }
+
     DashboardCard(modifier = modifier.fillMaxWidth()) {
         Column(
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 12.dp),
@@ -58,7 +64,7 @@ internal fun CollapsibleCalendar(
                 visibleMonth = currentMonth,
                 isExpanded = isCalendarExpanded,
                 onPreviousMonth = { currentMonth = currentMonth.minusMonth() },
-                onNextMonth = { currentMonth = currentMonth.plusMonth()  },
+                onNextMonth = { currentMonth = currentMonth.plusMonth() },
                 onToggleExpanded = { isCalendarExpanded = !isCalendarExpanded }
             )
             WeekdayLabels()
@@ -72,14 +78,18 @@ internal fun CollapsibleCalendar(
                 if (expanded) {
                     MonthGrid(
                         modifier = Modifier.fillMaxWidth(),
-                        currentMonth = currentMonth,
-                        state = state,
-                        onDateSelect = { action(DashboardAction.OnDateSelect(it)) }
+                        month = month,
+                        selectedDate = state.selectedDate,
+                        today = state.today,
+                        visibleMonth = currentMonth,
+                        onDateSelect = onDateSelect
                     )
                 } else {
                     WeekRow(
-                        state = state,
-                        onDateSelect = { action(DashboardAction.OnDateSelect(it)) }
+                        week = week,
+                        selectedDate = state.selectedDate,
+                        today = state.today,
+                        onDateSelect = onDateSelect
                     )
                 }
             }
@@ -118,36 +128,10 @@ private fun LegendItem(
     }
 }
 
-private fun previewSession(date: LocalDate) = SessionItem(
-    id = "preview-$date",
-    title = "Session",
-    counterpartName = "Anna Kovács",
-    date = date,
-    start = LocalTime(9, 0),
-    durationMinutes = 60
-)
-
-private fun collapsibleCalendarPreviewState(): DashboardState {
-    val today = currentDate()
-    return DashboardState(
-        today = today,
-        selectedDate = today,
-        sessions = listOf(
-            previewSession(today),
-            previewSession(today),
-            previewSession(today.plus(1, DateTimeUnit.DAY))
-        ),
-        openSlots = listOf(
-            OpenSlot("o1", "coach-anna", today, LocalTime(15, 0), 45),
-            OpenSlot("o2", "coach-mark", today.plus(3, DateTimeUnit.DAY), LocalTime(10, 0), 60)
-        )
-    )
-}
-
 @PreviewLightDark
 @Composable
 private fun CollapsibleCalendarPreview() {
     MeetingTheme {
-        CollapsibleCalendar(state = collapsibleCalendarPreviewState(), action = {})
+        CollapsibleCalendar(state = calendarPreviewState(), action = {})
     }
 }

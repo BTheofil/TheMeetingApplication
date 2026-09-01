@@ -31,5 +31,6 @@ dependencies {
     implementation(projects.dashboard.presentation)
 
     implementation(libs.koin)
+    implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.core.splashscreen)
 }

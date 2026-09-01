@@ -41,7 +41,7 @@ sealed interface Destination : NavKey {
 
     @Stable
     sealed interface DashboardGraph : NavKey {
-        data object Calendar : DashboardGraph
+        data object Dashboard : DashboardGraph
         data object Profile : DashboardGraph
     }
 }
@@ -61,7 +61,7 @@ fun Navigator(viewModel: NavigatorViewModel) {
     val authStack =
         remember { mutableStateListOf<Destination.AuthGraph>(Destination.AuthGraph.Welcome) }
     val dashboardStack =
-        remember { mutableStateListOf<Destination.DashboardGraph>(Destination.DashboardGraph.Calendar) }
+        remember { mutableStateListOf<Destination.DashboardGraph>(Destination.DashboardGraph.Dashboard) }
 
     NavDisplay(
         backStack = graphStack,
@@ -110,7 +110,7 @@ fun Navigator(viewModel: NavigatorViewModel) {
                         rememberViewModelStoreNavEntryDecorator()
                     ),
                     entryProvider = entryProvider {
-                        entry<Destination.DashboardGraph.Calendar> {
+                        entry<Destination.DashboardGraph.Dashboard> {
                             DashboardScreen(
                                 navigationRequest = { request ->
                                     when (request) {
@@ -140,7 +140,7 @@ fun Navigator(viewModel: NavigatorViewModel) {
                                     graphStack.add(Destination.AuthRoot)
                                     graphStack.remove(Destination.DashboardRoot)
                                     dashboardStack.clear()
-                                    dashboardStack.add(Destination.DashboardGraph.Calendar)
+                                    dashboardStack.add(Destination.DashboardGraph.Dashboard)
                                     authStack.clear()
                                     authStack.add(Destination.AuthGraph.Welcome)
                                 }

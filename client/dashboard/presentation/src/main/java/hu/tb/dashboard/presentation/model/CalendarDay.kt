@@ -9,3 +9,13 @@ data class CalendarDay(
     val sessionCount: Int = 0,
     val hasOpenSlot: Boolean = false
 )
+
+@Immutable
+data class CalendarWeek(
+    val days: List<CalendarDay>
+)
+
+@Immutable
+data class CalendarMonth(
+    val weeks: List<CalendarWeek>
+)

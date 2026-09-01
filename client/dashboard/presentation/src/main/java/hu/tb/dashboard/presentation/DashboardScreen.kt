@@ -137,7 +137,6 @@ private fun RoleSection(
                 onCoachClick = { action(DashboardAction.OnCoachClick(it)) }
             )
             DiscoverCoachesCard(
-                hasCoaches = state.coaches.isNotEmpty(),
                 onDiscoverCoaches = { action(DashboardAction.OnDiscoverCoachesClick) }
             )
         }
@@ -245,8 +244,8 @@ private fun previewState(
         )
     )
     val slots = listOf(
-        OpenSlot("o1", "coach-anna", today, LocalTime(15, 0), 45),
-        OpenSlot("o2", "coach-mark", today.plus(2, DateTimeUnit.DAY), LocalTime(10, 0), 60)
+        OpenSlot("coach-anna", today, LocalTime(15, 0), 45),
+        OpenSlot("coach-mark", today.plus(2, DateTimeUnit.DAY), LocalTime(10, 0), 60)
     )
 
     return DashboardState(

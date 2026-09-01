@@ -1,7 +1,6 @@
 package hu.tb.dashboard.presentation
 
 import androidx.compose.runtime.Immutable
-import hu.tb.dashboard.presentation.model.CalendarDay
 import hu.tb.dashboard.presentation.model.CoachItem
 import hu.tb.dashboard.presentation.model.OpenSlot
 import hu.tb.dashboard.presentation.model.SessionItem
@@ -18,13 +17,6 @@ data class DashboardState(
     val openSlots: List<OpenSlot> = emptyList(),
     val coaches: List<CoachItem> = emptyList()
 ) {
-    fun dayOf(date: LocalDate): CalendarDay =
-        CalendarDay(
-            date = date,
-            sessionCount = sessions.count { it.date == date },
-            hasOpenSlot = openSlots.any { it.date == date }
-        )
-
     fun sessionsOn(date: LocalDate): List<SessionItem> =
         sessions.filter { it.date == date }.sortedBy { it.start }
 

@@ -117,10 +117,10 @@ private fun TimeColumn(slot: OpenSlot) {
 }
 
 private fun previewNamedSlot(): OpenSlot =
-    OpenSlot("o1", "coach-anna", currentDate(), LocalTime(15, 0), 45)
+    OpenSlot("coach-anna", currentDate(), LocalTime(15, 0), 45)
 
 private fun previewAnonymousSlot(): OpenSlot =
-    OpenSlot("o2", "coach-mark", currentDate().plus(2, DateTimeUnit.DAY), LocalTime(10, 0), 60)
+    OpenSlot("coach-mark", currentDate().plus(2, DateTimeUnit.DAY), LocalTime(10, 0), 60)
 
 @PreviewLightDark
 @Composable

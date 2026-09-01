@@ -23,13 +23,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import hu.tb.dashboard.presentation.component.common.AvailableRing
 import hu.tb.dashboard.presentation.component.common.BookedDot
 import hu.tb.dashboard.presentation.component.common.IndicatorSize
 import hu.tb.dashboard.presentation.model.CalendarDay
 import hu.tb.design_system.theme.MeetingTheme
-import kotlinx.datetime.LocalDate
 
 @Composable
 internal fun DayCell(
@@ -113,40 +113,20 @@ private fun Indicators(
 
 @PreviewLightDark
 @Composable
-private fun DayCellPreview() {
+private fun DayCellPreview(
+    @PreviewParameter(CalendarDayPreviewParameterProvider::class) day: CalendarDay
+) {
     MeetingTheme {
         Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+            DayCell(day = day, isSelected = false, isToday = false, onClick = {})
+            DayCell(day = day, isSelected = false, isToday = true, onClick = {})
+            DayCell(day = day, isSelected = true, isToday = false, onClick = {})
             DayCell(
-                day = CalendarDay(LocalDate(2026, 8, 24), sessionCount = 2),
-                isSelected = false,
-                isToday = false,
-                onClick = {}
-            )
-            DayCell(
-                day = CalendarDay(LocalDate(2026, 8, 25), sessionCount = 0),
-                isSelected = false,
-                isToday = true,
-                onClick = {}
-            )
-            DayCell(
-                day = CalendarDay(LocalDate(2026, 8, 26), hasOpenSlot = true),
-                isSelected = false,
-                isToday = false,
-                onClick = {}
-            )
-            DayCell(
-                day = CalendarDay(LocalDate(2026, 8, 27), sessionCount = 5, hasOpenSlot = true),
-                isSelected = true,
-                isToday = false,
-                onClick = {}
-            )
-            DayCell(
-                day = CalendarDay(LocalDate(2026, 9, 1), sessionCount = 1, hasOpenSlot = true),
+                day = day,
                 isSelected = false,
                 isToday = false,
                 isInVisibleMonth = false,
-                onClick = {}
-            )
+                onClick = {})
         }
     }
 }
