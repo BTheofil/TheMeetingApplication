@@ -8,24 +8,28 @@ import hu.tb.dashboard.presentation.model.SessionItem
 import hu.tb.dashboard.presentation.util.currentDate
 import hu.tb.domain.ProfileType
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.YearMonth
-import kotlinx.datetime.yearMonth
 
 @Immutable
 data class DashboardState(
     val profileType: ProfileType = ProfileType.NORMAL,
     val today: LocalDate = currentDate(),
     val selectedDate: LocalDate = today,
-    val visibleMonth: YearMonth = today.yearMonth,
-    val days: List<CalendarDay> = emptyList(),
-    val sessionsOnSelectedDay: List<SessionItem> = emptyList(),
-    val openSlotsOnSelectedDay: List<OpenSlot> = emptyList(),
-    val coaches: List<CoachItem> = emptyList(),
-    val availableSlots: List<OpenSlot> = emptyList(),
-    val isLoading: Boolean = false
+    val sessions: List<SessionItem> = emptyList(),
+    val openSlots: List<OpenSlot> = emptyList(),
+    val coaches: List<CoachItem> = emptyList()
 ) {
     fun dayOf(date: LocalDate): CalendarDay =
-        days.firstOrNull { it.date == date } ?: CalendarDay(date)
+        CalendarDay(
+            date = date,
+            sessionCount = sessions.count { it.date == date },
+            hasOpenSlot = openSlots.any { it.date == date }
+        )
+
+    fun sessionsOn(date: LocalDate): List<SessionItem> =
+        sessions.filter { it.date == date }.sortedBy { it.start }
+
+    fun openSlotsOn(date: LocalDate): List<OpenSlot> =
+        openSlots.filter { it.date == date }.sortedBy { it.start }
 
     fun coachNameOf(coachId: String): String? =
         coaches.firstOrNull { it.id == coachId }?.name

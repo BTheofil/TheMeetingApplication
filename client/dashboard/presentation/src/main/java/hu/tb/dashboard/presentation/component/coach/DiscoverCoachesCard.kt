@@ -1,6 +1,5 @@
 package hu.tb.dashboard.presentation.component.coach
 
-import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -17,8 +16,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import hu.tb.dashboard.presentation.ThemePreviews
 import hu.tb.dashboard.presentation.component.common.DashboardCard
 import hu.tb.design_system.Icons
 import hu.tb.design_system.theme.MeetingTheme
@@ -73,7 +72,7 @@ internal fun DiscoverCoachesCard(
     }
 }
 
-@Preview(showBackground = true)
+@ThemePreviews
 @Composable
 private fun DiscoverCoachesCardPreview() {
     MeetingTheme {
@@ -81,18 +80,10 @@ private fun DiscoverCoachesCardPreview() {
     }
 }
 
-@Preview(showBackground = true)
+@ThemePreviews
 @Composable
 private fun DiscoverCoachesCardNoCoachesPreview() {
     MeetingTheme {
         DiscoverCoachesCard(hasCoaches = false, onDiscoverCoaches = {})
-    }
-}
-
-@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
-@Composable
-private fun DiscoverCoachesCardDarkPreview() {
-    MeetingTheme {
-        DiscoverCoachesCard(hasCoaches = true, onDiscoverCoaches = {})
     }
 }

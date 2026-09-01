@@ -1,6 +1,5 @@
 package hu.tb.dashboard.presentation.component.coach
 
-import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,13 +19,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import hu.tb.dashboard.presentation.ThemePreviews
 import hu.tb.dashboard.presentation.component.common.AvailableRing
 import hu.tb.dashboard.presentation.component.common.DashboardCard
 import hu.tb.dashboard.presentation.component.common.SectionHeader
 import hu.tb.dashboard.presentation.model.CoachItem
-import hu.tb.dashboard.presentation.preview.SampleData
 import hu.tb.design_system.theme.MeetingTheme
 
 @Composable
@@ -145,40 +143,35 @@ private fun EmptyCoaches() {
     }
 }
 
-@Preview(showBackground = true)
+private val previewCoaches = listOf(
+    CoachItem(id = "coach-anna", name = "Anna Kovács", openHourCount = 3),
+    CoachItem(id = "coach-mark", name = "Márk Szabó", openHourCount = 4),
+    CoachItem(id = "coach-julia", name = "Júlia Papp", openHourCount = 0)
+)
+
+@ThemePreviews
 @Composable
 private fun MyCoachesSectionPreview() {
     MeetingTheme {
         MyCoachesSection(
-            coaches = SampleData.coaches(),
+            coaches = previewCoaches,
             onCoachClick = {}
         )
     }
 }
 
-@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
-@Composable
-private fun MyCoachesSectionDarkPreview() {
-    MeetingTheme {
-        MyCoachesSection(
-            coaches = SampleData.coaches(),
-            onCoachClick = {}
-        )
-    }
-}
-
-@Preview(showBackground = true)
+@ThemePreviews
 @Composable
 private fun MyCoachesSectionSinglePreview() {
     MeetingTheme {
         MyCoachesSection(
-            coaches = listOf(SampleData.singleCoach()),
+            coaches = previewCoaches.take(1),
             onCoachClick = {}
         )
     }
 }
 
-@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
+@ThemePreviews
 @Composable
 private fun MyCoachesSectionEmptyPreview() {
     MeetingTheme {

@@ -21,16 +21,19 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import hu.tb.dashboard.presentation.ThemePreviews
 import hu.tb.dashboard.presentation.component.common.DashboardCard
 import hu.tb.dashboard.presentation.component.common.DashboardCardCornerSize
 import hu.tb.dashboard.presentation.model.SessionItem
-import hu.tb.dashboard.presentation.preview.SampleData
+import hu.tb.dashboard.presentation.util.currentDate
 import hu.tb.dashboard.presentation.util.formatDayLabel
 import hu.tb.dashboard.presentation.util.formatTime
 import hu.tb.design_system.Icons
 import hu.tb.design_system.theme.MeetingTheme
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.LocalTime
+import kotlinx.datetime.plus
 
 @Composable
 internal fun SessionCard(
@@ -120,13 +123,30 @@ private fun TimeColumn(session: SessionItem) {
     }
 }
 
-@Preview(showBackground = true)
+@ThemePreviews
 @Composable
 private fun SessionCardPreview() {
     MeetingTheme {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            SessionCard(session = SampleData.nextSession(), onClick = {})
-            SessionCard(session = SampleData.laterSession(), showDate = true, onClick = {})
+            SessionCard(
+                session = SessionItem(
+                    id = "s1",
+                    title = "Leg day",
+                    counterpartName = "Anna Kovács",
+                    date = currentDate(),
+                    start = LocalTime(9, 0),
+                    durationMinutes = 60,
+                    isNext = true
+                ), onClick = {})
+            SessionCard(
+                session = SessionItem(
+                    id = "s4",
+                    title = "Upper body",
+                    counterpartName = "Márk Szabó",
+                    date = currentDate().plus(4, DateTimeUnit.DAY),
+                    start = LocalTime(8, 0),
+                    durationMinutes = 60
+                ), showDate = true, onClick = {})
         }
     }
 }

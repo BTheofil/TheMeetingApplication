@@ -9,5 +9,7 @@ android {
 dependencies {
     implementation(projects.designSystem)
     implementation(projects.auth.domain)
+
     implementation(libs.kotlinx.datetime)
+    implementation(libs.bundles.koin)
 }

@@ -1,6 +1,5 @@
 package hu.tb.dashboard.presentation.component.coach
 
-import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,8 +16,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import hu.tb.dashboard.presentation.ThemePreviews
 import hu.tb.dashboard.presentation.component.common.DashboardCard
 import hu.tb.design_system.Icons
 import hu.tb.design_system.theme.MeetingTheme
@@ -26,7 +25,6 @@ import hu.tb.design_system.theme.MeetingTheme
 @Composable
 internal fun CoachOpenHoursCard(
     modifier: Modifier = Modifier,
-    openSlotCount: Int,
     onCreateOpenHours: () -> Unit
 ) {
     DashboardCard(modifier = modifier.fillMaxWidth()) {
@@ -51,15 +49,6 @@ internal fun CoachOpenHoursCard(
                     color = MaterialTheme.colorScheme.onSurface
                 )
             }
-            Text(
-                text = if (openSlotCount == 0) {
-                    "Clients can only book a session once you share when you are free."
-                } else {
-                    "$openSlotCount open ${if (openSlotCount == 1) "slot" else "slots"} published this month. Add more so clients can find a time that fits."
-                },
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
             Button(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -75,18 +64,10 @@ internal fun CoachOpenHoursCard(
     }
 }
 
-@Preview(showBackground = true)
+@ThemePreviews
 @Composable
 private fun CoachOpenHoursCardPreview() {
     MeetingTheme {
-        CoachOpenHoursCard(openSlotCount = 5, onCreateOpenHours = {})
-    }
-}
-
-@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
-@Composable
-private fun CoachOpenHoursCardEmptyPreview() {
-    MeetingTheme {
-        CoachOpenHoursCard(openSlotCount = 0, onCreateOpenHours = {})
+        CoachOpenHoursCard(onCreateOpenHours = {})
     }
 }

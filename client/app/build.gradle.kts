@@ -28,6 +28,7 @@ dependencies {
     implementation(projects.profile.presentation)
     implementation(projects.network)
     implementation(projects.datastore)
+    implementation(projects.dashboard.presentation)
 
     implementation(libs.koin)
     implementation(libs.androidx.core.splashscreen)

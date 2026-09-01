@@ -1,6 +1,5 @@
 package hu.tb.dashboard.presentation.component
 
-import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -21,15 +20,18 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import hu.tb.dashboard.presentation.ThemePreviews
 import hu.tb.dashboard.presentation.component.common.AvailableRing
 import hu.tb.dashboard.presentation.component.common.DashboardCard
 import hu.tb.dashboard.presentation.model.OpenSlot
-import hu.tb.dashboard.presentation.preview.SampleData
+import hu.tb.dashboard.presentation.util.currentDate
 import hu.tb.dashboard.presentation.util.formatTime
 import hu.tb.design_system.Icons
 import hu.tb.design_system.theme.MeetingTheme
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.LocalTime
+import kotlinx.datetime.plus
 
 @Composable
 internal fun OpenSlotCard(
@@ -114,33 +116,27 @@ private fun TimeColumn(slot: OpenSlot) {
     }
 }
 
-@Preview(showBackground = true)
+private fun previewNamedSlot(): OpenSlot =
+    OpenSlot("o1", "coach-anna", currentDate(), LocalTime(15, 0), 45)
+
+private fun previewAnonymousSlot(): OpenSlot =
+    OpenSlot("o2", "coach-mark", currentDate().plus(2, DateTimeUnit.DAY), LocalTime(10, 0), 60)
+
+@ThemePreviews
 @Composable
 private fun OpenSlotCardPreview() {
     MeetingTheme {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             OpenSlotCard(
-                slot = SampleData.openSlots().first(),
-                coachName = SampleData.singleCoach().name,
+                slot = previewNamedSlot(),
+                coachName = "Anna Kovács",
                 onClick = {}
             )
             OpenSlotCard(
-                slot = SampleData.openSlots().last(),
+                slot = previewAnonymousSlot(),
                 coachName = null,
                 onClick = {}
             )
         }
-    }
-}
-
-@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
-@Composable
-private fun OpenSlotCardDarkPreview() {
-    MeetingTheme {
-        OpenSlotCard(
-            slot = SampleData.openSlots().first(),
-            coachName = SampleData.singleCoach().name,
-            onClick = {}
-        )
     }
 }
