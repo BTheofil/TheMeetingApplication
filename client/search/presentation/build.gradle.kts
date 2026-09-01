@@ -8,4 +8,7 @@ android {
 
 dependencies {
     implementation(projects.designSystem)
+    implementation(projects.search.domain)
+
+    implementation(libs.koin.compose)
 }

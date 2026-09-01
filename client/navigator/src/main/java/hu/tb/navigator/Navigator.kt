@@ -25,6 +25,7 @@ import hu.tb.domain.AuthMode
 import hu.tb.presentation.form.AuthFormScreen
 import hu.tb.presentation.welcome.WelcomeScreen
 import hu.tb.profile.presentation.ProfileScreen
+import hu.tb.search.SearchScreen
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -43,6 +44,7 @@ sealed interface Destination : NavKey {
     sealed interface DashboardGraph : NavKey {
         data object Dashboard : DashboardGraph
         data object Profile : DashboardGraph
+        data object SearchCoach : DashboardGraph
     }
 }
 
@@ -117,14 +119,14 @@ fun Navigator(viewModel: NavigatorViewModel) {
                                         is DashboardAction.OnProfileClick -> dashboardStack.add(
                                             Destination.DashboardGraph.Profile
                                         )
-                                        // TODO(nav): open the session detail screen
+
                                         is DashboardAction.OnSessionClick -> Unit
-                                        // TODO(nav): navigate to the open-hours editor of the coach
                                         is DashboardAction.OnCreateOpenHoursClick -> Unit
-                                        // TODO(nav): open the coach availability screen and reserve there
                                         is DashboardAction.OnCoachClick -> Unit
-                                        // TODO(nav): open the coach discovery / search screen
-                                        is DashboardAction.OnDiscoverCoachesClick -> Unit
+                                        is DashboardAction.OnDiscoverCoachesClick -> {
+                                            dashboardStack.add(Destination.DashboardGraph.SearchCoach)
+                                        }
+
                                         else -> Unit
                                     }
                                 },
@@ -143,6 +145,13 @@ fun Navigator(viewModel: NavigatorViewModel) {
                                     dashboardStack.add(Destination.DashboardGraph.Dashboard)
                                     authStack.clear()
                                     authStack.add(Destination.AuthGraph.Welcome)
+                                }
+                            )
+                        }
+                        entry<Destination.DashboardGraph.SearchCoach> {
+                            SearchScreen(
+                                onBackClick = {
+                                    dashboardStack.remove(Destination.DashboardGraph.SearchCoach)
                                 }
                             )
                         }

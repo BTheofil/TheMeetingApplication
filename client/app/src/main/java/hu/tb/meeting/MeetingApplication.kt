@@ -7,6 +7,7 @@ import hu.tb.navigator.di.navigatorModule
 import hu.tb.network.di.networkModule
 import hu.tb.presentation.di.authModule
 import hu.tb.profile.presentation.di.profileModule
+import hu.tb.search.di.searchModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -24,7 +25,8 @@ class MeetingApplication : Application() {
                 authModule,
                 profileModule,
                 navigatorModule,
-                dashboardModule
+                dashboardModule,
+                searchModule
             )
         }
     }
