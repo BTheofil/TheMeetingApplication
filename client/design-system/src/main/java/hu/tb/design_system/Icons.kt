@@ -10,4 +10,5 @@ object Icons {
     val chevron_right = R.drawable.chevron_right
     val expand = R.drawable.expand
     val schedule = R.drawable.schedule
+    val search = R.drawable.search
 }

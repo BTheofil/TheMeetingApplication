@@ -10,4 +10,5 @@ sealed interface DashboardAction {
     data class OnSessionClick(val id: String) : DashboardAction
     data object OnCreateOpenHoursClick : DashboardAction
     data class OnCoachClick(val coachId: String) : DashboardAction
+    data object OnDiscoverCoachesClick : DashboardAction
 }

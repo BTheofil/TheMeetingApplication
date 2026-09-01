@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import com.skydoves.compose.stability.runtime.TraceRecomposition
 import hu.tb.dashboard.presentation.component.calendar.CollapsibleCalendar
 import hu.tb.dashboard.presentation.component.coach.CoachOpenHoursCard
+import hu.tb.dashboard.presentation.component.coach.DiscoverCoachesCard
 import hu.tb.dashboard.presentation.component.coach.MyCoachesSection
 import hu.tb.dashboard.presentation.component.common.DashboardCard
 import hu.tb.dashboard.presentation.component.common.SectionHeader
@@ -78,6 +79,8 @@ fun DashboardScreen(
                 DashboardAction.OnCreateOpenHoursClick -> Unit
                 // TODO(nav): open the coach availability screen and reserve there
                 is DashboardAction.OnCoachClick -> Unit
+                // TODO(nav): open the coach discovery / search screen
+                DashboardAction.OnDiscoverCoachesClick -> Unit
             }
         }
     )
@@ -151,10 +154,16 @@ private fun RoleSection(
             onCreateOpenHours = { action(DashboardAction.OnCreateOpenHoursClick) }
         )
 
-        ProfileType.NORMAL -> MyCoachesSection(
-            coaches = state.coaches,
-            onCoachClick = { action(DashboardAction.OnCoachClick(it)) }
-        )
+        ProfileType.NORMAL -> Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            MyCoachesSection(
+                coaches = state.coaches,
+                onCoachClick = { action(DashboardAction.OnCoachClick(it)) }
+            )
+            DiscoverCoachesCard(
+                hasCoaches = state.coaches.isNotEmpty(),
+                onDiscoverCoaches = { action(DashboardAction.OnDiscoverCoachesClick) }
+            )
+        }
     }
 }
 
