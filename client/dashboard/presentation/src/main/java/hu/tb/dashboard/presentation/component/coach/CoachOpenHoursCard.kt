@@ -16,8 +16,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import hu.tb.dashboard.presentation.ThemePreviews
 import hu.tb.dashboard.presentation.component.common.DashboardCard
 import hu.tb.design_system.Icons
 import hu.tb.design_system.theme.MeetingTheme
@@ -64,7 +64,7 @@ internal fun CoachOpenHoursCard(
     }
 }
 
-@ThemePreviews
+@PreviewLightDark
 @Composable
 private fun CoachOpenHoursCardPreview() {
     MeetingTheme {

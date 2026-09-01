@@ -10,7 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
-import hu.tb.dashboard.presentation.ThemePreviews
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import hu.tb.design_system.theme.MeetingTheme
 
 @Composable
@@ -43,7 +43,7 @@ internal fun SectionHeader(
     }
 }
 
-@ThemePreviews
+@PreviewLightDark
 @Composable
 private fun SectionHeaderPreview() {
     MeetingTheme {

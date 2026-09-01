@@ -19,8 +19,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import hu.tb.dashboard.presentation.ThemePreviews
 import hu.tb.dashboard.presentation.component.common.AvailableRing
 import hu.tb.dashboard.presentation.component.common.DashboardCard
 import hu.tb.dashboard.presentation.component.common.SectionHeader
@@ -143,40 +144,14 @@ private fun EmptyCoaches() {
     }
 }
 
-private val previewCoaches = listOf(
-    CoachItem(id = "coach-anna", name = "Anna Kovács", openHourCount = 3),
-    CoachItem(id = "coach-mark", name = "Márk Szabó", openHourCount = 4),
-    CoachItem(id = "coach-julia", name = "Júlia Papp", openHourCount = 0)
-)
-
-@ThemePreviews
+@PreviewLightDark
 @Composable
-private fun MyCoachesSectionPreview() {
+private fun MyCoachesSectionPreview(
+    @PreviewParameter(CoachPreviewParameterProvider::class) mock: List<CoachItem>
+) {
     MeetingTheme {
         MyCoachesSection(
-            coaches = previewCoaches,
-            onCoachClick = {}
-        )
-    }
-}
-
-@ThemePreviews
-@Composable
-private fun MyCoachesSectionSinglePreview() {
-    MeetingTheme {
-        MyCoachesSection(
-            coaches = previewCoaches.take(1),
-            onCoachClick = {}
-        )
-    }
-}
-
-@ThemePreviews
-@Composable
-private fun MyCoachesSectionEmptyPreview() {
-    MeetingTheme {
-        MyCoachesSection(
-            coaches = emptyList(),
+            coaches = mock,
             onCoachClick = {}
         )
     }

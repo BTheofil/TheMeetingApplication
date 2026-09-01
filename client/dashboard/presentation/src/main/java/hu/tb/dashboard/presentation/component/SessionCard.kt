@@ -21,8 +21,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import hu.tb.dashboard.presentation.ThemePreviews
 import hu.tb.dashboard.presentation.component.common.DashboardCard
 import hu.tb.dashboard.presentation.component.common.DashboardCardCornerSize
 import hu.tb.dashboard.presentation.model.SessionItem
@@ -123,7 +123,7 @@ private fun TimeColumn(session: SessionItem) {
     }
 }
 
-@ThemePreviews
+@PreviewLightDark
 @Composable
 private fun SessionCardPreview() {
     MeetingTheme {

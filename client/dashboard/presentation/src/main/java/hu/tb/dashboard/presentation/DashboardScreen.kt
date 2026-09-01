@@ -21,6 +21,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.skydoves.compose.stability.runtime.TraceRecomposition
@@ -258,7 +259,7 @@ private fun previewState(
     )
 }
 
-@ThemePreviews
+@PreviewLightDark
 @Composable
 private fun DashboardScreenCoachPreview() {
     MeetingTheme {
@@ -269,7 +270,7 @@ private fun DashboardScreenCoachPreview() {
     }
 }
 
-@ThemePreviews
+@PreviewLightDark
 @Composable
 private fun DashboardScreenClientPreview() {
     MeetingTheme {
@@ -277,7 +278,7 @@ private fun DashboardScreenClientPreview() {
     }
 }
 
-@ThemePreviews
+@PreviewLightDark
 @Composable
 private fun DashboardScreenNoCoachesPreview() {
     MeetingTheme {

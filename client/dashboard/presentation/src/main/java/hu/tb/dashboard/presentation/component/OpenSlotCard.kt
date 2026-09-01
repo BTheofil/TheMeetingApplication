@@ -20,8 +20,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import hu.tb.dashboard.presentation.ThemePreviews
 import hu.tb.dashboard.presentation.component.common.AvailableRing
 import hu.tb.dashboard.presentation.component.common.DashboardCard
 import hu.tb.dashboard.presentation.model.OpenSlot
@@ -122,7 +122,7 @@ private fun previewNamedSlot(): OpenSlot =
 private fun previewAnonymousSlot(): OpenSlot =
     OpenSlot("o2", "coach-mark", currentDate().plus(2, DateTimeUnit.DAY), LocalTime(10, 0), 60)
 
-@ThemePreviews
+@PreviewLightDark
 @Composable
 private fun OpenSlotCardPreview() {
     MeetingTheme {

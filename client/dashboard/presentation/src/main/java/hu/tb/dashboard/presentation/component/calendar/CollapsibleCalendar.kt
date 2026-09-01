@@ -20,10 +20,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import hu.tb.dashboard.presentation.DashboardAction
 import hu.tb.dashboard.presentation.DashboardState
-import hu.tb.dashboard.presentation.ThemePreviews
 import hu.tb.dashboard.presentation.component.common.AvailableRing
 import hu.tb.dashboard.presentation.component.common.BookedDot
 import hu.tb.dashboard.presentation.component.common.DashboardCard
@@ -144,7 +144,7 @@ private fun collapsibleCalendarPreviewState(): DashboardState {
     )
 }
 
-@ThemePreviews
+@PreviewLightDark
 @Composable
 private fun CollapsibleCalendarPreview() {
     MeetingTheme {

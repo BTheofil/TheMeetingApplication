@@ -4,8 +4,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import hu.tb.dashboard.presentation.DashboardState
-import hu.tb.dashboard.presentation.ThemePreviews
 import hu.tb.dashboard.presentation.model.OpenSlot
 import hu.tb.dashboard.presentation.model.SessionItem
 import hu.tb.dashboard.presentation.util.currentDate
@@ -65,7 +65,7 @@ private fun weekRowPreviewState(): DashboardState {
     )
 }
 
-@ThemePreviews
+@PreviewLightDark
 @Composable
 private fun WeekRowPreview() {
     MeetingTheme {
