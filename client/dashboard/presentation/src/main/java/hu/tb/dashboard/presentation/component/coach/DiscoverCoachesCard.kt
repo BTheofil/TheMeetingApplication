@@ -25,7 +25,6 @@ import hu.tb.design_system.theme.MeetingTheme
 @Composable
 internal fun DiscoverCoachesCard(
     modifier: Modifier = Modifier,
-    hasCoaches: Boolean,
     onDiscoverCoaches: () -> Unit
 ) {
     DashboardCard(modifier = modifier.fillMaxWidth()) {
@@ -45,7 +44,7 @@ internal fun DiscoverCoachesCard(
                 verticalArrangement = Arrangement.spacedBy(2.dp)
             ) {
                 Text(
-                    text = if (hasCoaches) "Find more coaches" else "Find your first coach",
+                    text = "Find coaches",
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
@@ -74,16 +73,8 @@ internal fun DiscoverCoachesCard(
 
 @PreviewLightDark
 @Composable
-private fun DiscoverCoachesCardPreview() {
-    MeetingTheme {
-        DiscoverCoachesCard(hasCoaches = true, onDiscoverCoaches = {})
-    }
-}
-
-@PreviewLightDark
-@Composable
 private fun DiscoverCoachesCardNoCoachesPreview() {
     MeetingTheme {
-        DiscoverCoachesCard(hasCoaches = false, onDiscoverCoaches = {})
+        DiscoverCoachesCard(onDiscoverCoaches = {})
     }
 }
