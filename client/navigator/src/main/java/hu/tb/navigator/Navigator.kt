@@ -18,9 +18,10 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import hu.tb.dashboard.presentation.DashboardAction
+import hu.tb.dashboard.presentation.DashboardScreen
 import hu.tb.design_system.component.SessionExpiredDialog
 import hu.tb.domain.AuthMode
-import hu.tb.presentation.DashboardScreen
 import hu.tb.presentation.form.AuthFormScreen
 import hu.tb.presentation.welcome.WelcomeScreen
 import hu.tb.profile.presentation.ProfileScreen
@@ -40,7 +41,7 @@ sealed interface Destination : NavKey {
 
     @Stable
     sealed interface DashboardGraph : NavKey {
-        data object Calendar : DashboardGraph
+        data object Dashboard : DashboardGraph
         data object Profile : DashboardGraph
     }
 }
@@ -60,7 +61,7 @@ fun Navigator(viewModel: NavigatorViewModel) {
     val authStack =
         remember { mutableStateListOf<Destination.AuthGraph>(Destination.AuthGraph.Welcome) }
     val dashboardStack =
-        remember { mutableStateListOf<Destination.DashboardGraph>(Destination.DashboardGraph.Calendar) }
+        remember { mutableStateListOf<Destination.DashboardGraph>(Destination.DashboardGraph.Dashboard) }
 
     NavDisplay(
         backStack = graphStack,
@@ -109,11 +110,24 @@ fun Navigator(viewModel: NavigatorViewModel) {
                         rememberViewModelStoreNavEntryDecorator()
                     ),
                     entryProvider = entryProvider {
-                        entry<Destination.DashboardGraph.Calendar> {
+                        entry<Destination.DashboardGraph.Dashboard> {
                             DashboardScreen(
-                                onProfileClick = {
-                                    dashboardStack.add(Destination.DashboardGraph.Profile)
-                                }
+                                navigationRequest = { request ->
+                                    when (request) {
+                                        is DashboardAction.OnProfileClick -> dashboardStack.add(
+                                            Destination.DashboardGraph.Profile
+                                        )
+                                        // TODO(nav): open the session detail screen
+                                        is DashboardAction.OnSessionClick -> Unit
+                                        // TODO(nav): navigate to the open-hours editor of the coach
+                                        is DashboardAction.OnCreateOpenHoursClick -> Unit
+                                        // TODO(nav): open the coach availability screen and reserve there
+                                        is DashboardAction.OnCoachClick -> Unit
+                                        // TODO(nav): open the coach discovery / search screen
+                                        is DashboardAction.OnDiscoverCoachesClick -> Unit
+                                        else -> Unit
+                                    }
+                                },
                             )
                         }
                         entry<Destination.DashboardGraph.Profile> {
@@ -126,7 +140,7 @@ fun Navigator(viewModel: NavigatorViewModel) {
                                     graphStack.add(Destination.AuthRoot)
                                     graphStack.remove(Destination.DashboardRoot)
                                     dashboardStack.clear()
-                                    dashboardStack.add(Destination.DashboardGraph.Calendar)
+                                    dashboardStack.add(Destination.DashboardGraph.Dashboard)
                                     authStack.clear()
                                     authStack.add(Destination.AuthGraph.Welcome)
                                 }
