@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewLightDark
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import hu.tb.dashboard.presentation.model.CalendarMonth
 import hu.tb.design_system.theme.MeetingTheme
@@ -47,12 +46,10 @@ internal fun MonthGrid(
 
 @PreviewLightDark
 @Composable
-private fun MonthGridPreview(
-    @PreviewParameter(CalendarMonthPreviewParameterProvider::class) month: CalendarMonth
-) {
+private fun MonthGridPreview() {
     MeetingTheme {
         MonthGrid(
-            month = month,
+            month = CalendarMonth(weeks = emptyList()),
             selectedDate = PreviewSelectedDate,
             today = PreviewToday,
             visibleMonth = PreviewMonth,

@@ -5,17 +5,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewLightDark
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import hu.tb.dashboard.presentation.model.CalendarWeek
 import hu.tb.design_system.theme.MeetingTheme
 import kotlinx.datetime.LocalDate
 
 @Composable
 internal fun WeekRow(
+    modifier: Modifier = Modifier,
     week: CalendarWeek,
     selectedDate: LocalDate,
     today: LocalDate,
-    modifier: Modifier = Modifier,
     onDateSelect: (LocalDate) -> Unit
 ) {
     Row(modifier = modifier.fillMaxWidth()) {
@@ -33,12 +32,10 @@ internal fun WeekRow(
 
 @PreviewLightDark
 @Composable
-private fun WeekRowPreview(
-    @PreviewParameter(CalendarWeekPreviewParameterProvider::class) week: CalendarWeek
-) {
+private fun WeekRowPreview() {
     MeetingTheme {
         WeekRow(
-            week = week,
+            week = CalendarWeek(days = emptyList()),
             selectedDate = PreviewSelectedDate,
             today = PreviewToday,
             onDateSelect = {}

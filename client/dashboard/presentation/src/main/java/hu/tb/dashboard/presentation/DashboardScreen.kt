@@ -112,7 +112,13 @@ private fun DashboardScreen(
                     .padding(horizontal = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                CollapsibleCalendar(state = state, action = action)
+                CollapsibleCalendar(
+                    sessions = state.sessions,
+                    openSlots = state.openSlots,
+                    todayDate = state.today,
+                    selectedDate = state.selectedDate,
+                    action = action
+                )
                 SelectedDayBooked(state = state, action = action)
                 SelectedDayOpenHours(state = state, action = action)
                 RoleSection(state = state, action = action)
