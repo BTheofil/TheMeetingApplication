@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,29 +34,41 @@ import hu.tb.dashboard.presentation.model.buildCalendarMonth
 import hu.tb.dashboard.presentation.model.buildCalendarWeek
 import hu.tb.design_system.theme.MeetingTheme
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.Month
 import kotlinx.datetime.minusMonth
 import kotlinx.datetime.plusMonth
 import kotlinx.datetime.yearMonth
+
+@Stable
+data class CollapsibleCalendarParameter(
+    val sessions: List<SessionItem>,
+    val openSlots: List<OpenSlot>,
+    val todayDate: LocalDate,
+    val selectedDate: LocalDate
+)
 
 @TraceRecomposition
 @Composable
 internal fun CollapsibleCalendar(
     modifier: Modifier = Modifier,
-    sessions: List<SessionItem>,
-    openSlots: List<OpenSlot>,
-    todayDate: LocalDate,
-    selectedDate: LocalDate,
+    calendarParameter: CollapsibleCalendarParameter,
     action: (DashboardAction) -> Unit
 ) {
     var isCalendarExpanded by remember { mutableStateOf(false) }
-    var currentMonth by remember { mutableStateOf(todayDate.yearMonth) }
+    var currentMonth by remember { mutableStateOf(calendarParameter.todayDate.yearMonth) }
 
-    val month = remember(sessions, openSlots, currentMonth) {
-        buildCalendarMonth(currentMonth, sessions, openSlots)
+    val month = remember(calendarParameter.sessions, calendarParameter.openSlots, currentMonth) {
+        buildCalendarMonth(currentMonth, calendarParameter.sessions, calendarParameter.openSlots)
     }
-    val week = remember(sessions, openSlots, selectedDate) {
-        buildCalendarWeek(selectedDate, sessions, openSlots)
+    val week = remember(
+        calendarParameter.sessions,
+        calendarParameter.openSlots,
+        calendarParameter.selectedDate
+    ) {
+        buildCalendarWeek(
+            calendarParameter.selectedDate,
+            calendarParameter.sessions,
+            calendarParameter.openSlots
+        )
     }
     val onDateSelect: (LocalDate) -> Unit = remember(action) {
         { date -> action(DashboardAction.OnDateSelect(date)) }
@@ -86,16 +99,20 @@ internal fun CollapsibleCalendar(
                     MonthGrid(
                         modifier = Modifier.fillMaxWidth(),
                         month = month,
-                        selectedDate = selectedDate,
-                        today = todayDate,
-                        visibleMonth = currentMonth,
+                        monthGridParameter = MonthGridParameter(
+                            calendarParameter.selectedDate,
+                            calendarParameter.todayDate,
+                            currentMonth
+                        ),
                         onDateSelect = onDateSelect
                     )
                 } else {
                     WeekRow(
                         week = week,
-                        selectedDate = selectedDate,
-                        today = todayDate,
+                        weekRowParameter = WeekRowParameter(
+                            selectedDate = calendarParameter.selectedDate,
+                            today = calendarParameter.todayDate
+                        ),
                         onDateSelect = onDateSelect
                     )
                 }
@@ -140,10 +157,12 @@ private fun LegendItem(
 private fun CollapsibleCalendarPreview() {
     MeetingTheme {
         CollapsibleCalendar(
-            sessions = emptyList(),
-            openSlots = emptyList(),
-            todayDate = LocalDate(2024, Month.APRIL, 16),
-            selectedDate = LocalDate(2024, Month.APRIL, 16),
+            calendarParameter = CollapsibleCalendarParameter(
+                sessions = emptyList(),
+                openSlots = emptyList(),
+                todayDate = LocalDate(2026,1,1),
+                selectedDate = LocalDate(2026,1,2)
+            ),
             action = {})
     }
 }
