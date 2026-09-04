@@ -1,9 +1,13 @@
 package hu.tb.network.di
 
+import hu.tb.network.TokenProvider
 import hu.tb.network.repository.AuthRepository
 import hu.tb.network.repository.ProfileRepository
+import hu.tb.network.repository.SearchRepository
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.auth.Auth
+import io.ktor.client.plugins.auth.providers.BearerTokens
+import io.ktor.client.plugins.auth.providers.bearer
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
@@ -17,6 +21,8 @@ import org.koin.dsl.module
 
 val networkModule = module {
     single<HttpClient> {
+        val tokenProvider = get<TokenProvider>()
+
         HttpClient {
             install(ContentNegotiation) {
                 json(
@@ -26,7 +32,14 @@ val networkModule = module {
                     }
                 )
             }
-            install(Auth) {}
+            install(Auth) {
+                bearer {
+                    cacheTokens = false
+                    loadTokens {
+                        tokenProvider.token()?.let { BearerTokens(it, null) }
+                    }
+                }
+            }
             install(Logging) {
                 level = LogLevel.HEADERS
             }
@@ -39,4 +52,5 @@ val networkModule = module {
 
     singleOf(::AuthRepository)
     singleOf(::ProfileRepository)
+    singleOf(::SearchRepository)
 }

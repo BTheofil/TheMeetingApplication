@@ -11,7 +11,8 @@ internal inline fun safeCall(
         execute()
     } catch (e: CancellationException) {
         throw e
-    } catch (_: IOException) {
+    } catch (e: IOException) {
+        e.printStackTrace()
         return ApiResult.Fail(DataError.NO_INTERNET)
     } catch (e: Exception) {
         e.printStackTrace()

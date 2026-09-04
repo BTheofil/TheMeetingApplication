@@ -28,6 +28,7 @@ import com.skydoves.compose.stability.runtime.TraceRecomposition
 import hu.tb.dashboard.presentation.component.OpenSlotCard
 import hu.tb.dashboard.presentation.component.SessionCard
 import hu.tb.dashboard.presentation.component.calendar.CollapsibleCalendar
+import hu.tb.dashboard.presentation.component.calendar.CollapsibleCalendarParameter
 import hu.tb.dashboard.presentation.component.coach.CoachOpenHoursCard
 import hu.tb.dashboard.presentation.component.coach.DiscoverCoachesCard
 import hu.tb.dashboard.presentation.component.coach.MyCoachesSection
@@ -112,7 +113,12 @@ private fun DashboardScreen(
                     .padding(horizontal = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                CollapsibleCalendar(state = state, action = action)
+                CollapsibleCalendar(
+                    calendarParameter = CollapsibleCalendarParameter(
+                        state.sessions, state.openSlots, state.today, state.selectedDate
+                    ),
+                    action = action
+                )
                 SelectedDayBooked(state = state, action = action)
                 SelectedDayOpenHours(state = state, action = action)
                 RoleSection(state = state, action = action)

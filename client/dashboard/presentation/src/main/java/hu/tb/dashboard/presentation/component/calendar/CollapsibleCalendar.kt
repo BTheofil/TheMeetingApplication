@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -22,11 +23,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import com.skydoves.compose.stability.runtime.TraceRecomposition
 import hu.tb.dashboard.presentation.DashboardAction
-import hu.tb.dashboard.presentation.DashboardState
 import hu.tb.dashboard.presentation.component.common.AvailableRing
 import hu.tb.dashboard.presentation.component.common.BookedDot
 import hu.tb.dashboard.presentation.component.common.DashboardCard
+import hu.tb.dashboard.presentation.model.OpenSlot
+import hu.tb.dashboard.presentation.model.SessionItem
 import hu.tb.dashboard.presentation.model.buildCalendarMonth
 import hu.tb.dashboard.presentation.model.buildCalendarWeek
 import hu.tb.design_system.theme.MeetingTheme
@@ -35,20 +38,37 @@ import kotlinx.datetime.minusMonth
 import kotlinx.datetime.plusMonth
 import kotlinx.datetime.yearMonth
 
+@Stable
+data class CollapsibleCalendarParameter(
+    val sessions: List<SessionItem>,
+    val openSlots: List<OpenSlot>,
+    val todayDate: LocalDate,
+    val selectedDate: LocalDate
+)
+
+@TraceRecomposition
 @Composable
 internal fun CollapsibleCalendar(
     modifier: Modifier = Modifier,
-    state: DashboardState,
+    calendarParameter: CollapsibleCalendarParameter,
     action: (DashboardAction) -> Unit
 ) {
     var isCalendarExpanded by remember { mutableStateOf(false) }
-    var currentMonth by remember { mutableStateOf(state.today.yearMonth) }
+    var currentMonth by remember { mutableStateOf(calendarParameter.todayDate.yearMonth) }
 
-    val month = remember(state.sessions, state.openSlots, currentMonth) {
-        state.buildCalendarMonth(currentMonth)
+    val month = remember(calendarParameter.sessions, calendarParameter.openSlots, currentMonth) {
+        buildCalendarMonth(currentMonth, calendarParameter.sessions, calendarParameter.openSlots)
     }
-    val week = remember(state.sessions, state.openSlots, state.selectedDate) {
-        state.buildCalendarWeek(state.selectedDate)
+    val week = remember(
+        calendarParameter.sessions,
+        calendarParameter.openSlots,
+        calendarParameter.selectedDate
+    ) {
+        buildCalendarWeek(
+            calendarParameter.selectedDate,
+            calendarParameter.sessions,
+            calendarParameter.openSlots
+        )
     }
     val onDateSelect: (LocalDate) -> Unit = remember(action) {
         { date -> action(DashboardAction.OnDateSelect(date)) }
@@ -79,16 +99,20 @@ internal fun CollapsibleCalendar(
                     MonthGrid(
                         modifier = Modifier.fillMaxWidth(),
                         month = month,
-                        selectedDate = state.selectedDate,
-                        today = state.today,
-                        visibleMonth = currentMonth,
+                        monthGridParameter = MonthGridParameter(
+                            calendarParameter.selectedDate,
+                            calendarParameter.todayDate,
+                            currentMonth
+                        ),
                         onDateSelect = onDateSelect
                     )
                 } else {
                     WeekRow(
                         week = week,
-                        selectedDate = state.selectedDate,
-                        today = state.today,
+                        weekRowParameter = WeekRowParameter(
+                            selectedDate = calendarParameter.selectedDate,
+                            today = calendarParameter.todayDate
+                        ),
                         onDateSelect = onDateSelect
                     )
                 }
@@ -132,6 +156,13 @@ private fun LegendItem(
 @Composable
 private fun CollapsibleCalendarPreview() {
     MeetingTheme {
-        CollapsibleCalendar(state = calendarPreviewState(), action = {})
+        CollapsibleCalendar(
+            calendarParameter = CollapsibleCalendarParameter(
+                sessions = emptyList(),
+                openSlots = emptyList(),
+                todayDate = LocalDate(2026,1,1),
+                selectedDate = LocalDate(2026,1,2)
+            ),
+            action = {})
     }
 }

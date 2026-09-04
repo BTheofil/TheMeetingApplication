@@ -1,4 +1,4 @@
-package hu.tb.data.auth.dto
+package hu.tb.data.auth
 
 import kotlinx.serialization.Serializable
 

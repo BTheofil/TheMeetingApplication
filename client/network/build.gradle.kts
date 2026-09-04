@@ -10,6 +10,7 @@ dependencies {
     implementation(projects.network.data)
     api(projects.auth.domain)
     api(projects.profile.domain)
+    api(projects.search.domain)
 
     api(libs.bundles.ktor)
 

@@ -29,6 +29,7 @@ dependencies {
     implementation(projects.network)
     implementation(projects.datastore)
     implementation(projects.dashboard.presentation)
+    implementation(projects.search.presentation)
 
     implementation(libs.koin)
     implementation(libs.androidx.activity.compose)

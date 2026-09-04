@@ -9,17 +9,13 @@ import hu.tb.profile.data.DeleteProfileResult
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.delete
-import io.ktor.client.request.header
-import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 
 class ProfileRepository(private val httpClient: HttpClient) {
 
-    suspend fun deleteProfile(token: String): DeleteProfileResult {
+    suspend fun deleteProfile(): DeleteProfileResult {
         val result = safeCall {
-            httpClient.delete("/profile") {
-                header(HttpHeaders.Authorization, "Bearer $token")
-            }
+            httpClient.delete("/profile")
         }
         return when (result) {
             is ApiResult.Fail -> DeleteProfileResult(errorMessage = DataError.UNKNOWN.asText())

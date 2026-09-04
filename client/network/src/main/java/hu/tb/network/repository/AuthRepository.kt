@@ -1,8 +1,8 @@
 package hu.tb.network.repository
 
-import hu.tb.data.auth.dto.AuthResponse
-import hu.tb.data.auth.dto.AuthSend
-import hu.tb.data.auth.dto.ErrorResponse
+import hu.tb.data.auth.AuthResponse
+import hu.tb.data.auth.AuthSend
+import hu.tb.data.auth.ErrorResponse
 import hu.tb.domain.AuthError
 import hu.tb.domain.AuthForm
 import hu.tb.domain.AuthMode
