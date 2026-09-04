@@ -8,7 +8,6 @@ import hu.tb.network.repository.ProfileRepository
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -42,8 +41,7 @@ class ProfileViewModel(
 
         _state.update { it.copy(isDeleting = true) }
         viewModelScope.launch {
-            val token = userDatastoreRepository.userdataFlow().first().token
-            val result = profileRepository.deleteProfile(token)
+            val result = profileRepository.deleteProfile()
 
             _state.update { it.copy(isDeleting = false) }
 

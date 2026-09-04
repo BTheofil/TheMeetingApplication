@@ -11,4 +11,9 @@ object Icons {
     val expand = R.drawable.expand
     val schedule = R.drawable.schedule
     val search = R.drawable.search
+    val add = R.drawable.add
+    val check = R.drawable.check_small
+    val pending = R.drawable.pending
+    val person_check = R.drawable.person_check
+    val person_disable = R.drawable.person_disabled
 }

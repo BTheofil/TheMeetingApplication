@@ -45,7 +45,7 @@ fun SearchScreen(
     SearchScreen(
         state = viewModel.state.collectAsStateWithLifecycle().value,
         onBackClick = onBackClick,
-        onSearch = {},
+        onSearch = viewModel::searchForCoach,
         onCoachClick = {}
     )
 }
@@ -95,7 +95,7 @@ private fun SearchScreen(
                         SearchBarDefaults.InputField(
                             textFieldState = textFieldState,
                             searchBarState = searchBarState,
-                            onSearch = {},
+                            onSearch = onSearch,
                             placeholder = { Text(text = "Search coaches") },
                             trailingIcon = {
                                 Icon(
@@ -110,6 +110,7 @@ private fun SearchScreen(
             }
             SearchResults(
                 modifier = Modifier.fillMaxSize(),
+                isLoading = state.isLoading,
                 coaches = state.searchResult,
                 query = query,
                 onCoachClick = onCoachClick

@@ -1,9 +1,11 @@
 package hu.tb.search
 
 import androidx.compose.runtime.Stable
-import hu.tb.search.domain.CoachResult
+import hu.tb.search.domain.Coach
 
 @Stable
 data class SearchState(
-    val searchResult: List<CoachResult> = emptyList()
+    val isLoading: Boolean = false,
+    val searchResult: List<Coach> = emptyList(),
+    val errorMessage: String? = null
 )
