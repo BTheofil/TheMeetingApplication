@@ -6,6 +6,7 @@ import com.auth0.jwt.algorithms.Algorithm
 import hu.tb.meet.data.repository.AuthRepository
 import hu.tb.meet.domain.receive.AccountType
 import hu.tb.meet.domain.send.AuthResponse
+import hu.tb.meet.testJwtConfig
 import hu.tb.meet.withTestApp
 import io.ktor.client.call.*
 import java.time.Instant
@@ -29,9 +30,10 @@ class TokenAndStorageTest {
         client.register("anna", "secret123", AccountType.NORMAL)
         val token = client.login("anna", "secret123", AccountType.NORMAL).body<AuthResponse>().token
 
-        val verifier = JWT.require(Algorithm.HMAC256("test-secret"))
-            .withIssuer("hu.tb.meet.test")
-            .withAudience("meeting-users-test")
+        val jwt = testJwtConfig()
+        val verifier = JWT.require(Algorithm.HMAC256(jwt.secret))
+            .withIssuer(jwt.issuer)
+            .withAudience(jwt.audience)
             .build()
 
         // throws if signature, issuer, audience or expiry do not match

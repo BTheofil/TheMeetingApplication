@@ -1,5 +1,6 @@
 package hu.tb.meet
 
+import hu.tb.meet.domain.JwtConfig
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.serialization.kotlinx.json.json
@@ -8,13 +9,19 @@ import io.ktor.server.testing.ApplicationTestBuilder
 import io.ktor.server.testing.testApplication
 import java.io.File
 
-private const val TEST_DB_DIR = "build/test-db"
+val testConfig = ApplicationConfig("application-test.conf")
+
+fun testJwtConfig() = JwtConfig(
+    issuer = testConfig.property("jwt.issuer").getString(),
+    audience = testConfig.property("jwt.audience").getString(),
+    secret = testConfig.propertyOrNull("jwt.secret.meeting")?.getString() ?: "debug_build",
+)
 
 fun withTestApp(block: suspend ApplicationTestBuilder.(client: HttpClient) -> Unit) = testApplication {
     resetTestDatabase()
 
     environment {
-        config = ApplicationConfig("application-test.conf")
+        config = testConfig
     }
 
     val client = createClient {
@@ -25,8 +32,11 @@ fun withTestApp(block: suspend ApplicationTestBuilder.(client: HttpClient) -> Un
 }
 
 private fun resetTestDatabase() {
-    val dir = File(TEST_DB_DIR)
-    dir.mkdirs()
+    val path = testConfig.property("database.url").getString()
+        .substringAfter("jdbc:sqlite:")
+        .substringBefore("?")
+    val dbFile = File(path)
+    dbFile.parentFile?.mkdirs()
     // -wal / -shm are SQLite's journal side files; leaving them behind leaks state
-    dir.listFiles()?.forEach { it.delete() }
+    listOf(dbFile, File("$path-wal"), File("$path-shm")).forEach { it.delete() }
 }
