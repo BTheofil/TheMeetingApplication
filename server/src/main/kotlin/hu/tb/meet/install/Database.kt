@@ -2,6 +2,7 @@ package hu.tb.meet.install
 
 import hu.tb.meet.data.model.CoachTable
 import hu.tb.meet.data.model.NormalTable
+import hu.tb.meet.data.model.SubscriptionTable
 import org.jetbrains.exposed.v1.jdbc.Database
 import org.jetbrains.exposed.v1.jdbc.SchemaUtils
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
@@ -14,11 +15,11 @@ fun configureDatabase() {
     else "build/data.db"
 
     Database.connect(
-        url = "jdbc:sqlite:$dbPath",
+        url = "jdbc:sqlite:$dbPath?foreign_keys=on",
         driver = "org.sqlite.JDBC"
     )
 
     transaction {
-        SchemaUtils.create(CoachTable, NormalTable)
+        SchemaUtils.create(CoachTable, NormalTable, SubscriptionTable)
     }
 }
