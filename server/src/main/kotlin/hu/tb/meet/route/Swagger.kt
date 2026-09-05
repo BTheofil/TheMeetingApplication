@@ -9,7 +9,7 @@ import io.ktor.server.routing.routingRoot
 
 fun Routing.swagger() {
     swaggerUI("/swagger") {
-        info = OpenApiInfo(title = "Endpoints", version = "1.1.3")
+        info = OpenApiInfo(title = "Endpoints", version = "1.2.0")
         source = OpenApiDocSource.Routing(ContentType.Application.Json) {
             routingRoot.descendants()
         }

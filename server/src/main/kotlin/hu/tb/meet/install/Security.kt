@@ -13,7 +13,13 @@ fun Application.configureSecurity() {
     val configRealm = environment.config.property("jwt.realm").getString()
     val configAudience = environment.config.property("jwt.audience").getString()
     val configIssuer = environment.config.property("jwt.issuer").getString()
-    val configSecret = environment.config.propertyOrNull("jwt.secret.meeting")?.getString() ?: "debug_build"
+    val configSecret = environment.config.propertyOrNull("jwt.secret.meeting")?.getString()
+        ?: if (developmentMode) {
+            log.warn("jwt.secret.meeting is not set, falling back to the built-in debug secret")
+            "debug_build"
+        } else {
+            error("jwt.secret.meeting is not set, pass JWT_SECRET_MEETING to the container")
+        }
 
     authentication {
         jwt("auth-jwt") {
