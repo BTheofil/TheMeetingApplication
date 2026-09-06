@@ -44,9 +44,10 @@ fun SearchScreen(
 ) {
     SearchScreen(
         state = viewModel.state.collectAsStateWithLifecycle().value,
-        onBackClick = onBackClick,
-        onSearch = viewModel::searchForCoach,
-        onCoachClick = {}
+        action = {
+            if (it is SearchAction.OnBackRequest) onBackClick()
+            else viewModel::action
+        }
     )
 }
 
@@ -55,9 +56,7 @@ fun SearchScreen(
 @Composable
 private fun SearchScreen(
     state: SearchState,
-    onBackClick: () -> Unit = {},
-    onSearch: (String) -> Unit,
-    onCoachClick: (String) -> Unit = {}
+    action: (SearchAction) -> Unit,
 ) {
     val textFieldState = rememberTextFieldState()
     val searchBarState = rememberSearchBarState()
@@ -77,9 +76,10 @@ private fun SearchScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(
-                    modifier = Modifier.fillMaxHeight()
+                    modifier = Modifier
+                        .fillMaxHeight()
                         .width(46.dp),
-                    onClick = onBackClick
+                    onClick = { action(SearchAction.OnBackRequest) }
                 ) {
                     Icon(
                         painter = painterResource(Icons.arrow_back),
@@ -95,7 +95,7 @@ private fun SearchScreen(
                         SearchBarDefaults.InputField(
                             textFieldState = textFieldState,
                             searchBarState = searchBarState,
-                            onSearch = onSearch,
+                            onSearch = { action(SearchAction.OnSearch(it)) },
                             placeholder = { Text(text = "Search coaches") },
                             trailingIcon = {
                                 Icon(
@@ -113,7 +113,7 @@ private fun SearchScreen(
                 isLoading = state.isLoading,
                 coaches = state.searchResult,
                 query = query,
-                onCoachClick = onCoachClick
+                onCoachClick = { coachId -> action(SearchAction.OnCoachAddRequest(coachId)) }
             )
         }
     }
@@ -123,6 +123,6 @@ private fun SearchScreen(
 @Composable
 private fun SearchScreenEmptyPreview() {
     MeetingTheme {
-        SearchScreen(state = SearchState(), onBackClick = {}, onSearch = {}, onCoachClick = {})
+        SearchScreen(state = SearchState(), action = {})
     }
 }

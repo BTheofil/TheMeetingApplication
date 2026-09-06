@@ -15,8 +15,16 @@ class SearchViewModel(
     private val _state = MutableStateFlow(SearchState())
     val state = _state.asStateFlow()
 
-    fun searchForCoach(name: String) {
-        val query = name.trim()
+    fun action(action: SearchAction) {
+        when (action) {
+            is SearchAction.OnCoachAddRequest -> requestCoach(action.coachId)
+            is SearchAction.OnSearch -> searchForCoach(action.query)
+            else -> {}
+        }
+    }
+
+    private fun searchForCoach(query: String) {
+        val query = query.trim()
         if (query.isBlank() || state.value.isLoading) return
 
         _state.update { it.copy(isLoading = true, errorMessage = null) }
@@ -31,5 +39,9 @@ class SearchViewModel(
                 )
             }
         }
+    }
+
+    private fun requestCoach(coachId: String) {
+
     }
 }

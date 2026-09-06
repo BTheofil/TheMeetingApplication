@@ -26,7 +26,7 @@ internal fun SearchResults(
     coaches: List<Coach>,
     query: String,
     isLoading: Boolean,
-    onCoachClick: (String) -> Unit
+    onCoachClick: (coachId: String) -> Unit
 ) {
     if (isLoading) {
         Box(
