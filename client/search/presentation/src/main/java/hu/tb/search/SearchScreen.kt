@@ -18,9 +18,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -32,9 +35,12 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.skydoves.compose.stability.runtime.TraceRecomposition
 import hu.tb.design_system.Icons
+import hu.tb.design_system.component.CountdownSnackbar
+import hu.tb.design_system.component.CountdownSnackbarVisuals
 import hu.tb.design_system.modifier.screenPadding
 import hu.tb.design_system.theme.MeetingTheme
 import hu.tb.search.component.SearchResults
+import kotlinx.coroutines.flow.collectLatest
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -42,11 +48,23 @@ fun SearchScreen(
     viewModel: SearchViewModel = koinViewModel(),
     onBackClick: () -> Unit
 ) {
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(Unit) {
+        viewModel.event.collectLatest {
+            snackbarHostState.showSnackbar(
+                visuals = CountdownSnackbarVisuals(message = it)
+            )
+        }
+    }
+
     SearchScreen(
+        snackbarHostState = snackbarHostState,
         state = viewModel.state.collectAsStateWithLifecycle().value,
-        onBackClick = onBackClick,
-        onSearch = viewModel::searchForCoach,
-        onCoachClick = {}
+        action = {
+            if (it is SearchAction.OnBackRequest) onBackClick()
+            else viewModel.action(it)
+        }
     )
 }
 
@@ -54,17 +72,22 @@ fun SearchScreen(
 @TraceRecomposition
 @Composable
 private fun SearchScreen(
+    snackbarHostState: SnackbarHostState,
     state: SearchState,
-    onBackClick: () -> Unit = {},
-    onSearch: (String) -> Unit,
-    onCoachClick: (String) -> Unit = {}
+    action: (SearchAction) -> Unit,
 ) {
     val textFieldState = rememberTextFieldState()
     val searchBarState = rememberSearchBarState()
 
     val query by remember { derivedStateOf { textFieldState.text.toString().trim() } }
 
-    Scaffold { innerPadding ->
+    Scaffold(
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState) { data ->
+                CountdownSnackbar(snackbarData = data)
+            }
+        }
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .padding(innerPadding)
@@ -77,9 +100,10 @@ private fun SearchScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(
-                    modifier = Modifier.fillMaxHeight()
+                    modifier = Modifier
+                        .fillMaxHeight()
                         .width(46.dp),
-                    onClick = onBackClick
+                    onClick = { action(SearchAction.OnBackRequest) }
                 ) {
                     Icon(
                         painter = painterResource(Icons.arrow_back),
@@ -95,7 +119,7 @@ private fun SearchScreen(
                         SearchBarDefaults.InputField(
                             textFieldState = textFieldState,
                             searchBarState = searchBarState,
-                            onSearch = onSearch,
+                            onSearch = { action(SearchAction.OnSearch(it)) },
                             placeholder = { Text(text = "Search coaches") },
                             trailingIcon = {
                                 Icon(
@@ -113,7 +137,7 @@ private fun SearchScreen(
                 isLoading = state.isLoading,
                 coaches = state.searchResult,
                 query = query,
-                onCoachClick = onCoachClick
+                onCoachClick = { coachId -> action(SearchAction.OnCoachAddRequest(coachId)) }
             )
         }
     }
@@ -123,6 +147,6 @@ private fun SearchScreen(
 @Composable
 private fun SearchScreenEmptyPreview() {
     MeetingTheme {
-        SearchScreen(state = SearchState(), onBackClick = {}, onSearch = {}, onCoachClick = {})
+        SearchScreen(snackbarHostState = SnackbarHostState(), state = SearchState(), action = {})
     }
 }

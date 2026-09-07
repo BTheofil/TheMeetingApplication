@@ -16,6 +16,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.skydoves.compose.stability.runtime.TraceRecomposition
+import hu.tb.design_system.modifier.clearFocus
 import hu.tb.design_system.theme.MeetingTheme
 import hu.tb.search.domain.Coach
 
@@ -26,7 +27,7 @@ internal fun SearchResults(
     coaches: List<Coach>,
     query: String,
     isLoading: Boolean,
-    onCoachClick: (String) -> Unit
+    onCoachClick: (coachId: String) -> Unit
 ) {
     if (isLoading) {
         Box(
@@ -54,7 +55,9 @@ internal fun SearchResults(
             }
         } else {
             LazyColumn(
-                modifier = modifier.fillMaxWidth(),
+                modifier = modifier
+                    .fillMaxWidth()
+                    .clearFocus(),
             ) {
                 items(items = coaches, key = { it.id }) { coach ->
                     CoachResultRow(
