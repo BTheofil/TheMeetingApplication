@@ -4,5 +4,5 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class CoachRequestSend(
-    val coachId: String
+    val coachId: Int
 )

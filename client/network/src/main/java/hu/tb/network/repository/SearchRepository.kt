@@ -9,6 +9,7 @@ import hu.tb.network.DataError
 import hu.tb.network.asText
 import hu.tb.network.safeCall
 import hu.tb.search.domain.Coach
+import hu.tb.search.domain.RequestCoachResult
 import hu.tb.search.domain.SearchResult
 import hu.tb.search.domain.Status
 import io.ktor.client.HttpClient
@@ -16,6 +17,7 @@ import io.ktor.client.call.body
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
+import io.ktor.http.HttpStatusCode
 
 class SearchRepository(private val httpClient: HttpClient) {
 
@@ -35,16 +37,24 @@ class SearchRepository(private val httpClient: HttpClient) {
         }
     }
 
-    suspend fun requestCoach(coachId: String) {
+    suspend fun requestCoach(coachId: String): RequestCoachResult {
         val result = safeCall {
             httpClient.post("/requestToCoach") {
-                setBody(CoachRequestSend(coachId))
+                setBody(CoachRequestSend(coachId.toInt()))
             }
         }
 
-        when(result) {
-            is ApiResult.Fail -> TODO()
-            is ApiResult.Ok -> TODO()
+        return when (result) {
+            is ApiResult.Fail -> RequestCoachResult(errorMessage = result.dataError.asText())
+
+            is ApiResult.Ok -> when (result.httpResponse.status) {
+                HttpStatusCode.OK -> RequestCoachResult(isRequestSent = true)
+
+                HttpStatusCode.Unauthorized ->
+                    RequestCoachResult(errorMessage = DataError.UNAUTHORIZED.asText())
+
+                else -> RequestCoachResult(errorMessage = DataError.UNKNOWN.asText())
+            }
         }
     }
 
@@ -77,7 +87,7 @@ class SearchRepository(private val httpClient: HttpClient) {
             name = coachName,
             status = when (status.trim().lowercase()) {
                 "pending" -> Status.PENDING
-                "added" -> Status.ADDED
+                "accepted", "added" -> Status.ADDED
                 else -> Status.INIT
             }
         )
