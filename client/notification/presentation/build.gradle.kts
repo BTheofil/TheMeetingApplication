@@ -8,4 +8,5 @@ android {
 
 dependencies {
     implementation(projects.designSystem)
+    implementation(projects.notification.domain)
 }

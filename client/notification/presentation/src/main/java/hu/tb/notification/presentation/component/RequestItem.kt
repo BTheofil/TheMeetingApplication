@@ -1,4 +1,4 @@
-package hu.tb.search.component
+package hu.tb.notification.presentation.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -19,44 +19,43 @@ import com.skydoves.compose.stability.runtime.TraceRecomposition
 import hu.tb.design_system.Icons
 import hu.tb.design_system.component.Avatar
 import hu.tb.design_system.theme.MeetingTheme
-import hu.tb.search.domain.Coach
-import hu.tb.search.domain.Status
+import hu.tb.notification.domain.RequestNotification
 
 @TraceRecomposition
 @Composable
-internal fun CoachResultRow(
-    modifier: Modifier = Modifier,
-    coach: Coach,
-    onClick: () -> Unit
+internal fun RequestItem(
+    request: RequestNotification,
+    onAccept: () -> Unit,
+    onReject: () -> Unit
 ) {
     Row(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 12.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Avatar(initials = coach.initials)
+        Avatar(initials = request.senderName.take(1).uppercase())
         Text(
             modifier = Modifier.weight(1f),
-            text = coach.name,
-            style = MaterialTheme.typography.titleMedium,
+            text = "${request.senderName} sent a request",
+            style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurface,
-            maxLines = 1,
+            maxLines = 2,
             overflow = TextOverflow.Ellipsis
         )
-        IconButton(
-            enabled = coach.status == Status.INIT,
-            onClick = onClick
-        ) {
-            val icon = when (coach.status) {
-                Status.INIT -> Icons.add
-                Status.PENDING -> Icons.pending
-                Status.ADDED -> Icons.person_check
-            }
+        IconButton(onClick = onAccept) {
             Icon(
-                painterResource(icon), contentDescription = "status icon",
+                painter = painterResource(Icons.person_check),
+                contentDescription = "Accept request",
                 tint = MaterialTheme.colorScheme.primary
+            )
+        }
+        IconButton(onClick = onReject) {
+            Icon(
+                painter = painterResource(Icons.person_disable),
+                contentDescription = "Reject request",
+                tint = MaterialTheme.colorScheme.error
             )
         }
     }
@@ -64,13 +63,12 @@ internal fun CoachResultRow(
 
 @PreviewLightDark
 @Composable
-private fun CoachResultRowPreview() {
+private fun RequestItemPreview() {
     MeetingTheme {
-        CoachResultRow(
-            coach = Coach(
-                id = "1", name = "Example name", status = Status.INIT
-            ),
-            onClick = {}
+        RequestItem(
+            request = RequestNotification(id = "1", senderName = "Example name"),
+            onAccept = {},
+            onReject = {}
         )
     }
 }
