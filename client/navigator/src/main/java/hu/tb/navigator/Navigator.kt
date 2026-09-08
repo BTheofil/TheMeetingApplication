@@ -137,7 +137,7 @@ fun Navigator(viewModel: NavigatorViewModel) {
                                 onBack = {
                                     dashboardStack.remove(Destination.DashboardGraph.Profile)
                                 },
-                                onDeleted = {
+                                onClearedProfile = {
                                     viewModel.clearUserData()
                                     graphStack.add(Destination.AuthRoot)
                                     graphStack.remove(Destination.DashboardRoot)
