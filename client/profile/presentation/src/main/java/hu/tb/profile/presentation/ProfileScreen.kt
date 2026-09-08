@@ -4,6 +4,7 @@ import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -55,7 +56,7 @@ import org.koin.androidx.compose.koinViewModel
 fun ProfileScreen(
     viewModel: ProfileViewModel = koinViewModel(),
     onBack: () -> Unit,
-    onDeleted: () -> Unit
+    onClearedProfile: () -> Unit
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -67,7 +68,7 @@ fun ProfileScreen(
                         visuals = CountdownSnackbarVisuals(message = it.errorMessage)
                     )
 
-                ProfileEvent.Deleted -> onDeleted()
+                ProfileEvent.Cleared -> onClearedProfile()
             }
         }
     }
@@ -79,6 +80,7 @@ fun ProfileScreen(
             when (it) {
                 ProfileAction.OnBackClick -> onBack()
                 ProfileAction.OnDeleteConfirmed -> viewModel.deleteProfile()
+                ProfileAction.OnLogoutClick -> viewModel.logout()
             }
         }
     )
@@ -139,6 +141,18 @@ private fun ProfileScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Details(state = state)
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp),
+                    onClick = { action(ProfileAction.OnLogoutClick) },
+                ) {
+                    Text(
+                        text = "Switch profile",
+                        style = MaterialTheme.typography.labelLarge
+                    )
+                }
+                Spacer(Modifier.height(8.dp))
                 Button(
                     modifier = Modifier
                         .fillMaxWidth()

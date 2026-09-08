@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 
 class ProfileViewModel(
     private val userDatastoreRepository: UserDatastoreRepository,
-    private val profileRepository: ProfileRepository
+    private val profileRepository: ProfileRepository,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ProfileState())
@@ -46,11 +46,17 @@ class ProfileViewModel(
             _state.update { it.copy(isDeleting = false) }
 
             _event.send(
-                if (result.isSuccess && result.errorMessage == null) ProfileEvent.Deleted
+                if (result.isSuccess && result.errorMessage == null) ProfileEvent.Cleared
                 else ProfileEvent.Failed(
                     result.errorMessage ?: "Something went wrong. Please try again."
                 )
             )
+        }
+    }
+
+    fun logout() {
+        viewModelScope.launch {
+            _event.send(ProfileEvent.Cleared)
         }
     }
 }
