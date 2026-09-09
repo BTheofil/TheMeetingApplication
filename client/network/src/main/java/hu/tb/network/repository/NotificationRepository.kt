@@ -25,7 +25,7 @@ class NotificationRepository(
         requestId: String
     ): ApiResult<Unit> {
         val normalId = requestId.toIntOrNull()
-            ?: return ApiResult.Fail(DataError.UNKNOWN)
+            ?: return ApiResult.Fail(DataError.BAD_REQUEST)
 
         return apiCall<Unit> {
             httpClient.post(decision.endpoint()) {

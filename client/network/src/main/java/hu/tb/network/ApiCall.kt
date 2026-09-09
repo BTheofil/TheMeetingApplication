@@ -37,8 +37,12 @@ suspend inline fun <reified T : Any> apiCall(execute: () -> HttpResponse): ApiRe
 internal suspend fun HttpResponse.toFail(): ApiResult.Fail =
     ApiResult.Fail(
         dataError = when (status.value) {
+            400 -> DataError.BAD_REQUEST
             401 -> DataError.UNAUTHORIZED
+            403 -> DataError.FORBIDDEN
+            404 -> DataError.NOT_FOUND
             409 -> DataError.CONFLICT
+            in 500..599 -> DataError.SERVER_ERROR
             else -> DataError.UNKNOWN
         },
         serverMessage = serverMessage()

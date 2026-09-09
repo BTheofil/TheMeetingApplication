@@ -2,8 +2,8 @@ package hu.tb.network.repository
 
 import hu.tb.data.search.CoachDto
 import hu.tb.data.search.CoachRequestSend
-import hu.tb.data.search.SearchCoachSend
 import hu.tb.data.search.CoachResultResponse
+import hu.tb.data.search.SearchCoachSend
 import hu.tb.network.ApiResult
 import hu.tb.network.apiCall
 import hu.tb.network.map
@@ -22,12 +22,13 @@ class SearchRepository(private val httpClient: HttpClient) {
             }
         }.map { response -> response.coaches.map { it.toDomain() } }
 
-    suspend fun requestCoach(coachId: String): ApiResult<Unit> =
-        apiCall<Unit> {
+    suspend fun requestCoach(coachId: Int): ApiResult<Unit> {
+        return apiCall<Unit> {
             httpClient.post("/requestToCoach") {
-                setBody(CoachRequestSend(coachId.toInt()))
+                setBody(CoachRequestSend(coachId))
             }
         }
+    }
 
     private fun CoachDto.toDomain(): Coach =
         Coach(

@@ -56,10 +56,11 @@ class SearchViewModel(
     }
 
     private fun requestCoach(coachId: String) {
+        if (coachId.toIntOrNull() == null) return
         updateCoachStatus(coachId, Status.PENDING)
 
         viewModelScope.launch {
-            searchRepository.requestCoach(coachId).fold(
+            searchRepository.requestCoach(coachId.toInt()).fold(
                 success = {},
                 fail = {
                     updateCoachStatus(coachId, Status.INIT)
