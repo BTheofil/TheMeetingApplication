@@ -2,20 +2,14 @@ package hu.tb.network.repository
 
 import hu.tb.data.auth.AuthResponse
 import hu.tb.data.auth.AuthSend
-import hu.tb.data.auth.ErrorResponse
-import hu.tb.domain.AuthError
 import hu.tb.domain.AuthForm
 import hu.tb.domain.AuthMode
-import hu.tb.domain.AuthResults
 import hu.tb.network.ApiResult
-import hu.tb.network.DataError
-import hu.tb.network.asText
-import hu.tb.network.safeCall
+import hu.tb.network.apiCall
+import hu.tb.network.map
 import io.ktor.client.HttpClient
-import io.ktor.client.call.body
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
-import io.ktor.client.statement.HttpResponse
 
 class AuthRepository(
     private val httpClient: HttpClient
@@ -23,13 +17,13 @@ class AuthRepository(
     suspend fun authenticate(
         mode: AuthMode,
         form: AuthForm,
-    ): AuthResults {
+    ): ApiResult<String> {
         val path = when (mode) {
             AuthMode.LOGIN -> "/login"
             AuthMode.REGISTER -> "/register"
         }
 
-        val result = safeCall {
+        return apiCall<AuthResponse> {
             httpClient.post(path) {
                 setBody(
                     AuthSend(
@@ -39,48 +33,6 @@ class AuthRepository(
                     )
                 )
             }
-        }
-
-        return when (result) {
-            is ApiResult.Ok -> result.httpResponse.toDataError()
-            is ApiResult.Fail -> AuthResults(
-                errorMessage = result.dataError.asText(),
-                error = result.dataError.asAuthError()
-            )
-        }
-    }
-
-    private suspend fun HttpResponse.toDataError(): AuthResults =
-        when (status.value) {
-            in 200..299 -> try {
-                val token = body<AuthResponse>().token
-                AuthResults(token = token)
-            } catch (e: Exception) {
-                e.printStackTrace()
-                AuthResults(
-                    errorMessage = DataError.UNKNOWN.asText(),
-                    error = AuthError.UNKNOWN
-                )
-            }
-
-            401, 409 -> {
-                val message = body<ErrorResponse>().message
-                AuthResults(
-                    errorMessage = message,
-                    error = if (status.value == 401) AuthError.UNAUTHORIZED else AuthError.CONFLICT
-                )
-            }
-
-            else -> AuthResults(
-                errorMessage = DataError.UNKNOWN.asText(),
-                error = AuthError.UNKNOWN
-            )
-        }
-
-    private fun DataError.asAuthError(): AuthError = when (this) {
-        DataError.NO_INTERNET -> AuthError.NO_INTERNET
-        DataError.UNAUTHORIZED -> AuthError.UNAUTHORIZED
-        DataError.CONFLICT -> AuthError.CONFLICT
-        DataError.UNKNOWN -> AuthError.UNKNOWN
+        }.map { it.token }
     }
 }

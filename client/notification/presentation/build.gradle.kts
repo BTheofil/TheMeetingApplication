@@ -10,7 +10,6 @@ dependencies {
     implementation(projects.designSystem)
     implementation(projects.notification.domain)
     implementation(projects.network)
-    implementation(projects.network.data)
 
     implementation(libs.bundles.koin)
 }
