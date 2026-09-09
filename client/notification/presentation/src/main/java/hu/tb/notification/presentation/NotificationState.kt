@@ -6,5 +6,6 @@ import hu.tb.notification.domain.RequestNotification
 @Stable
 data class NotificationState(
     val isLoading: Boolean = false,
-    val requests: List<RequestNotification> = emptyList()
+    val requests: List<RequestNotification> = emptyList(),
+    val errorMessage: String? = null
 )

@@ -1,6 +1,8 @@
 package hu.tb.notification.presentation
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -13,10 +15,15 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,11 +34,14 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.skydoves.compose.stability.runtime.TraceRecomposition
 import hu.tb.design_system.Icons
+import hu.tb.design_system.component.CountdownSnackbar
+import hu.tb.design_system.component.CountdownSnackbarVisuals
 import hu.tb.design_system.modifier.screenPadding
 import hu.tb.design_system.theme.MeetingTheme
 import hu.tb.notification.domain.RequestDecision
 import hu.tb.notification.domain.RequestNotification
 import hu.tb.notification.presentation.component.RequestItem
+import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -39,13 +49,22 @@ fun NotificationScreen(
     viewModel: NotificationViewModel = koinViewModel(),
     navigationRequest: () -> Unit
 ) {
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(Unit) {
+        viewModel.event.collectLatest { errorMessage ->
+            snackbarHostState.showSnackbar(
+                visuals = CountdownSnackbarVisuals(message = errorMessage)
+            )
+        }
+    }
+
     NotificationScreen(
+        snackbarHostState = snackbarHostState,
         state = viewModel.state.collectAsStateWithLifecycle().value,
         action = {
-            when (it) {
-                NotificationAction.BackRequest -> navigationRequest()
-                is NotificationAction.RequestSelected -> viewModel.requestMade(it.decision, it.notificationId)
-            }
+            if (it is NotificationAction.BackRequest) navigationRequest()
+            else viewModel.action(it)
         }
     )
 }
@@ -54,6 +73,7 @@ fun NotificationScreen(
 @TraceRecomposition
 @Composable
 private fun NotificationScreen(
+    snackbarHostState: SnackbarHostState,
     state: NotificationState,
     action: (NotificationAction) -> Unit
 ) {
@@ -79,6 +99,11 @@ private fun NotificationScreen(
                     }
                 }
             )
+        },
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState) { data ->
+                CountdownSnackbar(snackbarData = data)
+            }
         }
     ) { innerPadding ->
         Box(
@@ -93,6 +118,25 @@ private fun NotificationScreen(
                         .align(Alignment.Center)
                         .size(64.dp)
                 )
+
+                state.errorMessage != null -> Column(
+                    modifier = Modifier.align(Alignment.Center),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = state.errorMessage,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center
+                    )
+                    TextButton(onClick = { action(NotificationAction.RetryRequest) }) {
+                        Text(
+                            text = "Retry",
+                            style = MaterialTheme.typography.labelLarge
+                        )
+                    }
+                }
 
                 state.requests.isEmpty() -> Text(
                     modifier = Modifier.align(Alignment.Center),
@@ -110,7 +154,7 @@ private fun NotificationScreen(
                             request = request,
                             onAccept = {
                                 action(
-                                    NotificationAction.RequestSelected(
+                                    NotificationAction.RequestResolved(
                                         RequestDecision.ACCEPT,
                                         request.id
                                     )
@@ -118,7 +162,7 @@ private fun NotificationScreen(
                             },
                             onReject = {
                                 action(
-                                    NotificationAction.RequestSelected(
+                                    NotificationAction.RequestResolved(
                                         RequestDecision.REJECT,
                                         request.id
                                     )
@@ -137,6 +181,7 @@ private fun NotificationScreen(
 private fun NotificationScreenPreview() {
     MeetingTheme {
         NotificationScreen(
+            snackbarHostState = SnackbarHostState(),
             state = NotificationState(
                 requests = listOf(
                     RequestNotification(id = "1", senderName = "Example name"),

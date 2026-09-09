@@ -4,6 +4,7 @@ import hu.tb.notification.domain.RequestDecision
 
 sealed interface NotificationAction {
     data object BackRequest : NotificationAction
-    data class RequestSelected(val decision: RequestDecision, val notificationId: String) :
+    data object RetryRequest : NotificationAction
+    data class RequestResolved(val decision: RequestDecision, val requestId: String) :
         NotificationAction
 }

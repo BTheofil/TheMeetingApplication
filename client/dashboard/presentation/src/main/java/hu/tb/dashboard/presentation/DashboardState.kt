@@ -10,7 +10,7 @@ import kotlinx.datetime.LocalDate
 
 @Immutable
 data class DashboardState(
-    val profileType: ProfileType = ProfileType.NORMAL,
+    val profileType: ProfileType? = null,
     val today: LocalDate = currentDate(),
     val selectedDate: LocalDate = today,
     val sessions: List<SessionItem> = emptyList(),
