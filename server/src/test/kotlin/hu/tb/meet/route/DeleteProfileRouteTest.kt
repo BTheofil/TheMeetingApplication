@@ -38,12 +38,12 @@ class DeleteProfileRouteTest {
     }
 
     @Test
-    fun `deleting twice leaves the second call unauthorized`() = withTestApp { client ->
+    fun `deleting twice leaves the second call not found`() = withTestApp { client ->
         val token = client.tokenFor("anna", "secret123", AccountType.NORMAL)
 
         assertEquals(HttpStatusCode.NoContent, client.deleteProfile(token).status)
         val second = client.deleteProfile(token)
-        assertEquals(HttpStatusCode.Unauthorized, second.status)
+        assertEquals(HttpStatusCode.NotFound, second.status)
         assertEquals("Profile no longer exists", second.body<ErrorResponse>().message)
     }
 

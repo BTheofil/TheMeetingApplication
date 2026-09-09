@@ -4,6 +4,7 @@ import hu.tb.meet.domain.receive.AccountType
 import hu.tb.meet.domain.receive.RequestReceive
 import hu.tb.meet.domain.receive.ResolveReceive
 import hu.tb.meet.domain.send.CoachResult
+import hu.tb.meet.domain.send.ErrorResponse
 import hu.tb.meet.domain.send.SubscriberResult
 import hu.tb.meet.domain.send.SubscriptionStatus
 import hu.tb.meet.withTestApp
@@ -51,7 +52,6 @@ private suspend fun HttpClient.coachList(token: String) = myCoaches(token).body<
 
 private suspend fun HttpClient.statusOf(token: String) = coaches(token, "kovacs").single().status
 
-/** Registers a coach and a normal profile, returns (coachToken, normalToken, coachId). */
 private suspend fun HttpClient.pair(): Triple<String, String, Int> {
     val coach = tokenOf("Kovacs Anna", AccountType.COACH)
     val normal = tokenOf("anna", AccountType.NORMAL)
@@ -98,14 +98,14 @@ class SubscriptionRouteTest {
     }
 
     @Test
-    fun `the wrong account type is unauthorized on every endpoint`() = withTestApp { client ->
+    fun `the wrong account type is forbidden on every endpoint`() = withTestApp { client ->
         val (coach, normal, coachId) = client.pair()
 
-        assertEquals(HttpStatusCode.Unauthorized, client.requestToCoach(coach, coachId).status)
-        assertEquals(HttpStatusCode.Unauthorized, client.pendingRequests(normal).status)
-        assertEquals(HttpStatusCode.Unauthorized, client.acceptRequest(normal, 1).status)
-        assertEquals(HttpStatusCode.Unauthorized, client.rejectRequest(normal, 1).status)
-        assertEquals(HttpStatusCode.Unauthorized, client.myCoaches(coach).status)
+        assertEquals(HttpStatusCode.Forbidden, client.requestToCoach(coach, coachId).status)
+        assertEquals(HttpStatusCode.Forbidden, client.pendingRequests(normal).status)
+        assertEquals(HttpStatusCode.Forbidden, client.acceptRequest(normal, 1).status)
+        assertEquals(HttpStatusCode.Forbidden, client.rejectRequest(normal, 1).status)
+        assertEquals(HttpStatusCode.Forbidden, client.myCoaches(coach).status)
     }
 
     @Test
@@ -115,5 +115,28 @@ class SubscriptionRouteTest {
         assertEquals(HttpStatusCode.Unauthorized, client.acceptRequest(null, 1).status)
         assertEquals(HttpStatusCode.Unauthorized, client.rejectRequest(null, 1).status)
         assertEquals(HttpStatusCode.Unauthorized, client.myCoaches(null).status)
+    }
+
+    @Test
+    fun `a request to an unknown coach answers with a json error`() = withTestApp { client ->
+        val (_, normal, coachId) = client.pair()
+
+        val response = client.requestToCoach(normal, coachId + 404)
+
+        assertEquals(HttpStatusCode.NotFound, response.status)
+        assertEquals("Failed to send request", response.body<ErrorResponse>().message)
+    }
+
+    @Test
+    fun `resolving a request that does not exist answers with a json error`() = withTestApp { client ->
+        val (coach, _, _) = client.pair()
+
+        val accepted = client.acceptRequest(coach, 404)
+        assertEquals(HttpStatusCode.NotFound, accepted.status)
+        assertEquals("There is no pending request from this user", accepted.body<ErrorResponse>().message)
+
+        val rejected = client.rejectRequest(coach, 404)
+        assertEquals(HttpStatusCode.NotFound, rejected.status)
+        assertEquals("There is no pending request from this user", rejected.body<ErrorResponse>().message)
     }
 }

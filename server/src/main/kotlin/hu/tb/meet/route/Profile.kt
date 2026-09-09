@@ -1,12 +1,11 @@
 package hu.tb.meet.route
 
 import hu.tb.meet.data.repository.ProfileRepository
-import hu.tb.meet.domain.receive.AccountType
-import hu.tb.meet.domain.send.ErrorResponse
+import hu.tb.meet.domain.error.ApiError
+import hu.tb.meet.domain.error.fail
+import hu.tb.meet.route.helper.requireAccount
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.auth.authenticate
-import io.ktor.server.auth.jwt.JWTPrincipal
-import io.ktor.server.auth.principal
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.delete
@@ -17,19 +16,10 @@ fun Route.profile() {
 
     authenticate("auth-jwt") {
         delete("/profile") {
-            val payload = call.principal<JWTPrincipal>()?.payload
-            val username = payload?.getClaim("username")?.asString()
-            val accountType = payload?.getClaim("type")?.asString()
-                ?.let { name -> AccountType.entries.find { it.name == name } }
+            val account = requireAccount()
 
-            if (username == null || accountType == null) {
-                call.respond(HttpStatusCode.Unauthorized, ErrorResponse("Token is not valid or has expired"))
-                return@delete
-            }
-
-            if (profileRepository.deleteProfile(accountType, username) == 0) {
-                call.respond(HttpStatusCode.Unauthorized, ErrorResponse("Profile no longer exists"))
-                return@delete
+            if (profileRepository.deleteProfile(account.type, account.username) == 0) {
+                fail(ApiError.PROFILE_NOT_FOUND)
             }
 
             call.respond(HttpStatusCode.NoContent)

@@ -2,9 +2,10 @@ package hu.tb.meet.route
 
 import at.favre.lib.crypto.bcrypt.BCrypt
 import hu.tb.meet.data.repository.AuthRepository
+import hu.tb.meet.domain.error.ApiError
+import hu.tb.meet.domain.error.fail
 import hu.tb.meet.domain.receive.AuthReceive
 import hu.tb.meet.domain.send.AuthResponse
-import hu.tb.meet.domain.send.ErrorResponse
 import hu.tb.meet.security.JwtService
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.request.receive
@@ -25,10 +26,7 @@ fun Route.auth() {
         val verified = account != null &&
                 BCrypt.verifyer().verify(loginInfo.password.toCharArray(), account.passwordHash).verified
 
-        if (!verified) {
-            call.respond(HttpStatusCode.Unauthorized, ErrorResponse("Invalid username or password"))
-            return@post
-        }
+        if (!verified) fail(ApiError.INVALID_CREDENTIALS)
 
         val token = jwtService.generate(loginInfo.username, loginInfo.type)
         call.respond(HttpStatusCode.OK, AuthResponse(token))
@@ -38,8 +36,7 @@ fun Route.auth() {
         val registerInfo = call.receive<AuthReceive>()
 
         if (authRepository.exists(registerInfo.type, registerInfo.username)) {
-            call.respond(HttpStatusCode.Conflict, ErrorResponse("Username already taken"))
-            return@post
+            fail(ApiError.USERNAME_TAKEN)
         }
 
         val hash = BCrypt.withDefaults().hashToString(12, registerInfo.password.toCharArray())

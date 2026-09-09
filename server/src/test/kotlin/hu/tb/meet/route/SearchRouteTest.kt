@@ -64,7 +64,7 @@ class SearchRouteTest {
     fun `only a normal profile can search`() = withTestApp { client ->
         val coach = client.tokenOf("Kovacs Anna", AccountType.COACH)
 
-        assertEquals(HttpStatusCode.Unauthorized, client.searchCoach(coach, "kovacs").status)
+        assertEquals(HttpStatusCode.Forbidden, client.searchCoach(coach, "kovacs").status)
         assertEquals(HttpStatusCode.Unauthorized, client.searchCoach(null, "kovacs").status)
     }
 }

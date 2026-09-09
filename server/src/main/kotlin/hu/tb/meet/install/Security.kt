@@ -2,7 +2,7 @@ package hu.tb.meet.install
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
-import hu.tb.meet.domain.send.ErrorResponse
+import hu.tb.meet.domain.error.ApiError
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -34,7 +34,7 @@ fun Application.configureSecurity() {
                 if (credential.payload.audience.contains(configAudience)) JWTPrincipal(credential.payload) else null
             }
             challenge { _, _ ->
-                call.respond(HttpStatusCode.Unauthorized, ErrorResponse("Token is not valid or has expired"))
+                call.respondError(ApiError.INVALID_TOKEN)
             }
         }
     }
