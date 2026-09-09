@@ -101,6 +101,16 @@ private fun DashboardScreen(
                             style = MaterialTheme.typography.titleLarge
                         )
                     },
+                    actions = {
+                        if (state.profileType == ProfileType.COACH)
+                            IconButton(onClick = { action(DashboardAction.OnNotificationClick) }) {
+                                Icon(
+                                    painter = painterResource(Icons.notifications),
+                                    contentDescription = "notification icon",
+                                    tint = MaterialTheme.colorScheme.onSurface
+                                )
+                            }
+                    }
                 )
             }
         ) { innerPadding ->
@@ -133,6 +143,8 @@ private fun RoleSection(
     action: (DashboardAction) -> Unit
 ) {
     when (state.profileType) {
+        null -> Unit
+
         ProfileType.COACH -> CoachOpenHoursCard(
             onCreateOpenHours = { action(DashboardAction.OnCreateOpenHoursClick) }
         )
@@ -199,12 +211,11 @@ private fun SelectedDayOpenHours(
                 slot = slot,
                 coachName = state.coachNameOf(slot.coachId),
                 onClick = {
-                    action(
-                        when (state.profileType) {
-                            ProfileType.COACH -> DashboardAction.OnCreateOpenHoursClick
-                            ProfileType.NORMAL -> DashboardAction.OnCoachClick(slot.coachId)
-                        }
-                    )
+                    when (state.profileType) {
+                        null -> Unit
+                        ProfileType.COACH -> action(DashboardAction.OnCreateOpenHoursClick)
+                        ProfileType.NORMAL -> action(DashboardAction.OnCoachClick(slot.coachId))
+                    }
                 }
             )
         }

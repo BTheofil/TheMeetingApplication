@@ -22,6 +22,7 @@ import hu.tb.dashboard.presentation.DashboardAction
 import hu.tb.dashboard.presentation.DashboardScreen
 import hu.tb.design_system.component.SessionExpiredDialog
 import hu.tb.domain.AuthMode
+import hu.tb.notification.presentation.NotificationScreen
 import hu.tb.presentation.form.AuthFormScreen
 import hu.tb.presentation.welcome.WelcomeScreen
 import hu.tb.profile.presentation.ProfileScreen
@@ -45,6 +46,7 @@ sealed interface Destination : NavKey {
         data object Dashboard : DashboardGraph
         data object Profile : DashboardGraph
         data object SearchCoach : DashboardGraph
+        data object Notification : DashboardGraph
     }
 }
 
@@ -116,16 +118,14 @@ fun Navigator(viewModel: NavigatorViewModel) {
                             DashboardScreen(
                                 navigationRequest = { request ->
                                     when (request) {
-                                        is DashboardAction.OnProfileClick -> dashboardStack.add(
-                                            Destination.DashboardGraph.Profile
-                                        )
+                                        is DashboardAction.OnProfileClick ->
+                                            dashboardStack.add(Destination.DashboardGraph.Profile)
 
-                                        is DashboardAction.OnSessionClick -> Unit
-                                        is DashboardAction.OnCreateOpenHoursClick -> Unit
-                                        is DashboardAction.OnCoachClick -> Unit
-                                        is DashboardAction.OnDiscoverCoachesClick -> {
+                                        is DashboardAction.OnDiscoverCoachesClick ->
                                             dashboardStack.add(Destination.DashboardGraph.SearchCoach)
-                                        }
+
+                                        is DashboardAction.OnNotificationClick ->
+                                            dashboardStack.add(Destination.DashboardGraph.Notification)
 
                                         else -> Unit
                                     }
@@ -152,6 +152,13 @@ fun Navigator(viewModel: NavigatorViewModel) {
                             SearchScreen(
                                 onBackClick = {
                                     dashboardStack.remove(Destination.DashboardGraph.SearchCoach)
+                                }
+                            )
+                        }
+                        entry<Destination.DashboardGraph.Notification> {
+                            NotificationScreen(
+                                navigationRequest = {
+                                    dashboardStack.remove(Destination.DashboardGraph.Notification)
                                 }
                             )
                         }

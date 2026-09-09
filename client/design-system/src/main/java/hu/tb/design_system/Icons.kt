@@ -16,4 +16,5 @@ object Icons {
     val pending = R.drawable.pending
     val person_check = R.drawable.person_check
     val person_disable = R.drawable.person_disabled
+    val notifications = R.drawable.notifications
 }

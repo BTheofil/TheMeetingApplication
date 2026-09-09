@@ -11,10 +11,11 @@ dependencies {
     implementation(projects.auth.domain)
     implementation(projects.dashboard.presentation)
     implementation(projects.profile.presentation)
+    implementation(projects.search.presentation)
+    implementation(projects.notification.presentation)
     implementation(projects.datastore)
     implementation(projects.designSystem)
     implementation(projects.network)
-    implementation(projects.search.presentation)
 
     implementation(libs.koin.compose)
     api(libs.bundles.nav3)

@@ -7,6 +7,7 @@ import hu.tb.datastore.di.datastoreModule
 import hu.tb.navigator.di.navigatorModule
 import hu.tb.network.TokenProvider
 import hu.tb.network.di.networkModule
+import hu.tb.notification.presentation.di.notificationModule
 import hu.tb.presentation.di.authModule
 import hu.tb.profile.presentation.di.profileModule
 import hu.tb.search.di.searchModule
@@ -36,7 +37,8 @@ class MeetingApplication : Application() {
                 profileModule,
                 navigatorModule,
                 dashboardModule,
-                searchModule
+                searchModule,
+                notificationModule
             )
         }
     }

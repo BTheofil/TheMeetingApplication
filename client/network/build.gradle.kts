@@ -11,6 +11,7 @@ dependencies {
     api(projects.auth.domain)
     api(projects.profile.domain)
     api(projects.search.domain)
+    api(projects.notification.domain)
 
     api(libs.bundles.ktor)
 
