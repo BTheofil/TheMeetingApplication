@@ -2,6 +2,7 @@ package hu.tb.network.di
 
 import hu.tb.network.TokenProvider
 import hu.tb.network.repository.AuthRepository
+import hu.tb.network.repository.NotificationRepository
 import hu.tb.network.repository.ProfileRepository
 import hu.tb.network.repository.SearchRepository
 import io.ktor.client.HttpClient
@@ -53,4 +54,5 @@ val networkModule = module {
     singleOf(::AuthRepository)
     singleOf(::ProfileRepository)
     singleOf(::SearchRepository)
+    singleOf(::NotificationRepository)
 }
