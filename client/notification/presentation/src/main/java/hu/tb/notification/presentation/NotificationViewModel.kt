@@ -2,6 +2,7 @@ package hu.tb.notification.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import hu.tb.network.fold
 import hu.tb.network.repository.NotificationRepository
 import hu.tb.notification.domain.RequestDecision
 import hu.tb.notification.domain.RequestNotification
@@ -42,17 +43,17 @@ class NotificationViewModel(
 
         _state.update { it.copy(isLoading = true, errorMessage = null) }
         viewModelScope.launch {
-            val result = notificationRepository.getPendingRequests()
-
-            _state.update {
-                it.copy(
-                    isLoading = false,
-                    requests = result.requests,
-                    errorMessage = result.errorMessage
-                )
-            }
-
-            result.errorMessage?.let { _event.send(it) }
+            notificationRepository.getPendingRequests().fold(
+                success = { requests ->
+                    _state.update { it.copy(isLoading = false, requests = requests) }
+                },
+                fail = { failure ->
+                    _state.update {
+                        it.copy(isLoading = false, errorMessage = failure.errorMessage)
+                    }
+                    _event.send(failure.errorMessage)
+                }
+            )
         }
     }
 
@@ -66,12 +67,13 @@ class NotificationViewModel(
         }
 
         viewModelScope.launch {
-            val result = notificationRepository.resolveRequest(decision, requestId)
-
-            if (!result.isResolved) {
-                restoreRequest(request, index)
-                result.errorMessage?.let { _event.send(it) }
-            }
+            notificationRepository.resolveRequest(decision, requestId).fold(
+                success = {},
+                fail = {
+                    restoreRequest(request, index)
+                    _event.send(it.errorMessage)
+                }
+            )
         }
     }
 

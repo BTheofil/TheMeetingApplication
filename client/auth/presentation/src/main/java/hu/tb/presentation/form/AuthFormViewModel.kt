@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import hu.tb.datastore.UserDatastoreRepository
 import hu.tb.domain.AuthForm
 import hu.tb.domain.AuthMode
+import hu.tb.network.fold
 import hu.tb.network.repository.AuthRepository
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,30 +31,22 @@ class AuthFormViewModel(
 
         _state.update { it.copy(isLoading = true) }
         viewModelScope.launch {
-            val result = authRepository.authenticate(
-                mode = mode,
-                form = form
+            val event = authRepository.authenticate(mode = mode, form = form).fold(
+                success = { token ->
+                    userDatastoreRepository.updateUserData(
+                        name = form.username,
+                        password = form.password,
+                        profileType = form.type.value,
+                        token = token,
+                        tokenRefreshDate = System.currentTimeMillis()
+                    )
+                    AuthFormEvent.Success
+                },
+                fail = { AuthFormEvent.Failed(it.errorMessage) }
             )
-
-            val token = result.token
-            if (token != null) {
-                userDatastoreRepository.updateUserData(
-                    name = form.username,
-                    password = form.password,
-                    profileType = form.type.value,
-                    token = token,
-                    tokenRefreshDate = System.currentTimeMillis()
-                )
-            }
 
             _state.update { it.copy(isLoading = false) }
-
-            _event.send(
-                if (token != null) AuthFormEvent.Success
-                else AuthFormEvent.Failed(
-                    result.errorMessage ?: "Something went wrong. Please try again."
-                )
-            )
+            _event.send(event)
         }
     }
 }

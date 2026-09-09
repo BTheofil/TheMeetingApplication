@@ -7,7 +7,6 @@ android {
 }
 
 dependencies {
-    implementation(projects.profile.domain)
     implementation(projects.designSystem)
     implementation(projects.datastore)
     implementation(projects.network)

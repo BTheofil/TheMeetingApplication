@@ -2,6 +2,7 @@ package hu.tb.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import hu.tb.network.fold
 import hu.tb.network.repository.SearchRepository
 import hu.tb.search.domain.Status
 import kotlinx.coroutines.channels.Channel
@@ -35,15 +36,22 @@ class SearchViewModel(
 
         _state.update { it.copy(isLoading = true, errorMessage = null) }
         viewModelScope.launch {
-            val result = searchRepository.searchCoach(query)
-
-            _state.update {
-                it.copy(
-                    isLoading = false,
-                    searchResult = result.coaches,
-                    errorMessage = result.errorMessage
-                )
-            }
+            searchRepository.searchCoach(query).fold(
+                success = { coaches ->
+                    _state.update {
+                        it.copy(isLoading = false, searchResult = coaches)
+                    }
+                },
+                fail = { failure ->
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            searchResult = emptyList(),
+                            errorMessage = failure.errorMessage
+                        )
+                    }
+                }
+            )
         }
     }
 
@@ -51,12 +59,13 @@ class SearchViewModel(
         updateCoachStatus(coachId, Status.PENDING)
 
         viewModelScope.launch {
-            val result = searchRepository.requestCoach(coachId)
-
-            if (!result.isRequestSent) {
-                updateCoachStatus(coachId, Status.INIT)
-                result.errorMessage?.let { _event.send(it) }
-            }
+            searchRepository.requestCoach(coachId).fold(
+                success = {},
+                fail = {
+                    updateCoachStatus(coachId, Status.INIT)
+                    _event.send(it.errorMessage)
+                }
+            )
         }
     }
 

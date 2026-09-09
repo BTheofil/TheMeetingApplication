@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import hu.tb.datastore.UserDatastoreRepository
 import hu.tb.domain.ProfileType
+import hu.tb.network.fold
 import hu.tb.network.repository.ProfileRepository
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,16 +42,13 @@ class ProfileViewModel(
 
         _state.update { it.copy(isDeleting = true) }
         viewModelScope.launch {
-            val result = profileRepository.deleteProfile()
+            val event = profileRepository.deleteProfile().fold(
+                success = { ProfileEvent.Cleared },
+                fail = { ProfileEvent.Failed(it.errorMessage) }
+            )
 
             _state.update { it.copy(isDeleting = false) }
-
-            _event.send(
-                if (result.isSuccess && result.errorMessage == null) ProfileEvent.Cleared
-                else ProfileEvent.Failed(
-                    result.errorMessage ?: "Something went wrong. Please try again."
-                )
-            )
+            _event.send(event)
         }
     }
 

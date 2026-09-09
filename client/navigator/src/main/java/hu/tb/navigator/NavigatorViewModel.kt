@@ -7,6 +7,8 @@ import hu.tb.datastore.UserDatastoreRepository
 import hu.tb.domain.AuthForm
 import hu.tb.domain.AuthMode
 import hu.tb.domain.ProfileType
+import hu.tb.network.DataError
+import hu.tb.network.fold
 import hu.tb.network.repository.AuthRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -39,18 +41,21 @@ class NavigatorViewModel(
             val userData = userDatastoreRepository.userdataFlow().first()
             if (!userData.isLoggedIn) return@launch
 
-            val result = authRepository.authenticate(
+            authRepository.authenticate(
                 mode = AuthMode.LOGIN,
                 form = userData.toAuthForm()
+            ).fold(
+                success = { token ->
+                    userDatastoreRepository.updateUserData(
+                        token = token,
+                        tokenRefreshDate = System.currentTimeMillis()
+                    )
+                },
+                fail = {
+                    if (it.dataError == DataError.NO_INTERNET) isTokenRefreshed = false
+                    else _session.value = SessionState.Expired
+                }
             )
-
-            when {
-                result.token != null -> userDatastoreRepository.updateUserData(
-                    token = result.token,
-                    tokenRefreshDate = System.currentTimeMillis()
-                )
-                else -> _session.value = SessionState.Expired
-            }
         }
     }
 
