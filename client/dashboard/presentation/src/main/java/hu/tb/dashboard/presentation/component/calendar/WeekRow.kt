@@ -7,8 +7,8 @@ import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import com.skydoves.compose.stability.runtime.TraceRecomposition
-import hu.tb.dashboard.presentation.model.CalendarDay
-import hu.tb.dashboard.presentation.model.CalendarWeek
+import hu.tb.dashboard.presentation.component.calendar.model.CalendarDay
+import hu.tb.dashboard.presentation.component.calendar.model.CalendarWeek
 import hu.tb.design_system.theme.MeetingTheme
 import kotlinx.datetime.LocalDate
 

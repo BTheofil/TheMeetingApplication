@@ -3,7 +3,7 @@ package hu.tb.profile.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import hu.tb.datastore.UserDatastoreRepository
-import hu.tb.domain.ProfileType
+import hu.tb.datastore.ProfileType
 import hu.tb.network.fold
 import hu.tb.network.repository.ProfileRepository
 import kotlinx.coroutines.channels.Channel

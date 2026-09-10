@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.skydoves.compose.stability.runtime.TraceRecomposition
-import hu.tb.dashboard.presentation.model.CalendarMonth
+import hu.tb.dashboard.presentation.component.calendar.model.CalendarMonth
 import hu.tb.design_system.theme.MeetingTheme
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.YearMonth

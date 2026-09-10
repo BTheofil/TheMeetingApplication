@@ -29,7 +29,7 @@ class AuthRepository(
                     AuthSend(
                         username = form.username,
                         password = form.password,
-                        type = form.type.value
+                        type = form.type
                     )
                 )
             }

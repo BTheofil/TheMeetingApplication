@@ -1,11 +1,11 @@
 package hu.tb.dashboard.presentation
 
 import androidx.compose.runtime.Immutable
-import hu.tb.dashboard.presentation.model.CoachItem
-import hu.tb.dashboard.presentation.model.OpenSlot
-import hu.tb.dashboard.presentation.model.SessionItem
+import hu.tb.dashboard.domain.CoachItem
+import hu.tb.dashboard.domain.OpenSlot
+import hu.tb.dashboard.domain.SessionItem
 import hu.tb.dashboard.presentation.util.currentDate
-import hu.tb.domain.ProfileType
+import hu.tb.datastore.ProfileType
 import kotlinx.datetime.LocalDate
 
 @Immutable
@@ -15,7 +15,8 @@ data class DashboardState(
     val selectedDate: LocalDate = today,
     val sessions: List<SessionItem> = emptyList(),
     val openSlots: List<OpenSlot> = emptyList(),
-    val coaches: List<CoachItem> = emptyList()
+    val isMyCoachesLoading: Boolean = false,
+    val myCoaches: List<CoachItem> = emptyList()
 ) {
     fun sessionsOn(date: LocalDate): List<SessionItem> =
         sessions.filter { it.date == date }.sortedBy { it.start }
@@ -24,5 +25,5 @@ data class DashboardState(
         openSlots.filter { it.date == date }.sortedBy { it.start }
 
     fun coachNameOf(coachId: String): String? =
-        coaches.firstOrNull { it.id == coachId }?.name
+        myCoaches.firstOrNull { it.id == coachId }?.name
 }

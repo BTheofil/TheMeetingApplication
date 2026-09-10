@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import hu.tb.dashboard.presentation.component.common.AvailableRing
 import hu.tb.dashboard.presentation.component.common.BookedDot
 import hu.tb.dashboard.presentation.component.common.IndicatorSize
-import hu.tb.dashboard.presentation.model.CalendarDay
+import hu.tb.dashboard.presentation.component.calendar.model.CalendarDay
 import hu.tb.design_system.theme.MeetingTheme
 
 @Composable

@@ -36,7 +36,7 @@ class AuthFormViewModel(
                     userDatastoreRepository.updateUserData(
                         name = form.username,
                         password = form.password,
-                        profileType = form.type.value,
+                        profileType = form.type,
                         token = token,
                         tokenRefreshDate = System.currentTimeMillis()
                     )

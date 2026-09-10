@@ -1,4 +1,4 @@
-package hu.tb.dashboard.presentation.model
+package hu.tb.dashboard.domain
 
 import androidx.compose.runtime.Immutable
 
@@ -6,7 +6,6 @@ import androidx.compose.runtime.Immutable
 data class CoachItem(
     val id: String,
     val name: String,
-    val openHourCount: Int
 ) {
     val initials: String
         get() = name.split(' ')

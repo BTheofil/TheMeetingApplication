@@ -1,4 +1,4 @@
-package hu.tb.domain
+package hu.tb.datastore
 
 enum class ProfileType(val value: String) {
     COACH("coach"), NORMAL("normal");

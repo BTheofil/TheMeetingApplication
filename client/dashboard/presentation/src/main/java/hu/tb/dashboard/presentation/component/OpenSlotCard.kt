@@ -22,9 +22,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import hu.tb.dashboard.domain.OpenSlot
 import hu.tb.dashboard.presentation.component.common.AvailableRing
 import hu.tb.dashboard.presentation.component.common.DashboardCard
-import hu.tb.dashboard.presentation.model.OpenSlot
 import hu.tb.dashboard.presentation.util.currentDate
 import hu.tb.dashboard.presentation.util.formatTime
 import hu.tb.design_system.Icons
@@ -117,10 +117,10 @@ private fun TimeColumn(slot: OpenSlot) {
 }
 
 private fun previewNamedSlot(): OpenSlot =
-    OpenSlot("coach-anna", currentDate(), LocalTime(15, 0), 45)
+    OpenSlot("coach-anna", currentDate(), LocalTime(15, 0), LocalTime(16, 0),60)
 
 private fun previewAnonymousSlot(): OpenSlot =
-    OpenSlot("coach-mark", currentDate().plus(2, DateTimeUnit.DAY), LocalTime(10, 0), 60)
+    OpenSlot("coach-mark", currentDate().plus(2, DateTimeUnit.DAY), LocalTime(10, 0), LocalTime(11, 0),60)
 
 @PreviewLightDark
 @Composable

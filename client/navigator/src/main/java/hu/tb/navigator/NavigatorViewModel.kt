@@ -6,7 +6,6 @@ import hu.tb.datastore.UserData
 import hu.tb.datastore.UserDatastoreRepository
 import hu.tb.domain.AuthForm
 import hu.tb.domain.AuthMode
-import hu.tb.domain.ProfileType
 import hu.tb.network.DataError
 import hu.tb.network.fold
 import hu.tb.network.repository.AuthRepository
@@ -70,6 +69,6 @@ class NavigatorViewModel(
     private fun UserData.toAuthForm(): AuthForm = AuthForm(
         username = name,
         password = password,
-        type = ProfileType.fromValue(profileType)
+        type = profileType
     )
 }

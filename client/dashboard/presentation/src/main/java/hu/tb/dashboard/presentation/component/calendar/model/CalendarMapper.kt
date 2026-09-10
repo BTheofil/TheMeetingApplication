@@ -1,5 +1,7 @@
-package hu.tb.dashboard.presentation.model
+package hu.tb.dashboard.presentation.component.calendar.model
 
+import hu.tb.dashboard.domain.OpenSlot
+import hu.tb.dashboard.domain.SessionItem
 import hu.tb.dashboard.presentation.component.calendar.WeekDays
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate

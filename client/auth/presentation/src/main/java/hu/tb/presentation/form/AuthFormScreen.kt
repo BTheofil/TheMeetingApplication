@@ -57,7 +57,7 @@ import hu.tb.design_system.modifier.screenPadding
 import hu.tb.design_system.theme.MeetingTheme
 import hu.tb.domain.AuthForm
 import hu.tb.domain.AuthMode
-import hu.tb.domain.ProfileType
+import hu.tb.datastore.ProfileType
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
 
@@ -176,7 +176,7 @@ private fun AuthFormScreen(
                                         form = AuthForm(
                                             username = nameTFS.text.toString(),
                                             password = passwordTFS.text.toString(),
-                                            type = profileType ?: ProfileType.NORMAL
+                                            type = (profileType ?: ProfileType.NORMAL).value
                                         )
                                     )
                                 )

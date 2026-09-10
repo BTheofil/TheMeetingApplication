@@ -1,6 +1,6 @@
 package hu.tb.profile.presentation
 
-import hu.tb.domain.ProfileType
+import hu.tb.datastore.ProfileType
 
 data class ProfileState(
     val name: String = "",

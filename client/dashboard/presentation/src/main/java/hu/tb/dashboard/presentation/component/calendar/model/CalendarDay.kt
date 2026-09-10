@@ -1,4 +1,4 @@
-package hu.tb.dashboard.presentation.model
+package hu.tb.dashboard.presentation.component.calendar.model
 
 import androidx.compose.runtime.Immutable
 import kotlinx.datetime.LocalDate

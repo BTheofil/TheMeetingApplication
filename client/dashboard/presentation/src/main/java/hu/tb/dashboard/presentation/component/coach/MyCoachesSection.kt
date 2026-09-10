@@ -1,12 +1,14 @@
 package hu.tb.dashboard.presentation.component.coach
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -16,15 +18,16 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import hu.tb.dashboard.domain.CoachItem
 import hu.tb.dashboard.presentation.component.common.AvailableRing
 import hu.tb.dashboard.presentation.component.common.DashboardCard
 import hu.tb.dashboard.presentation.component.common.SectionHeader
-import hu.tb.dashboard.presentation.model.CoachItem
 import hu.tb.design_system.component.Avatar
 import hu.tb.design_system.theme.MeetingTheme
 
 @Composable
 internal fun MyCoachesSection(
+    isLoading: Boolean,
     coaches: List<CoachItem>,
     modifier: Modifier = Modifier,
     onCoachClick: (String) -> Unit
@@ -37,14 +40,30 @@ internal fun MyCoachesSection(
             modifier = Modifier.padding(horizontal = 4.dp),
             title = "My coaches"
         )
-        if (coaches.isEmpty()) {
-            EmptyCoaches()
-        } else {
-            coaches.forEach { coach ->
-                CoachRow(
-                    coach = coach,
-                    onClick = { onCoachClick(coach.id) }
-                )
+        when {
+            coaches.isEmpty() -> {
+                EmptyCoaches()
+            }
+
+            isLoading -> {
+                DashboardCard {
+                    Box(
+                        modifier = Modifier.fillMaxWidth()
+                            .padding(4.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                }
+            }
+
+            else -> {
+                coaches.forEach { coach ->
+                    CoachRow(
+                        coach = coach,
+                        onClick = { onCoachClick(coach.id) }
+                    )
+                }
             }
         }
     }
@@ -73,7 +92,7 @@ private fun CoachRow(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                OpenHours(count = coach.openHourCount)
+                //OpenHours(count = coach.openHourCount)
             }
             Button(
                 onClick = onClick,
@@ -129,7 +148,8 @@ private fun MyCoachesSectionPreview(
     MeetingTheme {
         MyCoachesSection(
             coaches = mock,
-            onCoachClick = {}
+            onCoachClick = {},
+            isLoading = true
         )
     }
 }

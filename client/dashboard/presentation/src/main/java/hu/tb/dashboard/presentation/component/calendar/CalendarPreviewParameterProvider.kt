@@ -1,7 +1,7 @@
 package hu.tb.dashboard.presentation.component.calendar
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import hu.tb.dashboard.presentation.model.CalendarDay
+import hu.tb.dashboard.presentation.component.calendar.model.CalendarDay
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.YearMonth
 

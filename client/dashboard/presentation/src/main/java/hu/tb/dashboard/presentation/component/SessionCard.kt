@@ -23,9 +23,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import hu.tb.dashboard.domain.SessionItem
 import hu.tb.dashboard.presentation.component.common.DashboardCard
 import hu.tb.dashboard.presentation.component.common.DashboardCardCornerSize
-import hu.tb.dashboard.presentation.model.SessionItem
 import hu.tb.dashboard.presentation.util.currentDate
 import hu.tb.dashboard.presentation.util.formatDayLabel
 import hu.tb.dashboard.presentation.util.formatTime
@@ -135,6 +135,7 @@ private fun SessionCardPreview() {
                     counterpartName = "Anna Kovács",
                     date = currentDate(),
                     start = LocalTime(9, 0),
+                    end = LocalTime(10, 0),
                     durationMinutes = 60,
                     isNext = true
                 ), onClick = {})
@@ -145,6 +146,7 @@ private fun SessionCardPreview() {
                     counterpartName = "Márk Szabó",
                     date = currentDate().plus(4, DateTimeUnit.DAY),
                     start = LocalTime(8, 0),
+                    end = LocalTime(9, 0),
                     durationMinutes = 60
                 ), showDate = true, onClick = {})
         }

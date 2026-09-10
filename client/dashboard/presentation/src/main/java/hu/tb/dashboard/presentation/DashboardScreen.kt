@@ -25,6 +25,9 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.skydoves.compose.stability.runtime.TraceRecomposition
+import hu.tb.dashboard.domain.CoachItem
+import hu.tb.dashboard.domain.OpenSlot
+import hu.tb.dashboard.domain.SessionItem
 import hu.tb.dashboard.presentation.component.OpenSlotCard
 import hu.tb.dashboard.presentation.component.SessionCard
 import hu.tb.dashboard.presentation.component.calendar.CollapsibleCalendar
@@ -34,16 +37,13 @@ import hu.tb.dashboard.presentation.component.coach.DiscoverCoachesCard
 import hu.tb.dashboard.presentation.component.coach.MyCoachesSection
 import hu.tb.dashboard.presentation.component.common.DashboardCard
 import hu.tb.dashboard.presentation.component.common.SectionHeader
-import hu.tb.dashboard.presentation.model.CoachItem
-import hu.tb.dashboard.presentation.model.OpenSlot
-import hu.tb.dashboard.presentation.model.SessionItem
 import hu.tb.dashboard.presentation.util.currentDate
 import hu.tb.dashboard.presentation.util.formatSectionLabel
+import hu.tb.datastore.ProfileType
 import hu.tb.design_system.Icons
 import hu.tb.design_system.modifier.authGlowBackground
 import hu.tb.design_system.modifier.screenPadding
 import hu.tb.design_system.theme.MeetingTheme
-import hu.tb.domain.ProfileType
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.plus
@@ -151,7 +151,8 @@ private fun RoleSection(
 
         ProfileType.NORMAL -> Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
             MyCoachesSection(
-                coaches = state.coaches,
+                isLoading = state.isMyCoachesLoading,
+                coaches = state.myCoaches,
                 onCoachClick = { action(DashboardAction.OnCoachClick(it)) }
             )
             DiscoverCoachesCard(
@@ -223,9 +224,9 @@ private fun SelectedDayOpenHours(
 }
 
 private val previewCoaches = listOf(
-    CoachItem(id = "coach-anna", name = "Anna Kovács", openHourCount = 3),
-    CoachItem(id = "coach-mark", name = "Márk Szabó", openHourCount = 4),
-    CoachItem(id = "coach-julia", name = "Júlia Papp", openHourCount = 0)
+    CoachItem(id = "coach-anna", name = "Anna Kovács"),
+    CoachItem(id = "coach-mark", name = "Márk Szabó"),
+    CoachItem(id = "coach-julia", name = "Júlia Papp")
 )
 
 private fun previewState(
@@ -240,6 +241,7 @@ private fun previewState(
             counterpartName = "Anna Kovács",
             date = today,
             start = LocalTime(9, 0),
+            end = LocalTime(10, 0),
             durationMinutes = 60,
             isNext = true
         ),
@@ -249,7 +251,8 @@ private fun previewState(
             counterpartName = "Júlia Papp",
             date = today,
             start = LocalTime(17, 30),
-            durationMinutes = 45
+            end = LocalTime(18, 0),
+            durationMinutes = 30
         ),
         SessionItem(
             id = "s3",
@@ -257,12 +260,19 @@ private fun previewState(
             counterpartName = "Márk Szabó",
             date = today.plus(1, DateTimeUnit.DAY),
             start = LocalTime(18, 30),
-            durationMinutes = 45
+            end = LocalTime(19, 0),
+            durationMinutes = 30
         )
     )
     val slots = listOf(
-        OpenSlot("coach-anna", today, LocalTime(15, 0), 45),
-        OpenSlot("coach-mark", today.plus(2, DateTimeUnit.DAY), LocalTime(10, 0), 60)
+        OpenSlot("coach-anna", today, LocalTime(15, 0), LocalTime(16, 0), 60),
+        OpenSlot(
+            "coach-mark",
+            today.plus(2, DateTimeUnit.DAY),
+            LocalTime(10, 0),
+            LocalTime(11, 0),
+            60
+        )
     )
 
     return DashboardState(
@@ -271,7 +281,7 @@ private fun previewState(
         selectedDate = today,
         sessions = sessions,
         openSlots = slots,
-        coaches = coaches
+        myCoaches = coaches
     )
 }
 
