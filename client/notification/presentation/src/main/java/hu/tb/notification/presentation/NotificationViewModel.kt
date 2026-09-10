@@ -49,9 +49,9 @@ class NotificationViewModel(
                 },
                 fail = { failure ->
                     _state.update {
-                        it.copy(isLoading = false, errorMessage = failure.errorMessage)
+                        it.copy(isLoading = false, errorMessage = failure.formatErrorMessage)
                     }
-                    _event.send(failure.errorMessage)
+                    _event.send(failure.formatErrorMessage)
                 }
             )
         }
@@ -71,7 +71,7 @@ class NotificationViewModel(
                 success = {},
                 fail = {
                     restoreRequest(request, index)
-                    _event.send(it.errorMessage)
+                    _event.send(it.formatErrorMessage)
                 }
             )
         }

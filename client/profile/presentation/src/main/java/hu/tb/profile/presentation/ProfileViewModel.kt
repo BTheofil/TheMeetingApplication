@@ -44,7 +44,7 @@ class ProfileViewModel(
         viewModelScope.launch {
             val event = profileRepository.deleteProfile().fold(
                 success = { ProfileEvent.Cleared },
-                fail = { ProfileEvent.Failed(it.errorMessage) }
+                fail = { ProfileEvent.Failed(it.formatErrorMessage) }
             )
 
             _state.update { it.copy(isDeleting = false) }

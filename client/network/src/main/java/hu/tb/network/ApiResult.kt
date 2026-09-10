@@ -6,7 +6,7 @@ sealed interface ApiResult<out T> {
         val dataError: DataError,
         val serverMessage: String? = null
     ) : ApiResult<Nothing> {
-        val errorMessage: String get() = serverMessage ?: dataError.asText()
+        val formatErrorMessage: String get() = serverMessage ?: dataError.asText()
     }
 }
 

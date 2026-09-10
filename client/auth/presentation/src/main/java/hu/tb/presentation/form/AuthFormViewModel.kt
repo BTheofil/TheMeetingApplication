@@ -42,7 +42,7 @@ class AuthFormViewModel(
                     )
                     AuthFormEvent.Success
                 },
-                fail = { AuthFormEvent.Failed(it.errorMessage) }
+                fail = { AuthFormEvent.Failed(it.formatErrorMessage) }
             )
 
             _state.update { it.copy(isLoading = false) }

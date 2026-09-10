@@ -47,7 +47,7 @@ class SearchViewModel(
                         it.copy(
                             isLoading = false,
                             searchResult = emptyList(),
-                            errorMessage = failure.errorMessage
+                            errorMessage = failure.formatErrorMessage
                         )
                     }
                 }
@@ -64,7 +64,7 @@ class SearchViewModel(
                 success = {},
                 fail = {
                     updateCoachStatus(coachId, Status.INIT)
-                    _event.send(it.errorMessage)
+                    _event.send(it.formatErrorMessage)
                 }
             )
         }
