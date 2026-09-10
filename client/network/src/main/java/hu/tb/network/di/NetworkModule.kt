@@ -2,6 +2,7 @@ package hu.tb.network.di
 
 import hu.tb.network.TokenProvider
 import hu.tb.network.repository.AuthRepository
+import hu.tb.network.repository.DashboardRepository
 import hu.tb.network.repository.NotificationRepository
 import hu.tb.network.repository.ProfileRepository
 import hu.tb.network.repository.SearchRepository
@@ -56,4 +57,5 @@ val networkModule = module {
     singleOf(::ProfileRepository)
     singleOf(::SearchRepository)
     singleOf(::NotificationRepository)
+    singleOf(::DashboardRepository)
 }
