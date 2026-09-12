@@ -9,6 +9,7 @@ import hu.tb.network.FidProvider
 import hu.tb.network.TokenProvider
 import hu.tb.network.di.networkModule
 import hu.tb.notification.data.DeviceFidProvider
+import hu.tb.notification.data.FcmRegistration
 import hu.tb.notification.presentation.di.notificationModule
 import hu.tb.presentation.di.authModule
 import hu.tb.profile.presentation.di.profileModule
@@ -44,5 +45,7 @@ class MeetingApplication : Application() {
                 notificationModule
             )
         }
+
+        FcmRegistration.ensure()
     }
 }

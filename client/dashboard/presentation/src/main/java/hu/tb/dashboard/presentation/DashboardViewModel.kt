@@ -8,6 +8,7 @@ import hu.tb.network.fold
 import hu.tb.network.repository.DashboardRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
@@ -22,14 +23,11 @@ class DashboardViewModel(
 
     init {
         viewModelScope.launch {
-            userDatastoreRepository.userdataFlow().collect { userData ->
-                _state.update {
-                    it.copy(profileType = ProfileType.fromValue(userData.profileType))
-                }
+            val userData = userDatastoreRepository.userdataFlow().first()
+            _state.update {
+                it.copy(profileType = ProfileType.fromValue(userData.profileType))
             }
-        }
-        if (state.value.profileType == ProfileType.COACH) {
-            viewModelScope.launch {
+            if (ProfileType.fromValue(userData.profileType) == ProfileType.NORMAL) {
                 _state.update { it.copy(isMyCoachesLoading = true) }
                 dashboardRepository.getCoaches().fold(
                     success = { coaches ->
@@ -46,6 +44,7 @@ class DashboardViewModel(
                 )
             }
         }
+
     }
 
     fun onDateSelected(date: LocalDate) {

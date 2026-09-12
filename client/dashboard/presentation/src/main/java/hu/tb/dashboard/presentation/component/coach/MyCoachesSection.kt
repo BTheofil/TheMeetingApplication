@@ -28,7 +28,7 @@ import hu.tb.design_system.theme.MeetingTheme
 @Composable
 internal fun MyCoachesSection(
     isLoading: Boolean,
-    coaches: List<CoachItem>,
+    coaches: List<CoachItem>?,
     modifier: Modifier = Modifier,
     onCoachClick: (String) -> Unit
 ) {
@@ -41,20 +41,21 @@ internal fun MyCoachesSection(
             title = "My coaches"
         )
         when {
-            coaches.isEmpty() -> {
-                EmptyCoaches()
-            }
-
-            isLoading -> {
+            isLoading || coaches == null -> {
                 DashboardCard {
                     Box(
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
                             .padding(4.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         CircularProgressIndicator()
                     }
                 }
+            }
+
+            coaches.isEmpty() -> {
+                EmptyCoaches()
             }
 
             else -> {

@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:name=".MeetingApplication"
@@ -16,8 +16,8 @@
         android:theme="@style/Theme.Meeting.Splash">
         <activity
             android:name=".MainActivity"
-            android:launchMode="singleTop"
             android:exported="true"
+            android:launchMode="singleTop"
             android:theme="@style/Theme.Meeting.Splash"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
@@ -26,6 +26,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <!--
+            Opts the app into FCM's installation-id registration. Without it the device only
+            registers the legacy way, its fid is not a valid send target, and every push the
+            server addresses by fid comes back as UNREGISTERED. Enabling it also disables
+            FirebaseMessaging.getToken() in favour of register().
+        -->
+        <meta-data
+            android:name="firebase_messaging_installation_id_enabled"
+            android:value="true" />
+
         <service
             android:name="hu.tb.notification.data.NotificationService"
             android:exported="false">

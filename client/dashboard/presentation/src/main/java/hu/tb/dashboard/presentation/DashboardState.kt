@@ -15,8 +15,8 @@ data class DashboardState(
     val selectedDate: LocalDate = today,
     val sessions: List<SessionItem> = emptyList(),
     val openSlots: List<OpenSlot> = emptyList(),
-    val isMyCoachesLoading: Boolean = false,
-    val myCoaches: List<CoachItem> = emptyList()
+    val isMyCoachesLoading: Boolean = true,
+    val myCoaches: List<CoachItem>? = null
 ) {
     fun sessionsOn(date: LocalDate): List<SessionItem> =
         sessions.filter { it.date == date }.sortedBy { it.start }
@@ -25,5 +25,5 @@ data class DashboardState(
         openSlots.filter { it.date == date }.sortedBy { it.start }
 
     fun coachNameOf(coachId: String): String? =
-        myCoaches.firstOrNull { it.id == coachId }?.name
+        myCoaches?.firstOrNull { it.id == coachId }?.name
 }

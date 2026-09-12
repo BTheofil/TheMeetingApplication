@@ -22,8 +22,10 @@ class NotificationService : FirebaseMessagingService() {
     private val authRepository: AuthRepository by inject()
     private val tokenProvider: TokenProvider by inject()
 
-    override fun onNewToken(token: String) {
-        super.onNewToken(token)
+    // replaces onNewToken: with installation-id registration enabled the SDK reports the
+    // registered fid here instead of handing out a legacy token
+    override fun onRegistered(fid: String) {
+        super.onRegistered(fid)
 
         CoroutineScope(SupervisorJob() + Dispatchers.IO).launch {
             if (tokenProvider.getTokenOrNull() == null) return@launch
