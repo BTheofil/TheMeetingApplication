@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "hu.tb"
-version = "1.3.0"
+version = "1.3.1"
 
 kotlin {
     jvmToolchain(libs.versions.java.get().toInt())
