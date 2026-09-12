@@ -40,6 +40,7 @@ class AuthFormViewModel(
                         token = token,
                         tokenRefreshDate = System.currentTimeMillis()
                     )
+                    authRepository.registerDeviceFid()
                     AuthFormEvent.Success
                 },
                 fail = { AuthFormEvent.Failed(it.formatErrorMessage) }

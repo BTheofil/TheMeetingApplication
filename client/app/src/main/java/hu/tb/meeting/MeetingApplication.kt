@@ -5,8 +5,10 @@ import hu.tb.dashboard.presentation.di.dashboardModule
 import hu.tb.datastore.UserDatastoreRepository
 import hu.tb.datastore.di.datastoreModule
 import hu.tb.navigator.di.navigatorModule
+import hu.tb.network.FidProvider
 import hu.tb.network.TokenProvider
 import hu.tb.network.di.networkModule
+import hu.tb.notification.data.DeviceFidProvider
 import hu.tb.notification.presentation.di.notificationModule
 import hu.tb.presentation.di.authModule
 import hu.tb.profile.presentation.di.profileModule
@@ -30,6 +32,7 @@ class MeetingApplication : Application() {
                         val datastore = get<UserDatastoreRepository>()
                         TokenProvider { datastore.userdataFlow().first().token.ifBlank { null } }
                     }
+                    single<FidProvider> { DeviceFidProvider() }
                 },
                 networkModule,
                 datastoreModule,

@@ -148,7 +148,7 @@ private fun ProfileScreen(
                     onClick = { action(ProfileAction.OnLogoutClick) },
                 ) {
                     Text(
-                        text = "Switch profile",
+                        text = "Log out",
                         style = MaterialTheme.typography.labelLarge
                     )
                 }

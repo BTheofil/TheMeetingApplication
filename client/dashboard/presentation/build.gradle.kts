@@ -12,6 +12,7 @@ dependencies {
     implementation(projects.datastore)
     implementation(projects.network)
 
+    implementation(libs.androidx.activity.compose)
     implementation(libs.kotlinx.datetime)
     implementation(libs.bundles.koin)
 }

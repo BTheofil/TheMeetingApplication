@@ -1,5 +1,10 @@
 package hu.tb.dashboard.presentation
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,9 +22,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
@@ -56,6 +63,8 @@ fun DashboardScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
+    RequestNotificationPermission(state.profileType)
+
     DashboardScreen(
         state = state,
         action = { dashboardAction ->
@@ -65,6 +74,25 @@ fun DashboardScreen(
             }
         }
     )
+}
+
+@Composable
+private fun RequestNotificationPermission(profileType: ProfileType?) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return
+    if (profileType != ProfileType.COACH) return
+
+    val context = LocalContext.current
+    val launcher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { /* denied */ }
+
+    LaunchedEffect(Unit) {
+        val isGranted =
+            context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) ==
+                    PackageManager.PERMISSION_GRANTED
+
+        if (!isGranted) launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

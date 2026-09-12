@@ -49,6 +49,7 @@ class NavigatorViewModel(
                         token = token,
                         tokenRefreshDate = System.currentTimeMillis()
                     )
+                    authRepository.registerDeviceFid()
                 },
                 fail = {
                     if (it.dataError == DataError.NO_INTERNET) isTokenRefreshed = false
@@ -60,7 +61,6 @@ class NavigatorViewModel(
 
     fun clearUserData() {
         viewModelScope.launch {
-            userDatastoreRepository.clearUserData()
             isTokenRefreshed = false
             _session.value = SessionState.NoUserSavedData
         }

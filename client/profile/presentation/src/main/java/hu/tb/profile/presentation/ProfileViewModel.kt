@@ -42,8 +42,12 @@ class ProfileViewModel(
 
         _state.update { it.copy(isDeleting = true) }
         viewModelScope.launch {
+            profileRepository.unregisterDeviceFid()
             val event = profileRepository.deleteProfile().fold(
-                success = { ProfileEvent.Cleared },
+                success = {
+                    userDatastoreRepository.clearUserData()
+                    ProfileEvent.Cleared
+                },
                 fail = { ProfileEvent.Failed(it.formatErrorMessage) }
             )
 
@@ -54,6 +58,8 @@ class ProfileViewModel(
 
     fun logout() {
         viewModelScope.launch {
+            profileRepository.unregisterDeviceFid()
+            userDatastoreRepository.clearUserData()
             _event.send(ProfileEvent.Cleared)
         }
     }

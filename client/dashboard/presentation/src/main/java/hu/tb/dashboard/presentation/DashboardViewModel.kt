@@ -28,21 +28,23 @@ class DashboardViewModel(
                 }
             }
         }
-        viewModelScope.launch {
-            _state.update { it.copy(isMyCoachesLoading = true) }
-            dashboardRepository.getCoaches().fold(
-                success = { coaches ->
-                    _state.update {
-                        it.copy(
-                            myCoaches = coaches,
-                            isMyCoachesLoading = false
-                        )
+        if (state.value.profileType == ProfileType.COACH) {
+            viewModelScope.launch {
+                _state.update { it.copy(isMyCoachesLoading = true) }
+                dashboardRepository.getCoaches().fold(
+                    success = { coaches ->
+                        _state.update {
+                            it.copy(
+                                myCoaches = coaches,
+                                isMyCoachesLoading = false
+                            )
+                        }
+                    },
+                    fail = {
+                        _state.update { it.copy(isMyCoachesLoading = false) }
                     }
-                },
-                fail = {
-                    _state.update { it.copy(isMyCoachesLoading = false) }
-                }
-            )
+                )
+            }
         }
     }
 

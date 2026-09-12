@@ -1,5 +1,5 @@
 package hu.tb.network
 
 fun interface TokenProvider {
-    suspend fun token(): String?
+    suspend fun getTokenOrNull(): String?
 }

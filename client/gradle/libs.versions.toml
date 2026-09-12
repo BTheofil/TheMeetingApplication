@@ -3,10 +3,10 @@ agp = "9.4.0"
 androidTools = "32.4.0"
 activityCompose = "1.13.0"
 koin = "4.2.2"
-kotlin = "2.4.10"
-composeBom = "2026.08.00"
+kotlin = "2.4.20"
+composeBom = "2026.09.00"
 composeAnalyzer = "0.13.0"
-composeRuntime = "1.12.0"
+composeRuntime = "1.12.1"
 nav3Core = "1.1.7"
 lifecycleViewmodelNav3 = "2.11.0"
 ktor = "3.5.2"
@@ -14,6 +14,9 @@ kotlinxSerialization = "1.11.0"
 kotlinxDatetime = "0.8.0"
 datastoreVersion = "1.2.1"
 coreSplashscreen = "1.2.0"
+androidxCore = "1.19.0"
+firebase = "34.19.0"
+googleServices = "4.5.0"
 
 #Project settings
 minSdk = "26"
@@ -32,10 +35,15 @@ androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", vers
 androidx-lifecycle-viewmodel-navigation3 = { module = "androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "lifecycleViewmodelNav3" }
 koin = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
 koin-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koin" }
-koin-navigation = { module = "io.insert-koin:koin-compose-navigation3", version.ref = "koin" }
 datastore = { group = "androidx.datastore", name = "datastore", version.ref = "datastoreVersion" }
 androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "coreSplashscreen" }
+androidx-core = { group = "androidx.core", name = "core", version.ref = "androidxCore" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
+
+#Firebase
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase" }
+firebase-message = { module = "com.google.firebase:firebase-messaging" }
+firebase-installations = { module = "com.google.firebase:firebase-installations" }
 
 # Network
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
@@ -58,6 +66,7 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 android-library = { id = "com.android.library", version.ref = "agp" }
 jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 stability-analyzer = { id = "com.github.skydoves.compose.stability.analyzer", version.ref = "composeAnalyzer" }
+google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
 
 meet-android-application = { id = "meet.android.application" }
 meet-android-application-compose = { id = "meet.android.application.compose" }

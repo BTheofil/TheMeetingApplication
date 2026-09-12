@@ -1,0 +1,8 @@
+package hu.tb.data.notification
+
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class DeviceFidSend(
+    private val fid: String
+)

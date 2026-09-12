@@ -51,7 +51,11 @@ sealed interface Destination : NavKey {
 }
 
 @Composable
-fun Navigator(viewModel: NavigatorViewModel) {
+fun Navigator(
+    viewModel: NavigatorViewModel,
+    openNotifications: Boolean,
+    onOpenNotificationsHandled: () -> Unit,
+) {
     val sessionState by viewModel.session.collectAsStateWithLifecycle()
 
     if (sessionState is SessionState.Init) return
@@ -67,8 +71,23 @@ fun Navigator(viewModel: NavigatorViewModel) {
     val dashboardStack =
         remember { mutableStateListOf<Destination.DashboardGraph>(Destination.DashboardGraph.Dashboard) }
 
+    LaunchedEffect(openNotifications) {
+        if (!openNotifications) return@LaunchedEffect
+
+        if (graphStack.last() == Destination.DashboardRoot &&
+            dashboardStack.last() != Destination.DashboardGraph.Notification
+        ) {
+            dashboardStack.add(Destination.DashboardGraph.Notification)
+        }
+        onOpenNotificationsHandled()
+    }
+
     NavDisplay(
         backStack = graphStack,
+        entryDecorators = listOf(
+            rememberSaveableStateHolderNavEntryDecorator(),
+            rememberViewModelStoreNavEntryDecorator()
+        ),
         entryProvider = entryProvider {
             entry<Destination.AuthRoot> {
                 NavDisplay(

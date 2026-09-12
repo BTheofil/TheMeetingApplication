@@ -39,7 +39,7 @@ val networkModule = module {
                 bearer {
                     cacheTokens = false
                     loadTokens {
-                        tokenProvider.token()?.let { BearerTokens(it, null) }
+                        tokenProvider.getTokenOrNull()?.let { BearerTokens(it, null) }
                     }
                 }
             }

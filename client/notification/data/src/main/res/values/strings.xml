@@ -1,0 +1,5 @@
+<resources>
+    <string name="notification_channel_requests">Coach requests</string>
+    <string name="notification_coach_request_title">New coach request</string>
+    <string name="notification_coach_request_text">%1$s would like to train with you.</string>
+</resources>

@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.meet.android.application)
     alias(libs.plugins.meet.android.application.compose)
+    alias(libs.plugins.google.services)
 }
 
 android {
@@ -31,6 +32,7 @@ dependencies {
     implementation(projects.dashboard.presentation)
     implementation(projects.search.presentation)
     implementation(projects.notification.presentation)
+    implementation(projects.notification.data)
 
     implementation(libs.koin)
     implementation(libs.androidx.activity.compose)
