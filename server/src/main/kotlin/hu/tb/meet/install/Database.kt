@@ -2,6 +2,7 @@ package hu.tb.meet.install
 
 import hu.tb.meet.data.model.CoachTable
 import hu.tb.meet.data.model.NormalTable
+import hu.tb.meet.data.model.DeviceFidTable
 import hu.tb.meet.data.model.SubscriptionTable
 import io.ktor.server.application.Application
 import org.jetbrains.exposed.v1.jdbc.Database
@@ -24,6 +25,6 @@ fun Application.configureDatabase() {
     )
 
     transaction {
-        SchemaUtils.create(CoachTable, NormalTable, SubscriptionTable)
+        SchemaUtils.create(CoachTable, NormalTable, SubscriptionTable, DeviceFidTable)
     }
 }

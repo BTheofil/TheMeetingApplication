@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "hu.tb"
-version = "1.2.1"
+version = "1.3.0"
 
 kotlin {
     jvmToolchain(libs.versions.java.get().toInt())
@@ -46,6 +46,9 @@ dependencies {
     implementation(libs.bundles.exposed)
     implementation(libs.sqlite)
     implementation(libs.bcrypt)
+
+    implementation(platform(libs.netty.bom))
+    implementation(libs.firebase.admin)
 
     testImplementation(ktorLibs.server.testHost)
     testImplementation(ktorLibs.client.contentNegotiation)

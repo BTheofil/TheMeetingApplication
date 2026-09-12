@@ -4,7 +4,8 @@ import hu.tb.meet.route.auth
 import hu.tb.meet.route.profile
 import hu.tb.meet.route.search
 import hu.tb.meet.route.status
-import hu.tb.meet.route.subscription
+import hu.tb.meet.route.deviceRegistration
+import hu.tb.meet.route.request
 import hu.tb.meet.route.swagger
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
@@ -16,6 +17,7 @@ fun Application.setupRoute() {
         auth()
         profile()
         search()
-        subscription()
+        request()
+        deviceRegistration()
     }
 }

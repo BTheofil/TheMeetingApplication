@@ -1,11 +1,10 @@
 package hu.tb.meet.install
 
 import hu.tb.meet.di.appModule
-import hu.tb.meet.di.tokenModule
-import hu.tb.meet.domain.JwtConfig
-import io.ktor.server.application.Application
-import io.ktor.server.application.install
-import io.ktor.server.application.log
+import hu.tb.meet.di.notificationModule
+import hu.tb.meet.security.JwtService
+import io.ktor.server.application.*
+import org.koin.dsl.module
 import org.koin.ktor.plugin.Koin
 import org.koin.logger.slf4jLogger
 
@@ -23,7 +22,8 @@ fun Application.configureKoin() {
     install(Koin) {
         slf4jLogger()
         modules(
-            tokenModule(config = JwtConfig(issuer = configIssuer, audience = configAudience, secret = configSecret)),
+            module { single { JwtService(issuer = configIssuer, audience = configAudience, secret = configSecret) } },
+            notificationModule(),
             appModule
         )
     }

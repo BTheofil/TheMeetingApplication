@@ -3,7 +3,8 @@ package hu.tb.meet.data.repository
 import hu.tb.meet.data.model.CoachTable
 import hu.tb.meet.data.model.NormalTable
 import hu.tb.meet.data.model.SubscriptionTable
-import hu.tb.meet.data.model.table
+import hu.tb.meet.data.repository.helper.accountId
+import hu.tb.meet.domain.RequestOutcome
 import hu.tb.meet.domain.receive.AccountType
 import hu.tb.meet.domain.send.CoachResult
 import hu.tb.meet.domain.send.SubscriberResult
@@ -16,9 +17,9 @@ import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.jetbrains.exposed.v1.jdbc.update
 import org.jetbrains.exposed.v1.jdbc.upsert
 
-class SubscriptionRepository {
+class RequestRepository {
 
-    fun request(normalUsername: String, coachId: Int): SubscriptionStatus? = transaction {
+    fun request(normalUsername: String, coachId: Int): RequestOutcome? = transaction {
         val normalId = accountId(AccountType.NORMAL, normalUsername) ?: return@transaction null
 
         val coachExists = !CoachTable
@@ -26,6 +27,8 @@ class SubscriptionRepository {
             .where { CoachTable.id eq coachId }
             .empty()
         if (!coachExists) return@transaction null
+
+        val previousStatus = statusOf(coachId, normalId) ?: SubscriptionStatus.INIT
 
         SubscriptionTable.upsert(
             SubscriptionTable.coachId, SubscriptionTable.normalId,
@@ -36,10 +39,11 @@ class SubscriptionRepository {
             it[status] = SubscriptionStatus.PENDING
         }
 
-        SubscriptionTable
-            .select(SubscriptionTable.status)
-            .where { (SubscriptionTable.coachId eq coachId) and (SubscriptionTable.normalId eq normalId) }
-            .single()[SubscriptionTable.status]
+        RequestOutcome(
+            normalId = normalId,
+            previousStatus = previousStatus,
+            currentStatus = statusOf(coachId, normalId) ?: SubscriptionStatus.INIT
+        )
     }
 
     fun pendingRequests(coachUsername: String): List<SubscriberResult> = transaction {
@@ -99,12 +103,10 @@ class SubscriptionRepository {
         }) { it[status] = newStatus } > 0
     }
 
-    private fun accountId(type: AccountType, username: String): Int? {
-        val accountTable = type.table()
-        return accountTable
-            .select(accountTable.id)
-            .where { accountTable.username eq username }
+    private fun statusOf(coachId: Int, normalId: Int): SubscriptionStatus? =
+        SubscriptionTable
+            .select(SubscriptionTable.status)
+            .where { (SubscriptionTable.coachId eq coachId) and (SubscriptionTable.normalId eq normalId) }
             .singleOrNull()
-            ?.get(accountTable.id)
-    }
+            ?.get(SubscriptionTable.status)
 }

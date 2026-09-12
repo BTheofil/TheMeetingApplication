@@ -3,10 +3,12 @@ package hu.tb.meet.route
 import at.favre.lib.crypto.bcrypt.BCrypt
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
+import hu.tb.meet.testJwtAudience
 import hu.tb.meet.data.repository.AuthRepository
 import hu.tb.meet.domain.receive.AccountType
 import hu.tb.meet.domain.send.AuthResponse
-import hu.tb.meet.testJwtConfig
+import hu.tb.meet.testJwtIssuer
+import hu.tb.meet.testJwtSecret
 import hu.tb.meet.withTestApp
 import io.ktor.client.call.*
 import java.time.Instant
@@ -30,10 +32,9 @@ class TokenAndStorageTest {
         client.register("anna", "secret123", AccountType.NORMAL)
         val token = client.login("anna", "secret123", AccountType.NORMAL).body<AuthResponse>().token
 
-        val jwt = testJwtConfig()
-        val verifier = JWT.require(Algorithm.HMAC256(jwt.secret))
-            .withIssuer(jwt.issuer)
-            .withAudience(jwt.audience)
+        val verifier = JWT.require(Algorithm.HMAC256(testJwtSecret))
+            .withIssuer(testJwtIssuer)
+            .withAudience(testJwtAudience)
             .build()
 
         // throws if signature, issuer, audience or expiry do not match

@@ -1,6 +1,5 @@
 package hu.tb.meet
 
-import hu.tb.meet.domain.JwtConfig
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.serialization.kotlinx.json.json
@@ -11,11 +10,9 @@ import java.io.File
 
 val testConfig = ApplicationConfig("application-test.conf")
 
-fun testJwtConfig() = JwtConfig(
-    issuer = testConfig.property("jwt.issuer").getString(),
-    audience = testConfig.property("jwt.audience").getString(),
-    secret = testConfig.propertyOrNull("jwt.secret.meeting")?.getString() ?: "debug_build",
-)
+val testJwtIssuer = testConfig.property("jwt.issuer").getString()
+val testJwtAudience = testConfig.property("jwt.audience").getString()
+val testJwtSecret = testConfig.propertyOrNull("jwt.secret.meeting")?.getString() ?: "debug_build"
 
 fun withTestApp(block: suspend ApplicationTestBuilder.(client: HttpClient) -> Unit) = testApplication {
     resetTestDatabase()

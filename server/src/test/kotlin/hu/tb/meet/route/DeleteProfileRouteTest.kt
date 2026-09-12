@@ -23,7 +23,7 @@ private suspend fun HttpClient.tokenFor(
     return login(username, password, type).body<AuthResponse>().token
 }
 
-private suspend fun HttpClient.deleteProfile(token: String?): HttpResponse = delete("/profile") {
+suspend fun HttpClient.deleteProfile(token: String?): HttpResponse = delete("/profile") {
     if (token != null) header(HttpHeaders.Authorization, "Bearer $token")
 }
 

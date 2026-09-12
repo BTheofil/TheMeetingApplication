@@ -58,7 +58,7 @@ private suspend fun HttpClient.pair(): Triple<String, String, Int> {
     return Triple(coach, normal, coaches(normal, "kovacs").single().coachId.toInt())
 }
 
-class SubscriptionRouteTest {
+class RequestRouteTest {
 
     @Test
     fun `a request lands in the coach inbox and shows as pending`() = withTestApp { client ->

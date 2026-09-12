@@ -8,7 +8,7 @@ import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 
 class ProfileRepository {
 
-    fun deleteProfile(type: AccountType, username: String) = transaction {
+    fun deleteProfile(type: AccountType, username: String): Int = transaction {
         val accountTable = type.table()
         accountTable.deleteWhere {
             accountTable.username eq username
