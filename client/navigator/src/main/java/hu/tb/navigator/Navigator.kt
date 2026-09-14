@@ -26,6 +26,7 @@ import hu.tb.notification.presentation.NotificationScreen
 import hu.tb.presentation.form.AuthFormScreen
 import hu.tb.presentation.welcome.WelcomeScreen
 import hu.tb.profile.presentation.ProfileScreen
+import hu.tb.schedule.presentation.ScheduleScreen
 import hu.tb.search.SearchScreen
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -47,6 +48,7 @@ sealed interface Destination : NavKey {
         data object Profile : DashboardGraph
         data object SearchCoach : DashboardGraph
         data object Notification : DashboardGraph
+        data object Schedule : DashboardGraph
     }
 }
 
@@ -146,6 +148,9 @@ fun Navigator(
                                         is DashboardAction.OnNotificationClick ->
                                             dashboardStack.add(Destination.DashboardGraph.Notification)
 
+                                        is DashboardAction.OnCreateOpenHoursClick ->
+                                            dashboardStack.add(Destination.DashboardGraph.Schedule)
+
                                         else -> Unit
                                     }
                                 },
@@ -178,6 +183,13 @@ fun Navigator(
                             NotificationScreen(
                                 navigationRequest = {
                                     dashboardStack.remove(Destination.DashboardGraph.Notification)
+                                }
+                            )
+                        }
+                        entry<Destination.DashboardGraph.Schedule> {
+                            ScheduleScreen(
+                                navigationRequest = {
+                                    dashboardStack.remove(Destination.DashboardGraph.Schedule)
                                 }
                             )
                         }

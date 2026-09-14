@@ -48,7 +48,7 @@ import hu.tb.dashboard.presentation.util.currentDate
 import hu.tb.dashboard.presentation.util.formatSectionLabel
 import hu.tb.datastore.ProfileType
 import hu.tb.design_system.Icons
-import hu.tb.design_system.modifier.authGlowBackground
+import hu.tb.design_system.modifier.glowBackground
 import hu.tb.design_system.modifier.screenPadding
 import hu.tb.design_system.theme.MeetingTheme
 import kotlinx.datetime.DateTimeUnit
@@ -105,7 +105,7 @@ private fun DashboardScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .authGlowBackground()
+            .glowBackground()
     ) {
         Scaffold(
             containerColor = Color.Transparent,

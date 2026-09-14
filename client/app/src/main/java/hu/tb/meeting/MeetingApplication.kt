@@ -13,6 +13,7 @@ import hu.tb.notification.data.FcmRegistration
 import hu.tb.notification.presentation.di.notificationModule
 import hu.tb.presentation.di.authModule
 import hu.tb.profile.presentation.di.profileModule
+import hu.tb.schedule.presentation.di.scheduleModule
 import hu.tb.search.di.searchModule
 import kotlinx.coroutines.flow.first
 import org.koin.android.ext.koin.androidContext
@@ -42,7 +43,8 @@ class MeetingApplication : Application() {
                 navigatorModule,
                 dashboardModule,
                 searchModule,
-                notificationModule
+                notificationModule,
+                scheduleModule,
             )
         }
 

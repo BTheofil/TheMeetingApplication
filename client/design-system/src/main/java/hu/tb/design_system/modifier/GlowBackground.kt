@@ -14,7 +14,7 @@ import androidx.compose.ui.graphics.Shader
 import androidx.compose.ui.graphics.ShaderBrush
 
 @Composable
-fun Modifier.authGlowBackground(): Modifier =
+fun Modifier.glowBackground(): Modifier =
     this
         .background(MaterialTheme.colorScheme.surface)
         .background(

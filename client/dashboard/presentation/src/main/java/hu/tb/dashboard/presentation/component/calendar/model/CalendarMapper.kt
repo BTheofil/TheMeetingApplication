@@ -2,66 +2,37 @@ package hu.tb.dashboard.presentation.component.calendar.model
 
 import hu.tb.dashboard.domain.OpenSlot
 import hu.tb.dashboard.domain.SessionItem
-import hu.tb.dashboard.presentation.component.calendar.WeekDays
-import kotlinx.datetime.DateTimeUnit
+import hu.tb.design_system.component.calendar.model.CalendarDay
+import hu.tb.design_system.component.calendar.model.CalendarMonth
+import hu.tb.design_system.component.calendar.model.CalendarWeek
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.YearMonth
-import kotlinx.datetime.plus
-import kotlinx.datetime.previousOrSame
-
-internal const val WEEKS_IN_GRID = 6
+import hu.tb.design_system.component.calendar.model.buildCalendarMonth as buildMonthGrid
+import hu.tb.design_system.component.calendar.model.buildCalendarWeek as buildWeekGrid
 
 internal fun buildCalendarMonth(
     month: YearMonth,
     sessions: List<SessionItem>,
     openSlots: List<OpenSlot>
-): CalendarMonth {
-    val gridStart = month.firstDay.previousOrSame(WeekDays.first())
-    return CalendarMonth(
-        weeks = List(WEEKS_IN_GRID) { week ->
-            weekFrom(
-                firstDay = gridStart.plus(week * WeekDays.size, DateTimeUnit.DAY),
-                sessions = sessions,
-                openSlots = openSlots
-            )
-        }
-    )
-}
+): CalendarMonth = buildMonthGrid(month, dayAt(sessions, openSlots))
 
 internal fun buildCalendarWeek(
     anchor: LocalDate,
     sessions: List<SessionItem>,
     openSlots: List<OpenSlot>
-): CalendarWeek =
-    weekFrom(
-        firstDay = anchor.previousOrSame(WeekDays.first()),
-        sessions = sessions,
-        openSlots = openSlots
-    )
-
-private fun weekFrom(
-    firstDay: LocalDate,
-    sessions: List<SessionItem>,
-    openSlots: List<OpenSlot>
-): CalendarWeek =
-    CalendarWeek(
-        days = List(WeekDays.size) { dayIndex ->
-            dayAt(
-                date = firstDay.plus(dayIndex, DateTimeUnit.DAY),
-                sessions = sessions.groupingBy { it.date }.eachCount(),
-                openSlots = openSlots.mapTo(mutableSetOf()) { it.date }
-            )
-        }
-    )
+): CalendarWeek = buildWeekGrid(anchor, dayAt(sessions, openSlots))
 
 private fun dayAt(
-    date: LocalDate,
-    sessions: Map<LocalDate, Int>,
-    openSlots: Set<LocalDate>
-): CalendarDay =
-    CalendarDay(
-        date = date,
-        sessionCount = sessions[date] ?: 0,
-        hasOpenSlot = date in openSlots
-    )
-
+    sessions: List<SessionItem>,
+    openSlots: List<OpenSlot>
+): (LocalDate) -> CalendarDay {
+    val sessionCounts = sessions.groupingBy { it.date }.eachCount()
+    val openSlotDates = openSlots.mapTo(mutableSetOf()) { it.date }
+    return { date ->
+        CalendarDay(
+            date = date,
+            sessionCount = sessionCounts[date] ?: 0,
+            hasOpenSlot = date in openSlotDates
+        )
+    }
+}

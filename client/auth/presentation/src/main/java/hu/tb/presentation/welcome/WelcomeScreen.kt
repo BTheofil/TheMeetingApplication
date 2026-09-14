@@ -21,7 +21,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.skydoves.compose.stability.runtime.TraceRecomposition
-import hu.tb.design_system.modifier.authGlowBackground
+import hu.tb.design_system.modifier.glowBackground
 import hu.tb.design_system.modifier.screenPadding
 import hu.tb.design_system.theme.MeetingTheme
 import hu.tb.domain.AuthMode
@@ -34,7 +34,7 @@ fun WelcomeScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .authGlowBackground()
+            .glowBackground()
     ) {
         Column(
             modifier = Modifier

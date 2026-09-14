@@ -51,7 +51,7 @@ import hu.tb.design_system.Icons
 import hu.tb.design_system.component.CountdownSnackbar
 import hu.tb.design_system.component.CountdownSnackbarVisuals
 import hu.tb.design_system.component.LoadingDialog
-import hu.tb.design_system.modifier.authGlowBackground
+import hu.tb.design_system.modifier.glowBackground
 import hu.tb.design_system.modifier.clearFocus
 import hu.tb.design_system.modifier.screenPadding
 import hu.tb.design_system.theme.MeetingTheme
@@ -124,7 +124,7 @@ private fun AuthFormScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .authGlowBackground()
+            .glowBackground()
     ) {
         Scaffold(
             containerColor = Color.Transparent,

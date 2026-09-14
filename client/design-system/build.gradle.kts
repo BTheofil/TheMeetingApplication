@@ -5,3 +5,7 @@ plugins {
 android {
     namespace = "hu.tb.design_system"
 }
+
+dependencies {
+    api(libs.kotlinx.datetime)
+}

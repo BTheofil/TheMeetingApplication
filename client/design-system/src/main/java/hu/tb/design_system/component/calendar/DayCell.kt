@@ -1,4 +1,4 @@
-package hu.tb.dashboard.presentation.component.calendar
+package hu.tb.design_system.component.calendar
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
@@ -25,14 +25,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import hu.tb.dashboard.presentation.component.common.AvailableRing
-import hu.tb.dashboard.presentation.component.common.BookedDot
-import hu.tb.dashboard.presentation.component.common.IndicatorSize
-import hu.tb.dashboard.presentation.component.calendar.model.CalendarDay
+import hu.tb.design_system.component.AvailableRing
+import hu.tb.design_system.component.BookedDot
+import hu.tb.design_system.component.IndicatorSize
+import hu.tb.design_system.component.calendar.model.CalendarDay
 import hu.tb.design_system.theme.MeetingTheme
 
 @Composable
-internal fun DayCell(
+fun DayCell(
     modifier: Modifier = Modifier,
     day: CalendarDay,
     isSelected: Boolean,
@@ -42,7 +42,6 @@ internal fun DayCell(
 ) {
     val containerColor by animateColorAsState(
         targetValue = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent,
-        label = "dayCellContainer"
     )
     val contentColor = when {
         isSelected -> MaterialTheme.colorScheme.onPrimary
@@ -117,7 +116,9 @@ private fun DayCellPreview(
     @PreviewParameter(CalendarDayPreviewParameterProvider::class) day: CalendarDay
 ) {
     MeetingTheme {
-        Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
             DayCell(day = day, isSelected = false, isToday = false, onClick = {})
             DayCell(day = day, isSelected = false, isToday = true, onClick = {})
             DayCell(day = day, isSelected = true, isToday = false, onClick = {})

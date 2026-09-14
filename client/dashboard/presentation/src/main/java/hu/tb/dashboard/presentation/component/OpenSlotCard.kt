@@ -23,7 +23,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import hu.tb.dashboard.domain.OpenSlot
-import hu.tb.dashboard.presentation.component.common.AvailableRing
+import hu.tb.design_system.component.AvailableRing
 import hu.tb.dashboard.presentation.component.common.DashboardCard
 import hu.tb.dashboard.presentation.util.currentDate
 import hu.tb.dashboard.presentation.util.formatTime

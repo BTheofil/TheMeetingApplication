@@ -1,4 +1,4 @@
-package hu.tb.dashboard.presentation.component.calendar
+package hu.tb.design_system.component.calendar
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -15,19 +15,20 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import hu.tb.dashboard.presentation.util.formatMonthLabel
+import com.skydoves.compose.stability.runtime.TraceRecomposition
 import hu.tb.design_system.Icons
 import hu.tb.design_system.theme.MeetingTheme
 import kotlinx.datetime.YearMonth
 
+@TraceRecomposition
 @Composable
-internal fun CalendarHeader(
+fun CalendarHeader(
     visibleMonth: YearMonth,
-    isExpanded: Boolean,
     modifier: Modifier = Modifier,
+    isExpanded: Boolean = true,
     onPreviousMonth: () -> Unit,
     onNextMonth: () -> Unit,
-    onToggleExpanded: () -> Unit
+    onToggleExpanded: (() -> Unit)? = null
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -63,12 +64,14 @@ internal fun CalendarHeader(
                 )
             }
         }
-        IconButton(onClick = onToggleExpanded) {
-            Icon(
-                painter = painterResource(Icons.expand),
-                contentDescription = if (isExpanded) "Collapse calendar" else "Expand calendar",
-                tint = MaterialTheme.colorScheme.primary
-            )
+        if (onToggleExpanded != null) {
+            IconButton(onClick = onToggleExpanded) {
+                Icon(
+                    painter = painterResource(Icons.expand),
+                    contentDescription = if (isExpanded) "Collapse calendar" else "Expand calendar",
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
         }
     }
 }

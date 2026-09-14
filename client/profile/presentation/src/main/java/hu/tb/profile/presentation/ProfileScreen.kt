@@ -45,7 +45,7 @@ import hu.tb.design_system.component.CountdownSnackbar
 import hu.tb.design_system.component.CountdownSnackbarVisuals
 import hu.tb.design_system.component.DeleteProfileDialog
 import hu.tb.design_system.component.LoadingDialog
-import hu.tb.design_system.modifier.authGlowBackground
+import hu.tb.design_system.modifier.glowBackground
 import hu.tb.design_system.modifier.screenPadding
 import hu.tb.design_system.theme.MeetingTheme
 import hu.tb.datastore.ProfileType
@@ -99,7 +99,7 @@ private fun ProfileScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .authGlowBackground()
+            .glowBackground()
     ) {
         Scaffold(
             containerColor = Color.Transparent,

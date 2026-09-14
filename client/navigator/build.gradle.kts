@@ -13,6 +13,7 @@ dependencies {
     implementation(projects.profile.presentation)
     implementation(projects.search.presentation)
     implementation(projects.notification.presentation)
+    implementation(projects.schedule.presentation)
     implementation(projects.datastore)
     implementation(projects.designSystem)
     implementation(projects.network)

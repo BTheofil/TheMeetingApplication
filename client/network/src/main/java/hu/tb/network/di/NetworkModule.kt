@@ -5,6 +5,7 @@ import hu.tb.network.repository.AuthRepository
 import hu.tb.network.repository.DashboardRepository
 import hu.tb.network.repository.NotificationRepository
 import hu.tb.network.repository.ProfileRepository
+import hu.tb.network.repository.ScheduleRepository
 import hu.tb.network.repository.SearchRepository
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.auth.Auth
@@ -58,4 +59,5 @@ val networkModule = module {
     singleOf(::SearchRepository)
     singleOf(::NotificationRepository)
     singleOf(::DashboardRepository)
+    singleOf(::ScheduleRepository)
 }

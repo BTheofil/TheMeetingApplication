@@ -33,6 +33,7 @@ dependencies {
     implementation(projects.search.presentation)
     implementation(projects.notification.presentation)
     implementation(projects.notification.data)
+    implementation(projects.schedule.presentation)
 
     implementation(libs.koin)
     implementation(libs.androidx.activity.compose)

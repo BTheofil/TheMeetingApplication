@@ -1,4 +1,4 @@
-package hu.tb.dashboard.presentation.component.common
+package hu.tb.design_system.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 internal val IndicatorSize = 7.dp
 
 @Composable
-internal fun BookedDot(
+fun BookedDot(
     modifier: Modifier = Modifier,
     alpha: Float = 1f
 ) {
@@ -29,7 +29,7 @@ internal fun BookedDot(
 }
 
 @Composable
-internal fun AvailableRing(
+fun AvailableRing(
     modifier: Modifier = Modifier,
     alpha: Float = 1f
 ) {

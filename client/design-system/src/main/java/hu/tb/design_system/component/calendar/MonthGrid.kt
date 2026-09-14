@@ -1,4 +1,4 @@
-package hu.tb.dashboard.presentation.component.calendar
+package hu.tb.design_system.component.calendar
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.skydoves.compose.stability.runtime.TraceRecomposition
-import hu.tb.dashboard.presentation.component.calendar.model.CalendarMonth
+import hu.tb.design_system.component.calendar.model.CalendarMonth
 import hu.tb.design_system.theme.MeetingTheme
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.YearMonth
@@ -25,7 +25,7 @@ data class MonthGridParameter(
 
 @TraceRecomposition
 @Composable
-internal fun MonthGrid(
+fun MonthGrid(
     month: CalendarMonth,
     monthGridParameter: MonthGridParameter,
     modifier: Modifier = Modifier,

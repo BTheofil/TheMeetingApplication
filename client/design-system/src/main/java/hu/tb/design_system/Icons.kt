@@ -12,9 +12,13 @@ object Icons {
     val schedule = R.drawable.schedule
     val search = R.drawable.search
     val add = R.drawable.add
-    val check = R.drawable.check_small
+    val check_small = R.drawable.check_small
     val pending = R.drawable.pending
     val person_check = R.drawable.person_check
     val person_disable = R.drawable.person_disabled
     val notifications = R.drawable.notifications
+    val copy = R.drawable.copy
+    val delete = R.drawable.delete
+    val close = R.drawable.close
+    val check = R.drawable.check
 }

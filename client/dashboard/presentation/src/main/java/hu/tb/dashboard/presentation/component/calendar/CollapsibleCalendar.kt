@@ -29,9 +29,15 @@ import hu.tb.dashboard.domain.SessionItem
 import hu.tb.dashboard.presentation.DashboardAction
 import hu.tb.dashboard.presentation.component.calendar.model.buildCalendarMonth
 import hu.tb.dashboard.presentation.component.calendar.model.buildCalendarWeek
-import hu.tb.dashboard.presentation.component.common.AvailableRing
-import hu.tb.dashboard.presentation.component.common.BookedDot
 import hu.tb.dashboard.presentation.component.common.DashboardCard
+import hu.tb.design_system.component.AvailableRing
+import hu.tb.design_system.component.BookedDot
+import hu.tb.design_system.component.calendar.CalendarHeader
+import hu.tb.design_system.component.calendar.MonthGrid
+import hu.tb.design_system.component.calendar.MonthGridParameter
+import hu.tb.design_system.component.calendar.WeekRow
+import hu.tb.design_system.component.calendar.WeekRowParameter
+import hu.tb.design_system.component.calendar.WeekdayLabels
 import hu.tb.design_system.theme.MeetingTheme
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.minusMonth

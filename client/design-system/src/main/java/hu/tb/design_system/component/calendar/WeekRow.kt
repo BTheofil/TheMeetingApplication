@@ -1,4 +1,4 @@
-package hu.tb.dashboard.presentation.component.calendar
+package hu.tb.design_system.component.calendar
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -7,8 +7,8 @@ import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import com.skydoves.compose.stability.runtime.TraceRecomposition
-import hu.tb.dashboard.presentation.component.calendar.model.CalendarDay
-import hu.tb.dashboard.presentation.component.calendar.model.CalendarWeek
+import hu.tb.design_system.component.calendar.model.CalendarDay
+import hu.tb.design_system.component.calendar.model.CalendarWeek
 import hu.tb.design_system.theme.MeetingTheme
 import kotlinx.datetime.LocalDate
 
@@ -20,7 +20,7 @@ data class WeekRowParameter(
 
 @TraceRecomposition
 @Composable
-internal fun WeekRow(
+fun WeekRow(
     modifier: Modifier = Modifier,
     week: CalendarWeek,
     weekRowParameter: WeekRowParameter,

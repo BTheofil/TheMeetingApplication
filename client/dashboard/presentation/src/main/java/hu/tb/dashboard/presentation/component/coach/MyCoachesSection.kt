@@ -19,7 +19,7 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import hu.tb.dashboard.domain.CoachItem
-import hu.tb.dashboard.presentation.component.common.AvailableRing
+import hu.tb.design_system.component.AvailableRing
 import hu.tb.dashboard.presentation.component.common.DashboardCard
 import hu.tb.dashboard.presentation.component.common.SectionHeader
 import hu.tb.design_system.component.Avatar
