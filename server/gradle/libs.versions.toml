@@ -10,11 +10,13 @@ logback = "1.5.35"
 bcrypt = "0.10.2"
 firebaseAdmin = "9.10.0"
 netty = "4.2.15.Final"
+exposedDateTime = "1.5.0"
 
 [libraries]
 exposed-core = { group = "org.jetbrains.exposed", name = "exposed-core", version.ref = "exposed" }
 exposed-jdbc = { group = "org.jetbrains.exposed", name = "exposed-jdbc", version.ref = "exposed" }
 exposed-dao = { group = "org.jetbrains.exposed", name = "exposed-dao", version.ref = "exposed" }
+exposed-datetime = { module = "org.jetbrains.exposed:exposed-kotlin-datetime", version.ref = "exposedDateTime" }
 
 sqlite = { group = "org.xerial", name = "sqlite-jdbc", version.ref = "sqlite" }
 

@@ -1,6 +1,6 @@
 package hu.tb.meet.data.repository
 
-import hu.tb.meet.data.model.DeviceFidTable
+import hu.tb.meet.data.table.DeviceFidTable
 import hu.tb.meet.data.repository.helper.accountId
 import hu.tb.meet.domain.receive.AccountType
 import org.jetbrains.exposed.v1.core.and

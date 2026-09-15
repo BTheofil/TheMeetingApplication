@@ -1,4 +1,4 @@
-package hu.tb.meet.data.model
+package hu.tb.meet.data.table
 
 import hu.tb.meet.domain.send.SubscriptionStatus
 import org.jetbrains.exposed.v1.core.ReferenceOption

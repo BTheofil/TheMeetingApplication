@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "hu.tb"
-version = "1.3.2"
+version = "1.4.0"
 
 kotlin {
     jvmToolchain(libs.versions.java.get().toInt())
@@ -44,6 +44,7 @@ dependencies {
     implementation(libs.logback.classic)
     implementation(libs.bundles.koin)
     implementation(libs.bundles.exposed)
+    implementation(libs.exposed.datetime)
     implementation(libs.sqlite)
     implementation(libs.bcrypt)
 

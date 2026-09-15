@@ -13,6 +13,7 @@ enum class ApiError(val status: HttpStatusCode, val message: String) {
     MALFORMED_BODY(HttpStatusCode.BadRequest, "Malformed request body"),
     ROUTE_NOT_FOUND(HttpStatusCode.NotFound, "Page not found"),
     INTERNAL(HttpStatusCode.InternalServerError, "Something went wrong, please try again later"),
+    SLOT_DELETE_NOT_FOUND(HttpStatusCode.NotFound, "Targeted slot can not be found"),
 }
 
 fun fail(error: ApiError): Nothing = throw ApiException(error)

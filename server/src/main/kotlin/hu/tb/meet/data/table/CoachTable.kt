@@ -1,3 +1,3 @@
-package hu.tb.meet.data.model
+package hu.tb.meet.data.table
 
 object CoachTable : AccountTable("coach")
