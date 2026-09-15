@@ -11,28 +11,31 @@ import hu.tb.design_system.component.calendar.model.CalendarDay
 import hu.tb.design_system.component.calendar.model.CalendarWeek
 import hu.tb.design_system.theme.MeetingTheme
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.YearMonth
+import kotlinx.datetime.yearMonth
 
 @Stable
 data class WeekRowParameter(
     val selectedDate: LocalDate,
-    val today: LocalDate
+    val today: LocalDate,
+    val visibleMonth: YearMonth
 )
 
 @TraceRecomposition
 @Composable
 fun WeekRow(
-    modifier: Modifier = Modifier,
     week: CalendarWeek,
     weekRowParameter: WeekRowParameter,
     onDateSelect: (LocalDate) -> Unit
 ) {
-    Row(modifier = modifier.fillMaxWidth()) {
+    Row(modifier = Modifier.fillMaxWidth()) {
         week.days.forEach { day ->
             DayCell(
                 modifier = Modifier.weight(1f),
                 day = day,
                 isSelected = day.date == weekRowParameter.selectedDate,
                 isToday = day.date == weekRowParameter.today,
+                isInVisibleMonth = day.date.yearMonth == weekRowParameter.visibleMonth,
                 onClick = { onDateSelect(day.date) }
             )
         }
@@ -72,8 +75,9 @@ private fun WeekRowPreview() {
                 )
             ),
             weekRowParameter = WeekRowParameter(
-                selectedDate = PreviewSelectedDate,
-                today = PreviewToday
+                selectedDate = LocalDate(2026, 9, 3),
+                today = LocalDate(2026, 9, 1),
+                visibleMonth = YearMonth(2026, 9)
             ),
             onDateSelect = {}
         )

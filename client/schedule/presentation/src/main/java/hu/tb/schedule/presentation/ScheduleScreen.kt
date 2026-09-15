@@ -8,12 +8,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -41,7 +43,6 @@ import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
 import org.koin.androidx.compose.koinViewModel
-import kotlin.collections.orEmpty
 import kotlin.time.Clock
 
 @Composable
@@ -66,9 +67,12 @@ private fun ScheduleScreen(
     action: (ScheduleAction) -> Unit
 ) {
     val today = remember { Clock.System.todayIn(TimeZone.currentSystemDefault()) }
-    val month = remember(state.visibleMonth, state.slotsByDate) {
+    val month = remember(state.visibleMonth, state.slotsByDate, state.drafts) {
         buildCalendarMonth(state.visibleMonth) { date ->
-            CalendarDay(date = date, hasOpenSlot = !state.slotsByDate[date].isNullOrEmpty())
+            CalendarDay(
+                date = date, hasOpenSlot = !state.slotsByDate[date].isNullOrEmpty() ||
+                        !state.drafts[date].isNullOrEmpty()
+            )
         }
     }
 
@@ -118,7 +122,7 @@ private fun ScheduleScreen(
                         onNextMonth = { action(ScheduleAction.NextMonth) },
                         onDateSelect = { action(ScheduleAction.DateSelect(it)) }
                     )
-                    if (state.isMonthLoading) {
+                    if (state.isCalendarLoading) {
                         LinearProgressIndicator(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -131,15 +135,35 @@ private fun ScheduleScreen(
                         slotListInfo = SlotListInfo(
                             date = state.selectedDate,
                             slots = state.slotsByDate[state.selectedDate].orEmpty(),
+                            drafts = state.drafts[state.selectedDate].orEmpty(),
                         ),
-                        onCopyDay = {},
-                        onCopySlot = {},
-                        onDeleteSlot = {},
+                        isPasteEnabled = state.clipboard.isNotEmpty(),
+                        onCopyDay = { action(ScheduleAction.DayCopy(state.selectedDate)) },
+                        onPasteDay = { action(ScheduleAction.DayPaste(state.selectedDate)) },
+                        onCopySlot = { action(ScheduleAction.SlotCopy(it)) },
+                        onDeleteSlot = {
+                            action(ScheduleAction.SlotDelete(state.selectedDate, it))
+                        },
+                        onDeleteDraft = {
+                            action(ScheduleAction.DraftDelete(state.selectedDate, it))
+                        },
                         onDraftConfirm = {
                             action(ScheduleAction.DraftConfirm(state.selectedDate, it))
                         }
                     )
                 }
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = { action(ScheduleAction.PublishDrafts) },
+                    enabled = state.drafts.isNotEmpty(),
+                    content = {
+                        Text(
+                            text = "Publish",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+                )
             }
         }
     }

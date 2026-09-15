@@ -28,6 +28,7 @@ import hu.tb.design_system.theme.MeetingTheme
 import hu.tb.schedule.domain.DraftSlot
 import hu.tb.schedule.domain.SlotListInfo
 import hu.tb.schedule.domain.TimeSlot
+import hu.tb.schedule.domain.formattedTimeUi
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.format
@@ -41,13 +42,18 @@ import kotlinx.datetime.format.char
 internal fun SlotList(
     slotListInfo: SlotListInfo,
     modifier: Modifier = Modifier,
+    isPasteEnabled: Boolean,
     onCopyDay: () -> Unit,
-    onCopySlot: (TimeSlot) -> Unit,
+    onPasteDay: () -> Unit,
+    onCopySlot: (DraftSlot) -> Unit,
     onDeleteSlot: (TimeSlot) -> Unit,
+    onDeleteDraft: (DraftSlot) -> Unit,
     onDraftConfirm: (DraftSlot) -> Unit
 ) {
     var draft by remember(slotListInfo.date) { mutableStateOf<DraftSlot?>(null) }
     var timeTarget by remember(slotListInfo.date) { mutableStateOf<TimeTarget?>(null) }
+
+    val isDayEmpty = slotListInfo.slots.isEmpty() && slotListInfo.drafts.isEmpty()
 
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -66,17 +72,26 @@ internal fun SlotList(
             )
             TextButton(
                 onClick = onCopyDay,
-                enabled = slotListInfo.slots.isNotEmpty()
+                enabled = !isDayEmpty
             ) {
                 Text(
                     text = "Copy day",
                     style = MaterialTheme.typography.labelLarge
                 )
             }
+            TextButton(
+                onClick = onPasteDay,
+                enabled = isPasteEnabled
+            ) {
+                Text(
+                    text = "Paste",
+                    style = MaterialTheme.typography.labelLarge
+                )
+            }
         }
 
         val currentDraft = draft
-        if (slotListInfo.slots.isEmpty() && currentDraft == null) {
+        if (isDayEmpty && currentDraft == null) {
             Text(
                 modifier = Modifier.padding(vertical = 8.dp),
                 text = "No open hours yet",
@@ -87,9 +102,19 @@ internal fun SlotList(
 
         slotListInfo.slots.forEach { slot ->
             SlotRow(
-                slot = slot,
-                onCopy = { onCopySlot(slot) },
+                time = slot.formattedTimeUi(),
+                isDraft = false,
+                onCopy = { onCopySlot(slot.toDraft()) },
                 onDelete = { onDeleteSlot(slot) }
+            )
+        }
+
+        slotListInfo.drafts.forEach { draftSlot ->
+            SlotRow(
+                time = draftSlot.formattedTimeUi(),
+                isDraft = true,
+                onCopy = { onCopySlot(draftSlot) },
+                onDelete = { onDeleteDraft(draftSlot) }
             )
         }
 
@@ -108,7 +133,8 @@ internal fun SlotList(
         } else {
             TextButton(
                 onClick = {
-                    val start = slotListInfo.slots.lastOrNull()?.end
+                    val start = (slotListInfo.slots.map { it.end } +
+                            slotListInfo.drafts.map { it.end }).maxOrNull()
                     draft = DraftSlot(
                         start = start ?: LocalTime(9, 0),
                         end = start ?: LocalTime(10, 0)
@@ -159,7 +185,8 @@ private val dayLabelFormat = LocalDate.Format {
 
 @Composable
 private fun SlotRow(
-    slot: TimeSlot,
+    time: String,
+    isDraft: Boolean,
     onCopy: () -> Unit,
     onDelete: () -> Unit
 ) {
@@ -169,9 +196,10 @@ private fun SlotRow(
     ) {
         Text(
             modifier = Modifier.weight(1f),
-            text = slot.formattedTimeUi(),
+            text = if (isDraft) "$time · unpublished" else time,
             style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurface
+            color = if (isDraft) MaterialTheme.colorScheme.onSurfaceVariant
+            else MaterialTheme.colorScheme.onSurface
         )
         IconButton(onClick = onCopy) {
             Icon(
@@ -206,13 +234,7 @@ private fun SlotDraftRow(
     ) {
         AssistChip(
             onClick = onStartClick,
-            label = {
-                Text(text = draft.start.format(LocalTime.Format {
-                    hour()
-                    char(':')
-                    minute()
-                }))
-            }
+            label = { Text(text = draft.start.formattedTimeUi()) }
         )
         Text(
             text = "–",
@@ -221,13 +243,7 @@ private fun SlotDraftRow(
         )
         AssistChip(
             onClick = onEndClick,
-            label = {
-                Text(text = draft.end.format(LocalTime.Format {
-                    hour()
-                    char(':')
-                    minute()
-                }))
-            }
+            label = { Text(text = draft.end.formattedTimeUi()) }
         )
         IconButton(
             onClick = onConfirm,
@@ -259,11 +275,17 @@ private fun SlotListPreview() {
                 slots = listOf(
                     TimeSlot(1, LocalTime(9, 0), LocalTime(10, 0)),
                     TimeSlot(2, LocalTime(11, 0), LocalTime(11, 30))
+                ),
+                drafts = listOf(
+                    DraftSlot(LocalTime(13, 0), LocalTime(14, 0))
                 )
             ),
+            isPasteEnabled = true,
             onCopyDay = {},
+            onPasteDay = {},
             onCopySlot = {},
             onDeleteSlot = {},
+            onDeleteDraft = {},
             onDraftConfirm = {}
         )
     }

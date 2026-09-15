@@ -2,8 +2,6 @@ package hu.tb.schedule.domain
 
 import androidx.compose.runtime.Immutable
 import kotlinx.datetime.LocalTime
-import kotlinx.datetime.format
-import kotlinx.datetime.format.char
 
 @Immutable
 data class TimeSlot(
@@ -11,11 +9,7 @@ data class TimeSlot(
     val start: LocalTime,
     val end: LocalTime
 ) {
-    fun formattedTimeUi(): String = "${start.formatTime()} – ${end.formatTime()}"
+    fun formattedTimeUi(): String = "${start.formattedTimeUi()} – ${end.formattedTimeUi()}"
 
-    private fun LocalTime.formatTime(): String = format(LocalTime.Format {
-        hour()
-        char(':')
-        minute()
-    })
+    fun toDraft(): DraftSlot = DraftSlot(start = start, end = end)
 }

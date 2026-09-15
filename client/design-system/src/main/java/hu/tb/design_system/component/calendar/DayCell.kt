@@ -119,10 +119,26 @@ private fun DayCellPreview(
         Row(
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            DayCell(day = day, isSelected = false, isToday = false, onClick = {})
-            DayCell(day = day, isSelected = false, isToday = true, onClick = {})
-            DayCell(day = day, isSelected = true, isToday = false, onClick = {})
             DayCell(
+                modifier = Modifier.weight(1f),
+                day = day,
+                isSelected = false,
+                isToday = false,
+                onClick = {})
+            DayCell(
+                modifier = Modifier.weight(1f),
+                day = day,
+                isSelected = false,
+                isToday = true,
+                onClick = {})
+            DayCell(
+                modifier = Modifier.weight(1f),
+                day = day,
+                isSelected = true,
+                isToday = false,
+                onClick = {})
+            DayCell(
+                modifier = Modifier.weight(1f),
                 day = day,
                 isSelected = false,
                 isToday = false,

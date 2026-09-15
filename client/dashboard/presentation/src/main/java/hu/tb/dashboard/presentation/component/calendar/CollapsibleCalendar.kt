@@ -117,7 +117,8 @@ internal fun CollapsibleCalendar(
                         week = week,
                         weekRowParameter = WeekRowParameter(
                             selectedDate = calendarParameter.selectedDate,
-                            today = calendarParameter.todayDate
+                            today = calendarParameter.todayDate,
+                            visibleMonth = currentMonth
                         ),
                         onDateSelect = onDateSelect
                     )
@@ -166,8 +167,8 @@ private fun CollapsibleCalendarPreview() {
             calendarParameter = CollapsibleCalendarParameter(
                 sessions = emptyList(),
                 openSlots = emptyList(),
-                todayDate = LocalDate(2026,1,1),
-                selectedDate = LocalDate(2026,1,2)
+                todayDate = LocalDate(2026, 1, 1),
+                selectedDate = LocalDate(2026, 1, 2)
             ),
             action = {})
     }

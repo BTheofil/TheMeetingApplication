@@ -7,4 +7,6 @@ import kotlinx.datetime.LocalTime
 data class DraftSlot(
     val start: LocalTime,
     val end: LocalTime
-)
+) {
+    fun formattedTimeUi(): String = "${start.formattedTimeUi()} – ${end.formattedTimeUi()}"
+}
