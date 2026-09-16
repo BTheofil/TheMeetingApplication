@@ -2,6 +2,7 @@ package hu.tb.schedule.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import hu.tb.network.fold
 import hu.tb.network.repository.ScheduleRepository
 import hu.tb.schedule.domain.DraftSlot
 import hu.tb.schedule.domain.TimeSlot
@@ -19,12 +20,6 @@ class ScheduleViewModel(
 
     private val _state = MutableStateFlow(ScheduleState())
     val state = _state.asStateFlow()
-
-    init {
-        viewModelScope.launch {
-            scheduleRepository.getMonth()
-        }
-    }
 
     fun action(action: ScheduleAction) {
         when (action) {
@@ -47,7 +42,19 @@ class ScheduleViewModel(
             is ScheduleAction.DraftDelete -> deleteDraft(action.date, action.draft)
             is ScheduleAction.DayCopy -> copyDay(action.date)
             is ScheduleAction.DayPaste -> pasteDay(action.date)
-            ScheduleAction.PublishDrafts -> TODO()
+            ScheduleAction.PublishDrafts -> publishDrafts()
+        }
+    }
+
+    private fun publishDrafts() {
+        val drafts = state.value.drafts
+        if (drafts.isEmpty()) return
+
+        viewModelScope.launch {
+            scheduleRepository.uploadDrafts(drafts).fold(
+                success = { _state.update { it.copy(drafts = emptyMap()) } },
+                fail = {}
+            )
         }
     }
 
