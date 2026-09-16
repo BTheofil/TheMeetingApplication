@@ -4,6 +4,7 @@ import hu.tb.meet.data.repository.ScheduleRepository
 import hu.tb.meet.domain.error.ApiError
 import hu.tb.meet.domain.error.fail
 import hu.tb.meet.domain.receive.AccountType
+import hu.tb.meet.domain.receive.MonthReceive
 import hu.tb.meet.domain.receive.ScheduleDay
 import hu.tb.meet.domain.receive.SlotReceive
 import hu.tb.meet.route.helper.requireAccount
@@ -20,19 +21,30 @@ fun Route.schedule() {
 
     authenticate("auth-jwt") {
         post("/uploadDrafts") {
+            val (username, _) = requireAccount(AccountType.COACH)
+
             val plannedSchedule = call.receive<List<ScheduleDay>>()
 
-            scheduleRepository.saveDrafts(plannedSchedule)
+            scheduleRepository.saveDrafts(username, plannedSchedule) ?: fail(ApiError.PROFILE_NOT_FOUND)
 
             call.respond(HttpStatusCode.OK)
         }
-    }
 
-    authenticate("auth-jwt") {
+        post("/coachSessions") {
+            val (username, _) = requireAccount(AccountType.COACH)
+
+            val sessions = scheduleRepository.coachSessions(username, call.receive<MonthReceive>().date)
+                ?: fail(ApiError.PROFILE_NOT_FOUND)
+
+            call.respond(HttpStatusCode.OK, sessions)
+        }
+
         delete("/deleteSession") {
+            val (username, _) = requireAccount(AccountType.COACH)
+
             val targetSlot = call.receive<SlotReceive>()
             val count = scheduleRepository.deleteSession(
-                targetSlot.coachId,
+                username,
                 targetSlot.date,
                 targetSlot.startTime,
                 targetSlot.endTime

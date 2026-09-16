@@ -37,88 +37,84 @@ suspend fun HttpClient.deleteSession(token: String?, slot: SlotReceive): HttpRes
     setBody(slot)
 }
 
-private suspend fun HttpClient.upload(token: String, coachId: Int, date: LocalDate, vararg drafts: Draft) =
-    uploadDrafts(token, listOf(ScheduleDay(coachId, date, drafts.toList())))
+private suspend fun HttpClient.upload(token: String, date: LocalDate, vararg drafts: Draft) =
+    uploadDrafts(token, listOf(ScheduleDay(date, drafts.toList())))
 
-private suspend fun HttpClient.delete(token: String, coachId: Int, date: LocalDate, draft: Draft) =
-    deleteSession(token, SlotReceive(coachId, date, draft.start, draft.end))
+private suspend fun HttpClient.delete(token: String, date: LocalDate, draft: Draft) =
+    deleteSession(token, SlotReceive(date, draft.start, draft.end))
 
-private suspend fun HttpClient.coach(): Pair<String, Int> {
-    val token = tokenOf("Kovacs Anna", AccountType.COACH)
-    val normal = tokenOf("anna", AccountType.NORMAL)
-    return token to coaches(normal, "kovacs").single().coachId.toInt()
-}
+private suspend fun HttpClient.coach(name: String = "Kovacs Anna") = tokenOf(name, AccountType.COACH)
 
 class ScheduleRouteTest {
 
     @Test
     fun `every uploaded slot of a day is stored`() = withTestApp { client ->
-        val (token, coachId) = client.coach()
+        val token = client.coach()
         val morning = draft("09:00", "10:00")
         val noon = draft("12:00", "13:00")
 
-        assertEquals(HttpStatusCode.OK, client.upload(token, coachId, MONDAY, morning, noon).status)
+        assertEquals(HttpStatusCode.OK, client.upload(token, MONDAY, morning, noon).status)
 
-        assertEquals(HttpStatusCode.OK, client.delete(token, coachId, MONDAY, morning).status)
-        assertEquals(HttpStatusCode.OK, client.delete(token, coachId, MONDAY, noon).status)
+        assertEquals(HttpStatusCode.OK, client.delete(token, MONDAY, morning).status)
+        assertEquals(HttpStatusCode.OK, client.delete(token, MONDAY, noon).status)
     }
 
     @Test
     fun `a later upload extends the day instead of replacing it`() = withTestApp { client ->
-        val (token, coachId) = client.coach()
+        val token = client.coach()
         val morning = draft("09:00", "10:00")
         val afternoon = draft("15:00", "16:00")
 
-        client.upload(token, coachId, MONDAY, morning)
-        client.upload(token, coachId, MONDAY, afternoon)
+        client.upload(token, MONDAY, morning)
+        client.upload(token, MONDAY, afternoon)
 
-        assertEquals(HttpStatusCode.OK, client.delete(token, coachId, MONDAY, morning).status)
-        assertEquals(HttpStatusCode.OK, client.delete(token, coachId, MONDAY, afternoon).status)
+        assertEquals(HttpStatusCode.OK, client.delete(token, MONDAY, morning).status)
+        assertEquals(HttpStatusCode.OK, client.delete(token, MONDAY, afternoon).status)
     }
 
     @Test
     fun `uploading the same slot twice stores it once`() = withTestApp { client ->
-        val (token, coachId) = client.coach()
+        val token = client.coach()
         val morning = draft("09:00", "10:00")
 
-        client.upload(token, coachId, MONDAY, morning)
-        assertEquals(HttpStatusCode.OK, client.upload(token, coachId, MONDAY, morning).status)
+        client.upload(token, MONDAY, morning)
+        assertEquals(HttpStatusCode.OK, client.upload(token, MONDAY, morning).status)
 
-        assertEquals(HttpStatusCode.OK, client.delete(token, coachId, MONDAY, morning).status)
-        assertEquals(HttpStatusCode.NotFound, client.delete(token, coachId, MONDAY, morning).status)
+        assertEquals(HttpStatusCode.OK, client.delete(token, MONDAY, morning).status)
+        assertEquals(HttpStatusCode.NotFound, client.delete(token, MONDAY, morning).status)
     }
 
     @Test
     fun `days of one upload are kept apart`() = withTestApp { client ->
-        val (token, coachId) = client.coach()
+        val token = client.coach()
         val morning = draft("09:00", "10:00")
 
         client.uploadDrafts(
             token, listOf(
-                ScheduleDay(coachId, MONDAY, listOf(morning)),
-                ScheduleDay(coachId, TUESDAY, listOf(morning))
+                ScheduleDay(MONDAY, listOf(morning)),
+                ScheduleDay(TUESDAY, listOf(morning))
             )
         )
 
-        assertEquals(HttpStatusCode.OK, client.delete(token, coachId, MONDAY, morning).status)
-        assertEquals(HttpStatusCode.OK, client.delete(token, coachId, TUESDAY, morning).status)
+        assertEquals(HttpStatusCode.OK, client.delete(token, MONDAY, morning).status)
+        assertEquals(HttpStatusCode.OK, client.delete(token, TUESDAY, morning).status)
     }
 
     @Test
     fun `an empty upload is accepted and stores nothing`() = withTestApp { client ->
-        val (token, coachId) = client.coach()
+        val token = client.coach()
 
         assertEquals(HttpStatusCode.OK, client.uploadDrafts(token, emptyList()).status)
-        assertEquals(HttpStatusCode.OK, client.upload(token, coachId, MONDAY).status)
+        assertEquals(HttpStatusCode.OK, client.upload(token, MONDAY).status)
 
-        assertEquals(HttpStatusCode.NotFound, client.delete(token, coachId, MONDAY, draft("09:00", "10:00")).status)
+        assertEquals(HttpStatusCode.NotFound, client.delete(token, MONDAY, draft("09:00", "10:00")).status)
     }
 
     @Test
     fun `deleting an unknown slot answers with a json error`() = withTestApp { client ->
-        val (token, coachId) = client.coach()
+        val token = client.coach()
 
-        val response = client.delete(token, coachId, MONDAY, draft("09:00", "10:00"))
+        val response = client.delete(token, MONDAY, draft("09:00", "10:00"))
 
         assertEquals(HttpStatusCode.NotFound, response.status)
         assertEquals("Targeted slot can not be found", response.body<ErrorResponse>().message)
@@ -126,25 +122,56 @@ class ScheduleRouteTest {
 
     @Test
     fun `deleting keeps the slot when the end time does not match`() = withTestApp { client ->
-        val (token, coachId) = client.coach()
+        val token = client.coach()
         val morning = draft("09:00", "10:00")
-        client.upload(token, coachId, MONDAY, morning)
+        client.upload(token, MONDAY, morning)
 
-        assertEquals(HttpStatusCode.NotFound, client.delete(token, coachId, MONDAY, draft("09:00", "11:00")).status)
+        assertEquals(HttpStatusCode.NotFound, client.delete(token, MONDAY, draft("09:00", "11:00")).status)
 
-        assertEquals(HttpStatusCode.OK, client.delete(token, coachId, MONDAY, morning).status)
+        assertEquals(HttpStatusCode.OK, client.delete(token, MONDAY, morning).status)
     }
 
     @Test
     fun `deleting only touches the targeted day`() = withTestApp { client ->
-        val (token, coachId) = client.coach()
+        val token = client.coach()
         val morning = draft("09:00", "10:00")
-        client.upload(token, coachId, MONDAY, morning)
-        client.upload(token, coachId, TUESDAY, morning)
+        client.upload(token, MONDAY, morning)
+        client.upload(token, TUESDAY, morning)
 
-        client.delete(token, coachId, MONDAY, morning)
+        client.delete(token, MONDAY, morning)
 
-        assertEquals(HttpStatusCode.OK, client.delete(token, coachId, TUESDAY, morning).status)
+        assertEquals(HttpStatusCode.OK, client.delete(token, TUESDAY, morning).status)
+    }
+
+    @Test
+    fun `a coach only writes and deletes its own slots`() = withTestApp { client ->
+        val anna = client.coach("Kovacs Anna")
+        val bela = client.coach("Nagy Bela")
+        val morning = draft("09:00", "10:00")
+
+        client.upload(anna, MONDAY, morning)
+        // the same slot on the same day is a separate row for the other coach
+        assertEquals(HttpStatusCode.OK, client.upload(bela, MONDAY, morning).status)
+
+        // bela deleting only removes his own row, anna's stays
+        assertEquals(HttpStatusCode.OK, client.delete(bela, MONDAY, morning).status)
+        assertEquals(HttpStatusCode.NotFound, client.delete(bela, MONDAY, morning).status)
+        assertEquals(HttpStatusCode.OK, client.delete(anna, MONDAY, morning).status)
+    }
+
+    @Test
+    fun `a normal account is forbidden on every endpoint`() = withTestApp { client ->
+        val token = client.tokenOf("anna", AccountType.NORMAL)
+        val morning = draft("09:00", "10:00")
+
+        assertEquals(
+            HttpStatusCode.Forbidden,
+            client.uploadDrafts(token, listOf(ScheduleDay(MONDAY, listOf(morning)))).status
+        )
+        assertEquals(
+            HttpStatusCode.Forbidden,
+            client.deleteSession(token, SlotReceive(MONDAY, morning.start, morning.end)).status
+        )
     }
 
     @Test
@@ -153,17 +180,17 @@ class ScheduleRouteTest {
 
         assertEquals(
             HttpStatusCode.Unauthorized,
-            client.uploadDrafts(null, listOf(ScheduleDay(1, MONDAY, listOf(morning)))).status
+            client.uploadDrafts(null, listOf(ScheduleDay(MONDAY, listOf(morning)))).status
         )
         assertEquals(
             HttpStatusCode.Unauthorized,
-            client.deleteSession(null, SlotReceive(1, MONDAY, morning.start, morning.end)).status
+            client.deleteSession(null, SlotReceive(MONDAY, morning.start, morning.end)).status
         )
     }
 
     @Test
     fun `a malformed body answers with a json error`() = withTestApp { client ->
-        val (token, _) = client.coach()
+        val token = client.coach()
 
         val response = client.post("/uploadDrafts") {
             contentType(ContentType.Application.Json)

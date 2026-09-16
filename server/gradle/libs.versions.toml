@@ -1,7 +1,7 @@
 [versions]
 java = "21"
-kotlin = "2.3.20"
-ktor = "3.4.2"
+kotlin = "2.4.20"
+ktor = "3.5.2"
 jib = "3.5.4"
 exposed = "1.1.1"
 sqlite = "3.50.2.0"

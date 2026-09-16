@@ -1,20 +1,13 @@
-package hu.tb.meet.domain.receive
+package hu.tb.meet.domain.send
 
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class ScheduleDay(
+data class SessionResult(
+    val id: Int,
     val date: LocalDate,
-    val drafts: List<Draft>
-)
-
-@Serializable
-data class Draft(
     val start: LocalTime,
     val end: LocalTime
 )
-
-@Serializable
-data class MonthReceive(val date: LocalDate)
