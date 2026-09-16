@@ -1,6 +1,6 @@
 package hu.tb.meet.data.repository
 
-import hu.tb.meet.data.model.table
+import hu.tb.meet.data.table.table
 import hu.tb.meet.domain.AccountRecord
 import hu.tb.meet.domain.receive.AccountType
 import org.jetbrains.exposed.v1.core.eq

@@ -5,6 +5,7 @@ import hu.tb.meet.data.repository.DeviceFidRepository
 import hu.tb.meet.data.repository.ProfileRepository
 import hu.tb.meet.data.repository.SearchRepository
 import hu.tb.meet.data.repository.RequestRepository
+import hu.tb.meet.data.repository.ScheduleRepository
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
@@ -14,4 +15,5 @@ val appModule = module {
     singleOf(::SearchRepository)
     singleOf(::RequestRepository)
     singleOf(::DeviceFidRepository)
+    singleOf(::ScheduleRepository)
 }

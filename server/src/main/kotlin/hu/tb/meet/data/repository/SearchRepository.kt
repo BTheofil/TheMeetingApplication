@@ -1,8 +1,8 @@
 package hu.tb.meet.data.repository
 
-import hu.tb.meet.data.model.CoachTable
-import hu.tb.meet.data.model.NormalTable
-import hu.tb.meet.data.model.SubscriptionTable
+import hu.tb.meet.data.table.CoachTable
+import hu.tb.meet.data.table.NormalTable
+import hu.tb.meet.data.table.SubscriptionTable
 import hu.tb.meet.domain.send.CoachResult
 import hu.tb.meet.domain.send.SubscriptionStatus
 import org.jetbrains.exposed.v1.core.eq
