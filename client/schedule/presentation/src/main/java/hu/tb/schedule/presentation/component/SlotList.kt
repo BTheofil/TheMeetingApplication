@@ -25,9 +25,8 @@ import androidx.compose.ui.unit.dp
 import com.skydoves.compose.stability.runtime.TraceRecomposition
 import hu.tb.design_system.Icons
 import hu.tb.design_system.theme.MeetingTheme
-import hu.tb.schedule.domain.DraftSlot
 import hu.tb.schedule.domain.SlotListInfo
-import hu.tb.schedule.domain.TimeSlot
+import hu.tb.schedule.domain.TimeRange
 import hu.tb.schedule.domain.formattedTimeUi
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
@@ -45,15 +44,15 @@ internal fun SlotList(
     isPasteEnabled: Boolean,
     onCopyDay: () -> Unit,
     onPasteDay: () -> Unit,
-    onCopySlot: (DraftSlot) -> Unit,
-    onDeleteSlot: (TimeSlot) -> Unit,
-    onDeleteDraft: (DraftSlot) -> Unit,
-    onDraftConfirm: (DraftSlot) -> Unit
+    onDeleteSession: (TimeRange.SessionTime) -> Unit,
+    onDeleteDraft: (TimeRange.DraftSlot) -> Unit,
+    onCopy: (TimeRange) -> Unit,
+    onConfirmDraft: (TimeRange.DraftSlot) -> Unit
 ) {
-    var draft by remember(slotListInfo.date) { mutableStateOf<DraftSlot?>(null) }
+    var draft by remember(slotListInfo.date) { mutableStateOf<TimeRange.DraftSlot?>(null) }
     var timeTarget by remember(slotListInfo.date) { mutableStateOf<TimeTarget?>(null) }
 
-    val isDayEmpty = slotListInfo.slots.isEmpty() && slotListInfo.drafts.isEmpty()
+    val isDayEmpty = slotListInfo.sessions.isEmpty() && slotListInfo.drafts.isEmpty()
 
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -100,12 +99,12 @@ internal fun SlotList(
             )
         }
 
-        slotListInfo.slots.forEach { slot ->
+        slotListInfo.sessions.forEach { session ->
             SlotRow(
-                time = slot.formattedTimeUi(),
+                time = session.formattedTimeUi(),
                 isDraft = false,
-                onCopy = { onCopySlot(slot.toDraft()) },
-                onDelete = { onDeleteSlot(slot) }
+                onCopy = { onCopy(session) },
+                onDelete = { onDeleteSession(session) }
             )
         }
 
@@ -113,7 +112,7 @@ internal fun SlotList(
             SlotRow(
                 time = draftSlot.formattedTimeUi(),
                 isDraft = true,
-                onCopy = { onCopySlot(draftSlot) },
+                onCopy = { onCopy(draftSlot) },
                 onDelete = { onDeleteDraft(draftSlot) }
             )
         }
@@ -125,7 +124,7 @@ internal fun SlotList(
                 onStartClick = { timeTarget = TimeTarget.START },
                 onEndClick = { timeTarget = TimeTarget.END },
                 onConfirm = {
-                    onDraftConfirm(currentDraft)
+                    onConfirmDraft(currentDraft)
                     draft = null
                 },
                 onCancel = { draft = null }
@@ -133,9 +132,9 @@ internal fun SlotList(
         } else {
             TextButton(
                 onClick = {
-                    val start = (slotListInfo.slots.map { it.end } +
+                    val start = (slotListInfo.sessions.map { it.end } +
                             slotListInfo.drafts.map { it.end }).maxOrNull()
-                    draft = DraftSlot(
+                    draft = TimeRange.DraftSlot(
                         start = start ?: LocalTime(9, 0),
                         end = start ?: LocalTime(10, 0)
                     )
@@ -220,7 +219,7 @@ private fun SlotRow(
 
 @Composable
 private fun SlotDraftRow(
-    draft: DraftSlot,
+    draft: TimeRange.DraftSlot,
     isConfirmEnabled: Boolean,
     onStartClick: () -> Unit,
     onEndClick: () -> Unit,
@@ -272,21 +271,21 @@ private fun SlotListPreview() {
         SlotList(
             slotListInfo = SlotListInfo(
                 date = LocalDate(2026, 9, 14),
-                slots = listOf(
-                    TimeSlot(1, LocalTime(9, 0), LocalTime(10, 0)),
-                    TimeSlot(2, LocalTime(11, 0), LocalTime(11, 30))
+                sessions = listOf(
+                    TimeRange.SessionTime(1, LocalTime(9, 0), LocalTime(10, 0)),
+                    TimeRange.SessionTime(2, LocalTime(11, 0), LocalTime(11, 30))
                 ),
                 drafts = listOf(
-                    DraftSlot(LocalTime(13, 0), LocalTime(14, 0))
+                    TimeRange.DraftSlot(LocalTime(13, 0), LocalTime(14, 0))
                 )
             ),
             isPasteEnabled = true,
             onCopyDay = {},
             onPasteDay = {},
-            onCopySlot = {},
-            onDeleteSlot = {},
+            onDeleteSession = {},
             onDeleteDraft = {},
-            onDraftConfirm = {}
+            onCopy = {},
+            onConfirmDraft = {}
         )
     }
 }

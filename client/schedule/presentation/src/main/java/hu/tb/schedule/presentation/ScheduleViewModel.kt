@@ -4,15 +4,19 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import hu.tb.network.fold
 import hu.tb.network.repository.ScheduleRepository
-import hu.tb.schedule.domain.DraftSlot
-import hu.tb.schedule.domain.TimeSlot
+import hu.tb.schedule.domain.TimeRange
+import hu.tb.schedule.domain.toDraft
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
 import kotlinx.datetime.minusMonth
 import kotlinx.datetime.plusMonth
+import kotlinx.datetime.todayIn
+import kotlin.collections.toSet
+import kotlin.time.Clock
 
 class ScheduleViewModel(
     private val scheduleRepository: ScheduleRepository
@@ -20,6 +24,10 @@ class ScheduleViewModel(
 
     private val _state = MutableStateFlow(ScheduleState())
     val state = _state.asStateFlow()
+
+    init {
+        getPublishedSessions()
+    }
 
     fun action(action: ScheduleAction) {
         when (action) {
@@ -37,79 +45,87 @@ class ScheduleViewModel(
             }
 
             is ScheduleAction.DraftConfirm -> addDraft(action.date, action.draft)
-            is ScheduleAction.SlotDelete -> deleteSlot(action.date, action.slot)
-            is ScheduleAction.SlotCopy -> copySlot(action.slot)
+            is ScheduleAction.SessionDelete -> deleteSession(action.date, action.session)
             is ScheduleAction.DraftDelete -> deleteDraft(action.date, action.draft)
-            is ScheduleAction.DayCopy -> copyDay(action.date)
-            is ScheduleAction.DayPaste -> pasteDay(action.date)
-            ScheduleAction.PublishDrafts -> publishDrafts()
+            is ScheduleAction.DayPaste -> pasteDay(action.date, action.slots)
+            ScheduleAction.DraftsPublish -> publishDrafts()
         }
     }
 
     private fun publishDrafts() {
-        val drafts = state.value.drafts
+        val drafts = state.value.draftsByDate
         if (drafts.isEmpty()) return
 
         viewModelScope.launch {
             scheduleRepository.uploadDrafts(drafts).fold(
-                success = { _state.update { it.copy(drafts = emptyMap()) } },
+                success = {
+                    _state.update { it.copy(draftsByDate = emptyMap()) }
+                    getPublishedSessions()
+                },
                 fail = {}
             )
         }
     }
 
-    private fun addDraft(date: LocalDate, draft: DraftSlot) {
-        _state.update { state ->
-            state.copy(
-                drafts = state.drafts + (date to (state.drafts[date].orEmpty() + draft))
+    private fun getPublishedSessions() {
+        viewModelScope.launch {
+            val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
+            scheduleRepository.getPublishedSessions(today).fold(
+                success = { response ->
+                    _state.update { it.copy(sessionsByDate = response) }
+                },
+                fail = {}
             )
         }
     }
 
-    private fun deleteSlot(date: LocalDate, slot: TimeSlot) {
+    private fun addDraft(date: LocalDate, draft: TimeRange.DraftSlot) {
         _state.update { state ->
-            val remaining = state.slotsByDate[date].orEmpty() - slot
             state.copy(
-                slotsByDate = if (remaining.isEmpty()) state.slotsByDate - date
-                else state.slotsByDate + (date to remaining)
+                draftsByDate = state.draftsByDate + (date to (state.draftsByDate[date].orEmpty() + draft))
             )
         }
     }
 
-    private fun deleteDraft(date: LocalDate, draft: DraftSlot) {
-        _state.update { state ->
-            val remaining = state.drafts[date].orEmpty() - draft
-            state.copy(
-                drafts = if (remaining.isEmpty()) state.drafts - date
-                else state.drafts + (date to remaining)
+    private fun deleteSession(date: LocalDate, session: TimeRange.SessionTime) {
+        viewModelScope.launch {
+            scheduleRepository.deletePublishedSession(date, session.start, session.end).fold(
+                success = {
+                    _state.update { state ->
+                        val remaining = state.sessionsByDate[date].orEmpty() - session
+                        state.copy(
+                            sessionsByDate = if (remaining.isEmpty()) state.sessionsByDate - date
+                            else state.sessionsByDate + (date to remaining)
+                        )
+                    }
+                },
+                fail = {}
             )
         }
     }
 
-    private fun copySlot(slot: DraftSlot) {
+    private fun deleteDraft(date: LocalDate, draft: TimeRange.DraftSlot) {
         _state.update { state ->
-            state.copy(clipboard = listOf(slot))
+            val remaining = state.draftsByDate[date].orEmpty() - draft
+            state.copy(
+                draftsByDate = if (remaining.isEmpty()) state.draftsByDate - date
+                else state.draftsByDate + (date to remaining)
+            )
         }
     }
 
-    private fun copyDay(date: LocalDate) {
+    private fun pasteDay(date: LocalDate, slots: List<TimeRange>) {
         _state.update { state ->
-            state.copy(clipboard = state.dayTimes(date))
-        }
-    }
-
-    private fun pasteDay(date: LocalDate) {
-        _state.update { state ->
-            val newDrafts = state.clipboard - state.dayTimes(date).toSet()
+            val newDrafts = slots.map { it.toDraft() } - state.dayDrafts(date).toSet()
             if (newDrafts.isEmpty()) return@update state
             state.copy(
-                drafts = state.drafts + (date to (state.drafts[date].orEmpty() + newDrafts)
+                draftsByDate = state.draftsByDate + (date to (state.draftsByDate[date].orEmpty() + newDrafts)
                     .sortedBy { it.start })
             )
         }
     }
 
-    private fun ScheduleState.dayTimes(date: LocalDate): List<DraftSlot> =
-        (slotsByDate[date].orEmpty().map { it.toDraft() } + drafts[date].orEmpty())
+    private fun ScheduleState.dayDrafts(date: LocalDate): List<TimeRange.DraftSlot> =
+        (sessionsByDate[date].orEmpty().map { it.toDraft() } + draftsByDate[date].orEmpty())
             .sortedBy { it.start }
 }
