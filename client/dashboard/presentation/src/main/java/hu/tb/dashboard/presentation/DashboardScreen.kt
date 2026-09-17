@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -42,12 +41,12 @@ import hu.tb.dashboard.presentation.component.calendar.CollapsibleCalendarParame
 import hu.tb.dashboard.presentation.component.coach.CoachOpenHoursCard
 import hu.tb.dashboard.presentation.component.coach.DiscoverCoachesCard
 import hu.tb.dashboard.presentation.component.coach.MyCoachesSection
-import hu.tb.dashboard.presentation.component.common.DashboardCard
 import hu.tb.dashboard.presentation.component.common.SectionHeader
 import hu.tb.dashboard.presentation.util.currentDate
 import hu.tb.dashboard.presentation.util.formatSectionLabel
 import hu.tb.datastore.ProfileType
 import hu.tb.design_system.Icons
+import hu.tb.design_system.component.CardComponent
 import hu.tb.design_system.modifier.glowBackground
 import hu.tb.design_system.modifier.screenPadding
 import hu.tb.design_system.theme.MeetingTheme
@@ -203,7 +202,7 @@ private fun SelectedDayBooked(
             title = "Booked · ${state.selectedDate.formatSectionLabel(state.today)}"
         )
         if (sessions.isEmpty()) {
-            DashboardCard(modifier = Modifier.fillMaxWidth()) {
+            CardComponent {
                 Text(
                     modifier = Modifier.padding(20.dp),
                     text = "No sessions on this day.",

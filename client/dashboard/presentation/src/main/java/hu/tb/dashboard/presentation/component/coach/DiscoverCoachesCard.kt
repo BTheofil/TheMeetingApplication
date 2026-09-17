@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
@@ -18,16 +17,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import hu.tb.dashboard.presentation.component.common.DashboardCard
 import hu.tb.design_system.Icons
+import hu.tb.design_system.component.CardComponent
 import hu.tb.design_system.theme.MeetingTheme
 
 @Composable
 internal fun DiscoverCoachesCard(
-    modifier: Modifier = Modifier,
     onDiscoverCoaches: () -> Unit
 ) {
-    DashboardCard(modifier = modifier.fillMaxWidth()) {
+    CardComponent {
         Row(
             modifier = Modifier.padding(14.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),

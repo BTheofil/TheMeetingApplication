@@ -11,9 +11,11 @@ dependencies {
     api(projects.auth.domain)
     api(projects.search.domain)
     api(projects.notification.domain)
+    api(projects.schedule.domain)
     implementation(projects.dashboard.domain)
 
     api(libs.bundles.ktor)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.koin)
+    implementation(libs.kotlinx.datetime)
 }

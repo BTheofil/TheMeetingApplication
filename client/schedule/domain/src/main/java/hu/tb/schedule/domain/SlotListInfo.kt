@@ -6,6 +6,6 @@ import kotlinx.datetime.LocalDate
 @Immutable
 data class SlotListInfo(
     val date: LocalDate,
-    val slots: List<TimeSlot>,
-    val drafts: List<DraftSlot> = emptyList()
+    val sessions: List<TimeRange.SessionTime>,
+    val drafts: List<TimeRange.DraftSlot> = emptyList()
 )

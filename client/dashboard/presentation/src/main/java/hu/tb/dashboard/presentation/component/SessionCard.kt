@@ -6,7 +6,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -24,12 +23,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import hu.tb.dashboard.domain.SessionItem
-import hu.tb.dashboard.presentation.component.common.DashboardCard
-import hu.tb.dashboard.presentation.component.common.DashboardCardCornerSize
 import hu.tb.dashboard.presentation.util.currentDate
 import hu.tb.dashboard.presentation.util.formatDayLabel
 import hu.tb.dashboard.presentation.util.formatTime
 import hu.tb.design_system.Icons
+import hu.tb.design_system.component.CardComponent
 import hu.tb.design_system.theme.MeetingTheme
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalTime
@@ -38,11 +36,10 @@ import kotlinx.datetime.plus
 @Composable
 internal fun SessionCard(
     session: SessionItem,
-    modifier: Modifier = Modifier,
     showDate: Boolean = false,
     onClick: () -> Unit
 ) {
-    DashboardCard(modifier = modifier.fillMaxWidth()) {
+    CardComponent {
         Row(
             modifier = Modifier
                 .clickable(onClick = onClick)
@@ -51,7 +48,7 @@ internal fun SessionCard(
                         Modifier.border(
                             width = 4.dp,
                             color = MaterialTheme.colorScheme.primary.copy(alpha = .7f),
-                            shape = RoundedCornerShape(DashboardCardCornerSize.dp)
+                            shape = RoundedCornerShape(16.dp)
                         )
                     } else Modifier
                 )

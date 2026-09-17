@@ -10,6 +10,7 @@ dependencies {
     implementation(projects.designSystem)
     implementation(projects.network)
     implementation(projects.schedule.domain)
+    implementation(projects.datastore)
 
     implementation(libs.kotlinx.datetime)
     implementation(libs.bundles.koin)

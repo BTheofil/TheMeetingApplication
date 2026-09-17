@@ -3,6 +3,6 @@ plugins {
 }
 
 dependencies {
-    implementation(libs.compose.runtime)
+    api(libs.compose.runtime)
     implementation(libs.kotlinx.datetime)
 }

@@ -2,8 +2,8 @@ package hu.tb.dashboard.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import hu.tb.datastore.UserDatastoreRepository
 import hu.tb.datastore.ProfileType
+import hu.tb.datastore.UserDatastoreRepository
 import hu.tb.network.fold
 import hu.tb.network.repository.DashboardRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -44,7 +44,6 @@ class DashboardViewModel(
                 )
             }
         }
-
     }
 
     fun onDateSelected(date: LocalDate) {

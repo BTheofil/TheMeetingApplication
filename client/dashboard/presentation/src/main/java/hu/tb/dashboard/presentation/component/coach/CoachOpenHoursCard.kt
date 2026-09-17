@@ -18,16 +18,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import hu.tb.dashboard.presentation.component.common.DashboardCard
 import hu.tb.design_system.Icons
+import hu.tb.design_system.component.CardComponent
 import hu.tb.design_system.theme.MeetingTheme
 
 @Composable
 internal fun CoachOpenHoursCard(
-    modifier: Modifier = Modifier,
     onCreateOpenHours: () -> Unit
 ) {
-    DashboardCard(modifier = modifier.fillMaxWidth()) {
+    CardComponent {
         Column(
             modifier = Modifier.padding(20.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)

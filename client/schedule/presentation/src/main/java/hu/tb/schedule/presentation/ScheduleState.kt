@@ -1,8 +1,7 @@
 package hu.tb.schedule.presentation
 
 import androidx.compose.runtime.Immutable
-import hu.tb.schedule.domain.DraftSlot
-import hu.tb.schedule.domain.TimeSlot
+import hu.tb.schedule.domain.TimeRange
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.YearMonth
@@ -14,8 +13,10 @@ import kotlin.time.Clock
 data class ScheduleState(
     val selectedDate: LocalDate = Clock.System.todayIn(TimeZone.currentSystemDefault()),
     val visibleMonth: YearMonth = selectedDate.yearMonth,
-    val slotsByDate: Map<LocalDate, List<TimeSlot>> = emptyMap(),
-    val drafts: Map<LocalDate, List<DraftSlot>> = emptyMap(),
-    val clipboard: List<DraftSlot> = emptyList(),
-    val isCalendarLoading: Boolean = false
+    val sessionsByDate: Map<LocalDate, List<TimeRange.SessionTime>> = emptyMap(),
+    val draftsByDate: Map<LocalDate, List<TimeRange.DraftSlot>> = emptyMap(),
+    val loadedMonths: Set<YearMonth> = emptySet(),
+    val deletingSessionIds: Set<Int> = emptySet(),
+    val isCalendarLoading: Boolean = false,
+    val isPublishing: Boolean = false
 )

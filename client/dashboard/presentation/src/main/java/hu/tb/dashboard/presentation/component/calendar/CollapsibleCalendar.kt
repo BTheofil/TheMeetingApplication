@@ -29,9 +29,9 @@ import hu.tb.dashboard.domain.SessionItem
 import hu.tb.dashboard.presentation.DashboardAction
 import hu.tb.dashboard.presentation.component.calendar.model.buildCalendarMonth
 import hu.tb.dashboard.presentation.component.calendar.model.buildCalendarWeek
-import hu.tb.dashboard.presentation.component.common.DashboardCard
 import hu.tb.design_system.component.AvailableRing
 import hu.tb.design_system.component.BookedDot
+import hu.tb.design_system.component.CardComponent
 import hu.tb.design_system.component.calendar.CalendarHeader
 import hu.tb.design_system.component.calendar.MonthGrid
 import hu.tb.design_system.component.calendar.MonthGridParameter
@@ -55,11 +55,10 @@ data class CollapsibleCalendarParameter(
 @TraceRecomposition
 @Composable
 internal fun CollapsibleCalendar(
-    modifier: Modifier = Modifier,
     calendarParameter: CollapsibleCalendarParameter,
     action: (DashboardAction) -> Unit
 ) {
-    var isCalendarExpanded by remember { mutableStateOf(false) }
+    var isCalendarExpanded by remember { mutableStateOf(true) }
     var currentMonth by remember { mutableStateOf(calendarParameter.todayDate.yearMonth) }
 
     val month = remember(calendarParameter.sessions, calendarParameter.openSlots, currentMonth) {
@@ -80,13 +79,13 @@ internal fun CollapsibleCalendar(
         { date -> action(DashboardAction.OnDateSelect(date)) }
     }
 
-    DashboardCard(modifier = modifier.fillMaxWidth()) {
+    CardComponent {
         Column(
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 12.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             CalendarHeader(
-                modifier = Modifier.padding(start = 8.dp),
+                modifier = Modifier.padding(start = 12.dp),
                 visibleMonth = currentMonth,
                 isExpanded = isCalendarExpanded,
                 onPreviousMonth = { currentMonth = currentMonth.minusMonth() },
