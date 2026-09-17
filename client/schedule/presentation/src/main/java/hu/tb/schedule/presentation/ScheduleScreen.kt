@@ -15,10 +15,13 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,6 +34,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.skydoves.compose.stability.runtime.TraceRecomposition
 import hu.tb.design_system.Icons
+import hu.tb.design_system.component.CountdownSnackbar
+import hu.tb.design_system.component.CountdownSnackbarVisuals
 import hu.tb.design_system.component.calendar.model.CalendarDay
 import hu.tb.design_system.component.calendar.model.buildCalendarMonth
 import hu.tb.design_system.modifier.glowBackground
@@ -45,6 +50,7 @@ import hu.tb.schedule.presentation.component.SlotList
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
+import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
 import kotlin.collections.isNullOrEmpty
 import kotlin.collections.orEmpty
@@ -55,7 +61,18 @@ fun ScheduleScreen(
     viewModel: ScheduleViewModel = koinViewModel(),
     navigationRequest: () -> Unit
 ) {
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(Unit) {
+        viewModel.event.collectLatest {
+            snackbarHostState.showSnackbar(
+                visuals = CountdownSnackbarVisuals(message = it)
+            )
+        }
+    }
+
     ScheduleScreen(
+        snackbarHostState = snackbarHostState,
         state = viewModel.state.collectAsStateWithLifecycle().value,
         action = {
             if (it is ScheduleAction.BackRequest) navigationRequest()
@@ -68,6 +85,7 @@ fun ScheduleScreen(
 @TraceRecomposition
 @Composable
 private fun ScheduleScreen(
+    snackbarHostState: SnackbarHostState,
     state: ScheduleState,
     action: (ScheduleAction) -> Unit
 ) {
@@ -96,6 +114,11 @@ private fun ScheduleScreen(
     ) {
         Scaffold(
             containerColor = Color.Transparent,
+            snackbarHost = {
+                SnackbarHost(hostState = snackbarHostState) { data ->
+                    CountdownSnackbar(snackbarData = data)
+                }
+            },
             topBar = {
                 TopAppBar(
                     colors = TopAppBarDefaults.topAppBarColors(
@@ -187,6 +210,7 @@ private fun ScheduleScreenPreview() {
 
     MeetingTheme {
         ScheduleScreen(
+            snackbarHostState = SnackbarHostState(),
             state = ScheduleState(
                 sessionsByDate = mapOf(
                     today to listOf(

@@ -6,8 +6,10 @@ import hu.tb.network.fold
 import hu.tb.network.repository.ScheduleRepository
 import hu.tb.schedule.domain.TimeRange
 import hu.tb.schedule.domain.toDraft
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
@@ -24,6 +26,9 @@ class ScheduleViewModel(
 
     private val _state = MutableStateFlow(ScheduleState())
     val state = _state.asStateFlow()
+
+    private val _event = Channel<String>()
+    val event = _event.receiveAsFlow()
 
     init {
         getPublishedSessions()
@@ -62,7 +67,7 @@ class ScheduleViewModel(
                     _state.update { it.copy(draftsByDate = emptyMap()) }
                     getPublishedSessions()
                 },
-                fail = {}
+                fail = { _event.send(it.formatErrorMessage) }
             )
         }
     }
@@ -74,7 +79,7 @@ class ScheduleViewModel(
                 success = { response ->
                     _state.update { it.copy(sessionsByDate = response) }
                 },
-                fail = {}
+                fail = { _event.send(it.formatErrorMessage) }
             )
         }
     }
@@ -99,7 +104,7 @@ class ScheduleViewModel(
                         )
                     }
                 },
-                fail = {}
+                fail = { _event.send(it.formatErrorMessage) }
             )
         }
     }
