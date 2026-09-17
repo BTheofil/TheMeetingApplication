@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.skydoves.compose.stability.runtime.TraceRecomposition
 import hu.tb.design_system.Icons
+import hu.tb.design_system.component.CardComponent
 import hu.tb.design_system.component.CountdownSnackbar
 import hu.tb.design_system.component.CountdownSnackbarVisuals
 import hu.tb.design_system.component.calendar.model.CalendarDay
@@ -47,8 +48,7 @@ import hu.tb.schedule.domain.ScheduleCalendarInfo
 import hu.tb.schedule.domain.SlotListInfo
 import hu.tb.schedule.domain.TimeRange
 import hu.tb.schedule.presentation.component.ScheduleCalendar
-import hu.tb.schedule.presentation.component.ScheduleCard
-import hu.tb.schedule.presentation.component.SlotList
+import hu.tb.schedule.presentation.component.SessionsPanel
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
@@ -148,7 +148,7 @@ private fun ScheduleScreen(
                     .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                ScheduleCard {
+                CardComponent {
                     ScheduleCalendar(
                         month = month,
                         scheduleCalendarInfo = ScheduleCalendarInfo(
@@ -168,8 +168,9 @@ private fun ScheduleScreen(
                         )
                     }
                 }
-                ScheduleCard {
-                    SlotList(
+                CardComponent {
+                    SessionsPanel(
+                        modifier = Modifier.padding(horizontal = 10.dp),
                         slotListInfo = slotListInfo,
                         isPasteEnabled = clipboard.isNotEmpty(),
                         isPastDay = slotListInfo.date < today,

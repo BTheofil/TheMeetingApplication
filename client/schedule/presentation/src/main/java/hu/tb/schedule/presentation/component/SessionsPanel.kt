@@ -40,7 +40,7 @@ import kotlinx.datetime.format.char
 
 @TraceRecomposition
 @Composable
-internal fun SlotList(
+internal fun SessionsPanel(
     slotListInfo: SlotListInfo,
     modifier: Modifier = Modifier,
     isPasteEnabled: Boolean,
@@ -279,9 +279,9 @@ private fun SlotDraftRow(
 
 @PreviewLightDark
 @Composable
-private fun SlotListPreview() {
+private fun SessionsPanelPreview() {
     MeetingTheme {
-        SlotList(
+        SessionsPanel(
             slotListInfo = SlotListInfo(
                 date = LocalDate(2026, 9, 14),
                 sessions = listOf(

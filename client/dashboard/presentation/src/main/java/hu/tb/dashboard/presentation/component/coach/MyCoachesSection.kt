@@ -20,9 +20,9 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import hu.tb.dashboard.domain.CoachItem
 import hu.tb.design_system.component.AvailableRing
-import hu.tb.dashboard.presentation.component.common.DashboardCard
 import hu.tb.dashboard.presentation.component.common.SectionHeader
 import hu.tb.design_system.component.Avatar
+import hu.tb.design_system.component.CardComponent
 import hu.tb.design_system.theme.MeetingTheme
 
 @Composable
@@ -42,7 +42,7 @@ internal fun MyCoachesSection(
         )
         when {
             isLoading || coaches == null -> {
-                DashboardCard {
+                CardComponent {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -75,7 +75,7 @@ private fun CoachRow(
     coach: CoachItem,
     onClick: () -> Unit
 ) {
-    DashboardCard(modifier = Modifier.fillMaxWidth()) {
+    CardComponent {
         Row(
             modifier = Modifier.padding(14.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -131,7 +131,7 @@ private fun OpenHours(count: Int) {
 
 @Composable
 private fun EmptyCoaches() {
-    DashboardCard(modifier = Modifier.fillMaxWidth()) {
+    CardComponent {
         Text(
             modifier = Modifier.padding(20.dp),
             text = "You haven't signed up with any coach yet. Once you do, they'll show up here.",

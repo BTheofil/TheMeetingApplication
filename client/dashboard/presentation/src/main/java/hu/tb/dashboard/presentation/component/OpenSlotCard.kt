@@ -5,7 +5,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -23,11 +22,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import hu.tb.dashboard.domain.OpenSlot
-import hu.tb.design_system.component.AvailableRing
-import hu.tb.dashboard.presentation.component.common.DashboardCard
 import hu.tb.dashboard.presentation.util.currentDate
 import hu.tb.dashboard.presentation.util.formatTime
 import hu.tb.design_system.Icons
+import hu.tb.design_system.component.AvailableRing
+import hu.tb.design_system.component.CardComponent
 import hu.tb.design_system.theme.MeetingTheme
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalTime
@@ -37,10 +36,9 @@ import kotlinx.datetime.plus
 internal fun OpenSlotCard(
     slot: OpenSlot,
     coachName: String?,
-    modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
-    DashboardCard(modifier = modifier.fillMaxWidth()) {
+    CardComponent {
         Row(
             modifier = Modifier
                 .clickable(onClick = onClick)
