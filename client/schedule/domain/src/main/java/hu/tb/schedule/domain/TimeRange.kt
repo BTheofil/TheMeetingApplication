@@ -24,3 +24,5 @@ sealed interface TimeRange {
 fun TimeRange.formattedTimeUi(): String = "${start.formattedTimeUi()} – ${end.formattedTimeUi()}"
 
 fun TimeRange.toDraft(): TimeRange.DraftSlot = TimeRange.DraftSlot(start = start, end = end)
+
+fun TimeRange.overlaps(other: TimeRange): Boolean = start < other.end && other.start < end

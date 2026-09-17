@@ -18,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -28,6 +29,7 @@ import hu.tb.design_system.theme.MeetingTheme
 import hu.tb.schedule.domain.SlotListInfo
 import hu.tb.schedule.domain.TimeRange
 import hu.tb.schedule.domain.formattedTimeUi
+import hu.tb.schedule.domain.overlaps
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.format
@@ -42,6 +44,8 @@ internal fun SlotList(
     slotListInfo: SlotListInfo,
     modifier: Modifier = Modifier,
     isPasteEnabled: Boolean,
+    isPastDay: Boolean,
+    deletingSessionIds: Set<Int>,
     onCopyDay: () -> Unit,
     onPasteDay: () -> Unit,
     onDeleteSession: (TimeRange.SessionTime) -> Unit,
@@ -80,7 +84,7 @@ internal fun SlotList(
             }
             TextButton(
                 onClick = onPasteDay,
-                enabled = isPasteEnabled
+                enabled = isPasteEnabled && !isPastDay
             ) {
                 Text(
                     text = "Paste",
@@ -103,6 +107,7 @@ internal fun SlotList(
             SlotRow(
                 time = session.formattedTimeUi(),
                 isDraft = false,
+                isDeleting = session.id in deletingSessionIds,
                 onCopy = { onCopy(session) },
                 onDelete = { onDeleteSession(session) }
             )
@@ -120,7 +125,9 @@ internal fun SlotList(
         if (currentDraft != null) {
             SlotDraftRow(
                 draft = currentDraft,
-                isConfirmEnabled = currentDraft.end > currentDraft.start,
+                isConfirmEnabled = currentDraft.end > currentDraft.start &&
+                        slotListInfo.sessions.none { it.overlaps(currentDraft) } &&
+                        slotListInfo.drafts.none { it.overlaps(currentDraft) },
                 onStartClick = { timeTarget = TimeTarget.START },
                 onEndClick = { timeTarget = TimeTarget.END },
                 onConfirm = {
@@ -129,7 +136,7 @@ internal fun SlotList(
                 },
                 onCancel = { draft = null }
             )
-        } else {
+        } else if (!isPastDay) {
             TextButton(
                 onClick = {
                     val start = (slotListInfo.sessions.map { it.end } +
@@ -186,11 +193,14 @@ private val dayLabelFormat = LocalDate.Format {
 private fun SlotRow(
     time: String,
     isDraft: Boolean,
+    isDeleting: Boolean = false,
     onCopy: () -> Unit,
     onDelete: () -> Unit
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .alpha(if (isDeleting) 0.5f else 1f),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
@@ -207,7 +217,10 @@ private fun SlotRow(
                 tint = MaterialTheme.colorScheme.primary
             )
         }
-        IconButton(onClick = onDelete) {
+        IconButton(
+            onClick = onDelete,
+            enabled = !isDeleting
+        ) {
             Icon(
                 painter = painterResource(Icons.delete),
                 contentDescription = "delete copy",
@@ -280,6 +293,8 @@ private fun SlotListPreview() {
                 )
             ),
             isPasteEnabled = true,
+            isPastDay = false,
+            deletingSessionIds = emptySet(),
             onCopyDay = {},
             onPasteDay = {},
             onDeleteSession = {},

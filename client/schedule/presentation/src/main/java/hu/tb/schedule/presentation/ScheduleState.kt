@@ -15,5 +15,8 @@ data class ScheduleState(
     val visibleMonth: YearMonth = selectedDate.yearMonth,
     val sessionsByDate: Map<LocalDate, List<TimeRange.SessionTime>> = emptyMap(),
     val draftsByDate: Map<LocalDate, List<TimeRange.DraftSlot>> = emptyMap(),
-    val isCalendarLoading: Boolean = false
+    val loadedMonths: Set<YearMonth> = emptySet(),
+    val deletingSessionIds: Set<Int> = emptySet(),
+    val isCalendarLoading: Boolean = false,
+    val isPublishing: Boolean = false
 )

@@ -6,9 +6,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -170,6 +172,8 @@ private fun ScheduleScreen(
                     SlotList(
                         slotListInfo = slotListInfo,
                         isPasteEnabled = clipboard.isNotEmpty(),
+                        isPastDay = slotListInfo.date < today,
+                        deletingSessionIds = state.deletingSessionIds,
                         onCopyDay = { clipboard = slotListInfo.sessions + slotListInfo.drafts },
                         onPasteDay = {
                             action(ScheduleAction.DayPaste(state.selectedDate, clipboard))
@@ -189,13 +193,21 @@ private fun ScheduleScreen(
                 Button(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = { action(ScheduleAction.DraftsPublish) },
-                    enabled = state.draftsByDate.isNotEmpty(),
+                    enabled = state.draftsByDate.isNotEmpty() && !state.isPublishing,
                     content = {
-                        Text(
-                            text = "Publish",
-                            style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.onPrimary
-                        )
+                        if (state.isPublishing) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(20.dp),
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                strokeWidth = 2.dp
+                            )
+                        } else {
+                            Text(
+                                text = "Publish",
+                                style = MaterialTheme.typography.labelLarge,
+                                color = MaterialTheme.colorScheme.onPrimary
+                            )
+                        }
                     }
                 )
             }
