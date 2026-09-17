@@ -95,7 +95,6 @@ class ScheduleViewModel(
                         )
                     }
                     loadMonth(state.value.visibleMonth)
-                    _event.send("Time slots published")
                 },
                 fail = { failure ->
                     _state.update { it.copy(isPublishing = false) }
