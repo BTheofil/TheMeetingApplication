@@ -3,11 +3,9 @@ package hu.tb.dashboard.presentation.component.coach
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -19,7 +17,6 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import hu.tb.dashboard.domain.CoachItem
-import hu.tb.design_system.component.AvailableRing
 import hu.tb.dashboard.presentation.component.common.SectionHeader
 import hu.tb.design_system.component.Avatar
 import hu.tb.design_system.component.CardComponent
@@ -30,7 +27,6 @@ internal fun MyCoachesSection(
     isLoading: Boolean,
     coaches: List<CoachItem>?,
     modifier: Modifier = Modifier,
-    onCoachClick: (String) -> Unit
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -62,7 +58,6 @@ internal fun MyCoachesSection(
                 coaches.forEach { coach ->
                     CoachRow(
                         coach = coach,
-                        onClick = { onCoachClick(coach.id) }
                     )
                 }
             }
@@ -73,7 +68,6 @@ internal fun MyCoachesSection(
 @Composable
 private fun CoachRow(
     coach: CoachItem,
-    onClick: () -> Unit
 ) {
     CardComponent {
         Row(
@@ -93,39 +87,8 @@ private fun CoachRow(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                //OpenHours(count = coach.openHourCount)
-            }
-            Button(
-                onClick = onClick,
-                contentPadding = PaddingValues(horizontal = 20.dp, vertical = 6.dp)
-            ) {
-                Text(
-                    text = "Book",
-                    style = MaterialTheme.typography.labelLarge
-                )
             }
         }
-    }
-}
-
-@Composable
-private fun OpenHours(count: Int) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(6.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        if (count > 0) {
-            AvailableRing()
-        }
-        Text(
-            text = when (count) {
-                0 -> "No open hours right now"
-                1 -> "1 open hour"
-                else -> "$count open hours"
-            },
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
     }
 }
 
@@ -149,8 +112,7 @@ private fun MyCoachesSectionPreview(
     MeetingTheme {
         MyCoachesSection(
             coaches = mock,
-            onCoachClick = {},
-            isLoading = true
+            isLoading = false
         )
     }
 }

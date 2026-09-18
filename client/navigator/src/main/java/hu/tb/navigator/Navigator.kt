@@ -150,8 +150,6 @@ fun Navigator(
 
                                         is DashboardAction.OnCreateOpenHoursClick ->
                                             dashboardStack.add(Destination.DashboardGraph.Schedule)
-
-                                        else -> Unit
                                     }
                                 },
                             )

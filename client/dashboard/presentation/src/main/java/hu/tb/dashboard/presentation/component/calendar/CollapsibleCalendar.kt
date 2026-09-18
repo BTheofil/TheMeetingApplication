@@ -24,7 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.skydoves.compose.stability.runtime.TraceRecomposition
-import hu.tb.dashboard.domain.OpenSlot
+import hu.tb.dashboard.domain.FreeSession
 import hu.tb.dashboard.domain.SessionItem
 import hu.tb.dashboard.presentation.DashboardAction
 import hu.tb.dashboard.presentation.component.calendar.model.buildCalendarMonth
@@ -47,7 +47,7 @@ import kotlinx.datetime.yearMonth
 @Stable
 data class CollapsibleCalendarParameter(
     val sessions: List<SessionItem>,
-    val openSlots: List<OpenSlot>,
+    val freeSessions: List<FreeSession>,
     val todayDate: LocalDate,
     val selectedDate: LocalDate
 )
@@ -58,21 +58,21 @@ internal fun CollapsibleCalendar(
     calendarParameter: CollapsibleCalendarParameter,
     action: (DashboardAction) -> Unit
 ) {
-    var isCalendarExpanded by remember { mutableStateOf(true) }
+    var isCalendarExpanded by remember { mutableStateOf(false) }
     var currentMonth by remember { mutableStateOf(calendarParameter.todayDate.yearMonth) }
 
-    val month = remember(calendarParameter.sessions, calendarParameter.openSlots, currentMonth) {
-        buildCalendarMonth(currentMonth, calendarParameter.sessions, calendarParameter.openSlots)
+    val month = remember(calendarParameter.sessions, calendarParameter.freeSessions, currentMonth) {
+        buildCalendarMonth(currentMonth, calendarParameter.sessions, calendarParameter.freeSessions)
     }
     val week = remember(
         calendarParameter.sessions,
-        calendarParameter.openSlots,
+        calendarParameter.freeSessions,
         calendarParameter.selectedDate
     ) {
         buildCalendarWeek(
             calendarParameter.selectedDate,
             calendarParameter.sessions,
-            calendarParameter.openSlots
+            calendarParameter.freeSessions
         )
     }
     val onDateSelect: (LocalDate) -> Unit = remember(action) {
@@ -165,7 +165,7 @@ private fun CollapsibleCalendarPreview() {
         CollapsibleCalendar(
             calendarParameter = CollapsibleCalendarParameter(
                 sessions = emptyList(),
-                openSlots = emptyList(),
+                freeSessions = emptyList(),
                 todayDate = LocalDate(2026, 1, 1),
                 selectedDate = LocalDate(2026, 1, 2)
             ),

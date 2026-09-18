@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.skydoves.compose.stability.runtime.TraceRecomposition
 import hu.tb.dashboard.domain.CoachItem
-import hu.tb.dashboard.domain.OpenSlot
+import hu.tb.dashboard.domain.FreeSession
 import hu.tb.dashboard.domain.SessionItem
 import hu.tb.dashboard.presentation.component.OpenSlotCard
 import hu.tb.dashboard.presentation.component.SessionCard
@@ -42,7 +42,6 @@ import hu.tb.dashboard.presentation.component.coach.CoachOpenHoursCard
 import hu.tb.dashboard.presentation.component.coach.DiscoverCoachesCard
 import hu.tb.dashboard.presentation.component.coach.MyCoachesSection
 import hu.tb.dashboard.presentation.component.common.SectionHeader
-import hu.tb.dashboard.presentation.util.currentDate
 import hu.tb.dashboard.presentation.util.formatSectionLabel
 import hu.tb.datastore.ProfileType
 import hu.tb.design_system.Icons
@@ -52,8 +51,11 @@ import hu.tb.design_system.modifier.screenPadding
 import hu.tb.design_system.theme.MeetingTheme
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalTime
+import kotlinx.datetime.TimeZone
 import kotlinx.datetime.plus
+import kotlinx.datetime.todayIn
 import org.koin.androidx.compose.koinViewModel
+import kotlin.time.Clock
 
 @Composable
 fun DashboardScreen(
@@ -70,6 +72,7 @@ fun DashboardScreen(
             when (dashboardAction) {
                 is DashboardAction.OnDateSelect -> viewModel.onDateSelected(dashboardAction.date)
                 is NavigationRequest -> navigationRequest(dashboardAction)
+                is DashboardAction.BookSession -> viewModel.bookSession(dashboardAction.freeSession)
             }
         }
     )
@@ -152,12 +155,14 @@ private fun DashboardScreen(
             ) {
                 CollapsibleCalendar(
                     calendarParameter = CollapsibleCalendarParameter(
-                        state.sessions, state.openSlots, state.today, state.selectedDate
+                        state.bookedSessions, state.freeSessions, state.today, state.selectedDate
                     ),
                     action = action
                 )
-                SelectedDayBooked(state = state, action = action)
-                SelectedDayOpenHours(state = state, action = action)
+                SelectedDayBooked(state = state)
+                if (state.profileType == ProfileType.NORMAL) {
+                    SelectedDayFreeHours(state = state, action = action)
+                }
                 RoleSection(state = state, action = action)
             }
         }
@@ -180,7 +185,6 @@ private fun RoleSection(
             MyCoachesSection(
                 isLoading = state.isMyCoachesLoading,
                 coaches = state.myCoaches,
-                onCoachClick = { action(DashboardAction.OnCoachClick(it)) }
             )
             DiscoverCoachesCard(
                 onDiscoverCoaches = { action(DashboardAction.OnDiscoverCoachesClick) }
@@ -192,9 +196,8 @@ private fun RoleSection(
 @Composable
 private fun SelectedDayBooked(
     state: DashboardState,
-    action: (DashboardAction) -> Unit
 ) {
-    val sessions = state.sessionsOn(state.selectedDate)
+    val sessions = state.getBookedSessions(state.selectedDate)
 
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         SectionHeader(
@@ -213,8 +216,7 @@ private fun SelectedDayBooked(
         } else {
             sessions.forEach { session ->
                 SessionCard(
-                    session = session,
-                    onClick = { action(DashboardAction.OnSessionClick(session.id)) }
+                    session = session
                 )
             }
         }
@@ -222,11 +224,11 @@ private fun SelectedDayBooked(
 }
 
 @Composable
-private fun SelectedDayOpenHours(
+private fun SelectedDayFreeHours(
     state: DashboardState,
     action: (DashboardAction) -> Unit
 ) {
-    val slots = state.openSlotsOn(state.selectedDate)
+    val slots = state.getFreeSessions(state.selectedDate)
     if (slots.isEmpty()) return
 
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -238,13 +240,7 @@ private fun SelectedDayOpenHours(
             OpenSlotCard(
                 slot = slot,
                 coachName = state.coachNameOf(slot.coachId),
-                onClick = {
-                    when (state.profileType) {
-                        null -> Unit
-                        ProfileType.COACH -> action(DashboardAction.OnCreateOpenHoursClick)
-                        ProfileType.NORMAL -> action(DashboardAction.OnCoachClick(slot.coachId))
-                    }
-                }
+                onClick = { action(DashboardAction.BookSession(slot)) }
             )
         }
     }
@@ -260,45 +256,43 @@ private fun previewState(
     profileType: ProfileType,
     coaches: List<CoachItem> = previewCoaches
 ): DashboardState {
-    val today = currentDate()
+    val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
     val sessions = listOf(
         SessionItem(
             id = "s1",
-            title = "Leg day",
             counterpartName = "Anna Kovács",
             date = today,
             start = LocalTime(9, 0),
             end = LocalTime(10, 0),
-            durationMinutes = 60,
             isNext = true
         ),
         SessionItem(
             id = "s2",
-            title = "Mobility",
             counterpartName = "Júlia Papp",
             date = today,
             start = LocalTime(17, 30),
             end = LocalTime(18, 0),
-            durationMinutes = 30
         ),
         SessionItem(
             id = "s3",
-            title = "Cardio intervals",
             counterpartName = "Márk Szabó",
             date = today.plus(1, DateTimeUnit.DAY),
             start = LocalTime(18, 30),
             end = LocalTime(19, 0),
-            durationMinutes = 30
         )
     )
     val slots = listOf(
-        OpenSlot("coach-anna", today, LocalTime(15, 0), LocalTime(16, 0), 60),
-        OpenSlot(
+        FreeSession(
+            "coach-anna",
+            today,
+            LocalTime(15, 0),
+            LocalTime(16, 0)
+        ),
+        FreeSession(
             "coach-mark",
             today.plus(2, DateTimeUnit.DAY),
             LocalTime(10, 0),
             LocalTime(11, 0),
-            60
         )
     )
 
@@ -306,8 +300,8 @@ private fun previewState(
         profileType = profileType,
         today = today,
         selectedDate = today,
-        sessions = sessions,
-        openSlots = slots,
+        bookedSessions = sessions,
+        freeSessions = slots,
         myCoaches = coaches
     )
 }

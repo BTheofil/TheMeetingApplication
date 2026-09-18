@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -21,20 +22,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import hu.tb.dashboard.domain.OpenSlot
-import hu.tb.dashboard.presentation.util.currentDate
+import hu.tb.dashboard.domain.FreeSession
 import hu.tb.dashboard.presentation.util.formatTime
 import hu.tb.design_system.Icons
-import hu.tb.design_system.component.AvailableRing
 import hu.tb.design_system.component.CardComponent
 import hu.tb.design_system.theme.MeetingTheme
-import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
-import kotlinx.datetime.plus
 
 @Composable
 internal fun OpenSlotCard(
-    slot: OpenSlot,
+    slot: FreeSession,
     coachName: String?,
     onClick: () -> Unit
 ) {
@@ -53,38 +51,27 @@ internal fun OpenSlotCard(
             ) {
                 Text(
                     text = coachName ?: "Open hour",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
+                    style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    AvailableRing()
-                    Text(
-                        text = "Free · ${slot.durationMinutes} min",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
             }
-            Icon(
-                modifier = Modifier.size(20.dp),
-                painter = painterResource(Icons.chevron_right),
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            OutlinedButton(
+                onClick = onClick
+            ) {
+                Text(
+                    text = "Book",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+            }
         }
     }
 }
 
 @Composable
-private fun TimeColumn(slot: OpenSlot) {
+private fun TimeColumn(slot: FreeSession) {
     Column(
         modifier = Modifier
             .width(60.dp)
@@ -114,27 +101,19 @@ private fun TimeColumn(slot: OpenSlot) {
     }
 }
 
-private fun previewNamedSlot(): OpenSlot =
-    OpenSlot("coach-anna", currentDate(), LocalTime(15, 0), LocalTime(16, 0),60)
-
-private fun previewAnonymousSlot(): OpenSlot =
-    OpenSlot("coach-mark", currentDate().plus(2, DateTimeUnit.DAY), LocalTime(10, 0), LocalTime(11, 0),60)
-
 @PreviewLightDark
 @Composable
 private fun OpenSlotCardPreview() {
     MeetingTheme {
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            OpenSlotCard(
-                slot = previewNamedSlot(),
-                coachName = "Anna Kovács",
-                onClick = {}
-            )
-            OpenSlotCard(
-                slot = previewAnonymousSlot(),
-                coachName = null,
-                onClick = {}
-            )
-        }
+        OpenSlotCard(
+            slot = FreeSession(
+                "coach-anna",
+                LocalDate(2026, 6, 6),
+                LocalTime(15, 0),
+                LocalTime(16, 0)
+            ),
+            coachName = "Anna Kovács",
+            onClick = {}
+        )
     }
 }
