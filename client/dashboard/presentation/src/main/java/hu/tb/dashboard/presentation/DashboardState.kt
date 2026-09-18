@@ -2,27 +2,29 @@ package hu.tb.dashboard.presentation
 
 import androidx.compose.runtime.Immutable
 import hu.tb.dashboard.domain.CoachItem
-import hu.tb.dashboard.domain.OpenSlot
+import hu.tb.dashboard.domain.FreeSession
 import hu.tb.dashboard.domain.SessionItem
-import hu.tb.dashboard.presentation.util.currentDate
 import hu.tb.datastore.ProfileType
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.todayIn
+import kotlin.time.Clock
 
 @Immutable
 data class DashboardState(
     val profileType: ProfileType? = null,
-    val today: LocalDate = currentDate(),
+    val today: LocalDate = Clock.System.todayIn(TimeZone.currentSystemDefault()),
     val selectedDate: LocalDate = today,
-    val sessions: List<SessionItem> = emptyList(),
-    val openSlots: List<OpenSlot> = emptyList(),
+    val bookedSessions: List<SessionItem> = emptyList(),
+    val freeSessions: List<FreeSession> = emptyList(),
     val isMyCoachesLoading: Boolean = true,
     val myCoaches: List<CoachItem>? = null
 ) {
     fun sessionsOn(date: LocalDate): List<SessionItem> =
-        sessions.filter { it.date == date }.sortedBy { it.start }
+        bookedSessions.filter { it.date == date }.sortedBy { it.start }
 
-    fun openSlotsOn(date: LocalDate): List<OpenSlot> =
-        openSlots.filter { it.date == date }.sortedBy { it.start }
+    fun openSlotsOn(date: LocalDate): List<FreeSession> =
+        freeSessions.filter { it.date == date }.sortedBy { it.start }
 
     fun coachNameOf(coachId: String): String? =
         myCoaches?.firstOrNull { it.id == coachId }?.name

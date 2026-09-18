@@ -3,7 +3,6 @@ package hu.tb.dashboard.presentation.util
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
-import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format
 import kotlinx.datetime.format.DayOfWeekNames
 import kotlinx.datetime.format.MonthNames
@@ -11,8 +10,6 @@ import kotlinx.datetime.format.Padding
 import kotlinx.datetime.format.char
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
-import kotlinx.datetime.todayIn
-import kotlin.time.Clock
 
 private val timeFormat = LocalTime.Format {
     hour()
@@ -35,8 +32,6 @@ private val fullDayLabelFormat = LocalDate.Format {
     char(' ')
     monthName(MonthNames.ENGLISH_FULL)
 }
-
-internal fun currentDate(): LocalDate = Clock.System.todayIn(TimeZone.currentSystemDefault())
 
 internal fun LocalTime.formatTime(): String = format(timeFormat)
 

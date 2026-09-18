@@ -1,6 +1,6 @@
 package hu.tb.dashboard.presentation.component.calendar.model
 
-import hu.tb.dashboard.domain.OpenSlot
+import hu.tb.dashboard.domain.FreeSession
 import hu.tb.dashboard.domain.SessionItem
 import hu.tb.design_system.component.calendar.model.CalendarDay
 import hu.tb.design_system.component.calendar.model.CalendarMonth
@@ -13,21 +13,21 @@ import hu.tb.design_system.component.calendar.model.buildCalendarWeek as buildWe
 internal fun buildCalendarMonth(
     month: YearMonth,
     sessions: List<SessionItem>,
-    openSlots: List<OpenSlot>
-): CalendarMonth = buildMonthGrid(month, dayAt(sessions, openSlots))
+    freeSessions: List<FreeSession>
+): CalendarMonth = buildMonthGrid(month, dayAt(sessions, freeSessions))
 
 internal fun buildCalendarWeek(
     anchor: LocalDate,
     sessions: List<SessionItem>,
-    openSlots: List<OpenSlot>
-): CalendarWeek = buildWeekGrid(anchor, dayAt(sessions, openSlots))
+    freeSessions: List<FreeSession>
+): CalendarWeek = buildWeekGrid(anchor, dayAt(sessions, freeSessions))
 
 private fun dayAt(
     sessions: List<SessionItem>,
-    openSlots: List<OpenSlot>
+    freeSessions: List<FreeSession>
 ): (LocalDate) -> CalendarDay {
     val sessionCounts = sessions.groupingBy { it.date }.eachCount()
-    val openSlotDates = openSlots.mapTo(mutableSetOf()) { it.date }
+    val openSlotDates = freeSessions.mapTo(mutableSetOf()) { it.date }
     return { date ->
         CalendarDay(
             date = date,

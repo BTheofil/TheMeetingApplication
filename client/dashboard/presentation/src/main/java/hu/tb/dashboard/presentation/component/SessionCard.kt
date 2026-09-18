@@ -2,7 +2,6 @@ package hu.tb.dashboard.presentation.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,26 +22,22 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import hu.tb.dashboard.domain.SessionItem
-import hu.tb.dashboard.presentation.util.currentDate
 import hu.tb.dashboard.presentation.util.formatDayLabel
 import hu.tb.dashboard.presentation.util.formatTime
 import hu.tb.design_system.Icons
 import hu.tb.design_system.component.CardComponent
 import hu.tb.design_system.theme.MeetingTheme
-import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
-import kotlinx.datetime.plus
 
 @Composable
 internal fun SessionCard(
     session: SessionItem,
     showDate: Boolean = false,
-    onClick: () -> Unit
 ) {
     CardComponent {
         Row(
             modifier = Modifier
-                .clickable(onClick = onClick)
                 .then(
                     if (session.isNext) {
                         Modifier.border(
@@ -62,18 +57,8 @@ internal fun SessionCard(
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Text(
-                    text = session.title,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Text(
                     text = buildString {
                         append(session.counterpartName)
-                        append(" · ")
-                        append("${session.durationMinutes} min")
                         if (showDate) {
                             append(" · ")
                             append(session.date.formatDayLabel())
@@ -128,24 +113,20 @@ private fun SessionCardPreview() {
             SessionCard(
                 session = SessionItem(
                     id = "s1",
-                    title = "Leg day",
                     counterpartName = "Anna Kovács",
-                    date = currentDate(),
+                    date = LocalDate(2026, 6, 6),
                     start = LocalTime(9, 0),
                     end = LocalTime(10, 0),
-                    durationMinutes = 60,
                     isNext = true
-                ), onClick = {})
+                ))
             SessionCard(
                 session = SessionItem(
                     id = "s4",
-                    title = "Upper body",
                     counterpartName = "Márk Szabó",
-                    date = currentDate().plus(4, DateTimeUnit.DAY),
+                    date = LocalDate(2026, 6, 6),
                     start = LocalTime(8, 0),
                     end = LocalTime(9, 0),
-                    durationMinutes = 60
-                ), showDate = true, onClick = {})
+                ), showDate = true)
         }
     }
 }

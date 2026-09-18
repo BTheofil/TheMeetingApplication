@@ -22,6 +22,15 @@ class DashboardViewModel(
     val state = _state.asStateFlow()
 
     init {
+        loadMyCoaches()
+        loadCalendar()
+    }
+
+    fun onDateSelected(date: LocalDate) {
+        _state.update { it.copy(selectedDate = date) }
+    }
+
+    private fun loadMyCoaches() {
         viewModelScope.launch {
             val userData = userDatastoreRepository.userdataFlow().first()
             _state.update {
@@ -46,7 +55,9 @@ class DashboardViewModel(
         }
     }
 
-    fun onDateSelected(date: LocalDate) {
-        _state.update { it.copy(selectedDate = date) }
+    private fun loadCalendar() {
+        viewModelScope.launch {
+            //todo load user booked session and free
+        }
     }
 }
