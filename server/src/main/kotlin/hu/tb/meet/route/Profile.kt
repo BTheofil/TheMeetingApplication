@@ -17,14 +17,14 @@ fun Route.profile() {
     val profileRepository by inject<ProfileRepository>()
 
     authenticate("auth-jwt") {
-        get("/profileInfo") {
+        /*get("/profileInfo") {
             val account = requireAccount()
 
             val id = profileRepository.findProfileId(account.type, account.username)
                 ?: fail(ApiError.PROFILE_NOT_FOUND)
 
             call.respond(HttpStatusCode.OK, ProfileResponse(id, account.username, account.type))
-        }
+        }*/
 
         delete("/profile") {
             val account = requireAccount()
