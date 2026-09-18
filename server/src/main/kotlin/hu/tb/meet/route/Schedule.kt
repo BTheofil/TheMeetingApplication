@@ -4,6 +4,8 @@ import hu.tb.meet.data.repository.ScheduleRepository
 import hu.tb.meet.domain.error.ApiError
 import hu.tb.meet.domain.error.fail
 import hu.tb.meet.domain.receive.AccountType
+import hu.tb.meet.domain.receive.BookReceive
+import hu.tb.meet.domain.receive.CoachMonthReceive
 import hu.tb.meet.domain.receive.MonthReceive
 import hu.tb.meet.domain.receive.ScheduleDay
 import hu.tb.meet.domain.receive.SlotReceive
@@ -52,6 +54,32 @@ fun Route.schedule() {
             if (count != 1) fail(ApiError.SLOT_DELETE_NOT_FOUND)
 
             call.respond(HttpStatusCode.OK)
+        }
+
+        post("/bookSession") {
+            val (username, _) = requireAccount(AccountType.NORMAL)
+
+            val booked = scheduleRepository.bookSession(username, call.receive<BookReceive>().sessionId)
+                ?: fail(ApiError.SESSION_NOT_BOOKABLE)
+            if (!booked) fail(ApiError.SESSION_ALREADY_BOOKED)
+
+            call.respond(HttpStatusCode.OK)
+        }
+
+        post("/freeSessions") {
+            val (username, _) = requireAccount(AccountType.NORMAL)
+
+            val receive = call.receive<CoachMonthReceive>()
+            val sessions = scheduleRepository.freeSessions(username, receive.coachId, receive.date)
+                ?: fail(ApiError.SESSION_NOT_BOOKABLE)
+
+            call.respond(HttpStatusCode.OK, sessions)
+        }
+
+        get("/myBookings") {
+            val (username, _) = requireAccount(AccountType.NORMAL)
+
+            call.respond(HttpStatusCode.OK, scheduleRepository.myBookings(username))
         }
     }
 }

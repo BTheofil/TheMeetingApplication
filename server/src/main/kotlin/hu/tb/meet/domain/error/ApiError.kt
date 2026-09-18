@@ -14,6 +14,8 @@ enum class ApiError(val status: HttpStatusCode, val message: String) {
     ROUTE_NOT_FOUND(HttpStatusCode.NotFound, "Page not found"),
     INTERNAL(HttpStatusCode.InternalServerError, "Something went wrong, please try again later"),
     SLOT_DELETE_NOT_FOUND(HttpStatusCode.NotFound, "Targeted slot can not be found"),
+    SESSION_NOT_BOOKABLE(HttpStatusCode.NotFound, "This session can not be booked"),
+    SESSION_ALREADY_BOOKED(HttpStatusCode.Conflict, "This session is already taken"),
 }
 
 fun fail(error: ApiError): Nothing = throw ApiException(error)

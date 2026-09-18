@@ -15,6 +15,3 @@ data class Draft(
     val start: LocalTime,
     val end: LocalTime
 )
-
-@Serializable
-data class MonthReceive(val date: LocalDate)

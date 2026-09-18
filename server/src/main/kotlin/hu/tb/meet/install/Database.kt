@@ -1,5 +1,6 @@
 package hu.tb.meet.install
 
+import hu.tb.meet.data.table.BookingTable
 import hu.tb.meet.data.table.CoachTable
 import hu.tb.meet.data.table.NormalTable
 import hu.tb.meet.data.table.DeviceFidTable
@@ -26,6 +27,6 @@ fun Application.configureDatabase() {
     )
 
     transaction {
-        SchemaUtils.create(CoachTable, NormalTable, SubscriptionTable, DeviceFidTable, ScheduleTable)
+        SchemaUtils.create(CoachTable, NormalTable, SubscriptionTable, DeviceFidTable, ScheduleTable, BookingTable)
     }
 }
