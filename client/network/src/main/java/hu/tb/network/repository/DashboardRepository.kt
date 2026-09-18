@@ -15,4 +15,8 @@ class DashboardRepository(
         apiCall<List<MyCoachResponse>> {
             httpClient.get("/myCoaches")
         }.map { listOfCoach -> listOfCoach.map { CoachItem(id = it.coachId, name = it.coachName) } }
+
+    suspend fun getAllSessions() {}
+
+    suspend fun bookSession() {}
 }

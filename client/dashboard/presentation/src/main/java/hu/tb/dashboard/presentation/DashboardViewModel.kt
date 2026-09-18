@@ -2,6 +2,7 @@ package hu.tb.dashboard.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import hu.tb.dashboard.domain.FreeSession
 import hu.tb.datastore.ProfileType
 import hu.tb.datastore.UserDatastoreRepository
 import hu.tb.network.fold
@@ -28,6 +29,12 @@ class DashboardViewModel(
 
     fun onDateSelected(date: LocalDate) {
         _state.update { it.copy(selectedDate = date) }
+    }
+
+    fun bookSession(freeSession: FreeSession) {
+        viewModelScope.launch {
+            dashboardRepository.bookSession()
+        }
     }
 
     private fun loadMyCoaches() {
@@ -57,7 +64,7 @@ class DashboardViewModel(
 
     private fun loadCalendar() {
         viewModelScope.launch {
-            //todo load user booked session and free
+            dashboardRepository.getAllSessions()
         }
     }
 }

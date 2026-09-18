@@ -72,6 +72,7 @@ fun DashboardScreen(
             when (dashboardAction) {
                 is DashboardAction.OnDateSelect -> viewModel.onDateSelected(dashboardAction.date)
                 is NavigationRequest -> navigationRequest(dashboardAction)
+                is DashboardAction.BookSession -> viewModel.bookSession(dashboardAction.freeSession)
             }
         }
     )
@@ -158,7 +159,7 @@ private fun DashboardScreen(
                     ),
                     action = action
                 )
-                SelectedDayBooked(state = state, action = action)
+                SelectedDayBooked(state = state)
                 if (state.profileType == ProfileType.NORMAL) {
                     SelectedDayFreeHours(state = state, action = action)
                 }
@@ -184,7 +185,6 @@ private fun RoleSection(
             MyCoachesSection(
                 isLoading = state.isMyCoachesLoading,
                 coaches = state.myCoaches,
-                onCoachClick = { action(DashboardAction.ShowCoachFreeSessions(it)) }
             )
             DiscoverCoachesCard(
                 onDiscoverCoaches = { action(DashboardAction.OnDiscoverCoachesClick) }
@@ -196,9 +196,8 @@ private fun RoleSection(
 @Composable
 private fun SelectedDayBooked(
     state: DashboardState,
-    action: (DashboardAction) -> Unit
 ) {
-    val sessions = state.sessionsOn(state.selectedDate)
+    val sessions = state.getBookedSessions(state.selectedDate)
 
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         SectionHeader(
@@ -229,7 +228,7 @@ private fun SelectedDayFreeHours(
     state: DashboardState,
     action: (DashboardAction) -> Unit
 ) {
-    val slots = state.openSlotsOn(state.selectedDate)
+    val slots = state.getFreeSessions(state.selectedDate)
     if (slots.isEmpty()) return
 
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -241,7 +240,7 @@ private fun SelectedDayFreeHours(
             OpenSlotCard(
                 slot = slot,
                 coachName = state.coachNameOf(slot.coachId),
-                onClick = { action(DashboardAction.OnNotificationClick) }
+                onClick = { action(DashboardAction.BookSession(slot)) }
             )
         }
     }

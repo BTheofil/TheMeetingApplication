@@ -51,7 +51,7 @@ internal fun OpenSlotCard(
             ) {
                 Text(
                     text = coachName ?: "Open hour",
-                    style = MaterialTheme.typography.titleLarge,
+                    style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis

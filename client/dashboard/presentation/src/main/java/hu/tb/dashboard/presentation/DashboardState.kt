@@ -20,10 +20,10 @@ data class DashboardState(
     val isMyCoachesLoading: Boolean = true,
     val myCoaches: List<CoachItem>? = null
 ) {
-    fun sessionsOn(date: LocalDate): List<SessionItem> =
+    fun getBookedSessions(date: LocalDate): List<SessionItem> =
         bookedSessions.filter { it.date == date }.sortedBy { it.start }
 
-    fun openSlotsOn(date: LocalDate): List<FreeSession> =
+    fun getFreeSessions(date: LocalDate): List<FreeSession> =
         freeSessions.filter { it.date == date }.sortedBy { it.start }
 
     fun coachNameOf(coachId: String): String? =
