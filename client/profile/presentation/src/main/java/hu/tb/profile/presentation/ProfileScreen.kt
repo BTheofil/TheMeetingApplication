@@ -1,6 +1,5 @@
 package hu.tb.profile.presentation
 
-import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.skydoves.compose.stability.runtime.TraceRecomposition
@@ -47,6 +47,8 @@ import hu.tb.design_system.component.LoadingDialog
 import hu.tb.design_system.modifier.glowBackground
 import hu.tb.design_system.modifier.screenPadding
 import hu.tb.design_system.theme.MeetingTheme
+import hu.tb.profile.domain.SupportInfo
+import hu.tb.profile.presentation.component.SupportOption
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
 
@@ -141,9 +143,10 @@ private fun ProfileScreen(
                 state.profileType?.let {
                     Details(name = state.name, profileType = it)
                 }
-                CardComponent {
-
-                }
+                SupportSection(
+                    options = state.supportOptions,
+                    onOptionClick = {}
+                )
                 Button(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -186,6 +189,36 @@ private fun ProfileScreen(
         }
         if (state.isDeleting) {
             LoadingDialog(text = "Deleting profile…")
+        }
+    }
+}
+
+@Composable
+private fun SupportSection(
+    options: List<SupportInfo>,
+    onOptionClick: (SupportInfo) -> Unit
+) {
+    if (options.isEmpty()) return
+
+    CardComponent {
+        Column(modifier = Modifier.padding(vertical = 8.dp)) {
+            Text(
+                modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp),
+                text = "Support the developer",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            options.forEachIndexed { index, option ->
+                SupportOption(
+                    displayName = option.displayName,
+                    description = option.description,
+                    price = option.price,
+                    onClick = { onOptionClick(option) }
+                )
+                if (index != options.lastIndex) {
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 24.dp))
+                }
+            }
         }
     }
 }
@@ -242,39 +275,42 @@ private fun DetailRow(
     }
 }
 
-@Preview(showBackground = true)
+@PreviewLightDark
 @Composable
 private fun ProfileScreenPreview() {
     MeetingTheme {
         ProfileScreen(
             snackbarHostState = SnackbarHostState(),
-            state = ProfileState(name = "Theo", profileType = ProfileType.COACH),
+            state = ProfileState(
+                name = "Theo",
+                profileType = ProfileType.COACH,
+                supportOptions = listOf(
+                    SupportInfo(
+                        id = "small_tip",
+                        displayName = "Small tip",
+                        description = "Buy me a coffee",
+                        price = "$1.99"
+                    ),
+                    SupportInfo(
+                        id = "medium_tip",
+                        displayName = "Medium tip",
+                        description = "Keep the lights on for a week",
+                        price = "$4.99"
+                    )
+                )
+            ),
             action = {}
         )
     }
 }
 
-@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
-@Composable
-private fun ProfileScreenDarkPreview() {
-    MeetingTheme {
-        ProfileScreen(
-            snackbarHostState = SnackbarHostState(),
-            state = ProfileState(name = "Theo", profileType = ProfileType.NORMAL),
-            action = {}
-        )
-    }
-}
-
-@Preview(showBackground = true)
+@Preview
 @Composable
 private fun ProfileScreenDeletingPreview() {
     MeetingTheme {
         ProfileScreen(
             snackbarHostState = SnackbarHostState(),
             state = ProfileState(
-                name = "Theo",
-                profileType = ProfileType.NORMAL,
                 isDeleting = true
             ),
             action = {}

@@ -1,4 +1,4 @@
-package hu.tb.profile.presentation.di
+package hu.tb.profile.data
 
 import android.content.Context
 import com.revenuecat.purchases.LogLevel

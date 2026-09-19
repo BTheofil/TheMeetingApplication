@@ -12,7 +12,8 @@ import hu.tb.notification.data.DeviceFidProvider
 import hu.tb.notification.data.FcmRegistration
 import hu.tb.notification.presentation.di.notificationModule
 import hu.tb.presentation.di.authModule
-import hu.tb.profile.presentation.di.initRevenueCat
+import hu.tb.profile.data.profileDataModule
+import hu.tb.profile.data.initRevenueCat
 import hu.tb.profile.presentation.di.profileModule
 import hu.tb.schedule.presentation.di.scheduleModule
 import hu.tb.search.di.searchModule
@@ -52,6 +53,7 @@ class MeetingApplication : Application() {
                 searchModule,
                 notificationModule,
                 scheduleModule,
+                profileDataModule
             )
         }
 

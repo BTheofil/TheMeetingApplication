@@ -2,13 +2,15 @@ package hu.tb.profile.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import hu.tb.datastore.UserDatastoreRepository
 import hu.tb.datastore.ProfileType
+import hu.tb.datastore.UserDatastoreRepository
 import hu.tb.network.fold
 import hu.tb.network.repository.ProfileRepository
+import hu.tb.profile.data.PurchasesRepository
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -16,6 +18,7 @@ import kotlinx.coroutines.launch
 class ProfileViewModel(
     private val userDatastoreRepository: UserDatastoreRepository,
     private val profileRepository: ProfileRepository,
+    private val purchasesRepository: PurchasesRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ProfileState())
@@ -26,14 +29,18 @@ class ProfileViewModel(
 
     init {
         viewModelScope.launch {
-            userDatastoreRepository.userdataFlow().collect { userData ->
-                _state.update {
-                    it.copy(
-                        name = userData.name,
-                        profileType = ProfileType.fromValue(userData.profileType)
-                    )
-                }
+            val userDataIndo = userDatastoreRepository.userdataFlow().first()
+            _state.update {
+                it.copy(
+                    name = userDataIndo.name,
+                    profileType = ProfileType.fromValue(userDataIndo.profileType)
+                )
             }
+        }
+
+        viewModelScope.launch {
+            val options = purchasesRepository.loadSupportOptions()
+            _state.update { it.copy(supportOptions = options) }
         }
     }
 

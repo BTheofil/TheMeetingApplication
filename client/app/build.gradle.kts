@@ -12,7 +12,7 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        buildConfigField("String", "REVENUECAT_API_KEY", "test_ophoMSGxNKRmyrtWuaWkiKwDKgw")
+        buildConfigField("String", "REVENUECAT_API_KEY", "\"test_ophoMSGxNKRmyrtWuaWkiKwDKgw\"")
     }
 
     buildFeatures {
@@ -38,6 +38,7 @@ dependencies {
     implementation(projects.designSystem)
     implementation(projects.auth.presentation)
     implementation(projects.profile.presentation)
+    implementation(projects.profile.data)
     implementation(projects.network)
     implementation(projects.datastore)
     implementation(projects.dashboard.presentation)
