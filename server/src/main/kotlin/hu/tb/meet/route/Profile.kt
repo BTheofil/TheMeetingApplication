@@ -3,14 +3,11 @@ package hu.tb.meet.route
 import hu.tb.meet.data.repository.ProfileRepository
 import hu.tb.meet.domain.error.ApiError
 import hu.tb.meet.domain.error.fail
-import hu.tb.meet.domain.send.ProfileResponse
 import hu.tb.meet.route.helper.requireAccount
-import io.ktor.http.HttpStatusCode
-import io.ktor.server.auth.authenticate
-import io.ktor.server.response.respond
-import io.ktor.server.routing.Route
-import io.ktor.server.routing.delete
-import io.ktor.server.routing.get
+import io.ktor.http.*
+import io.ktor.server.auth.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
 
 fun Route.profile() {
