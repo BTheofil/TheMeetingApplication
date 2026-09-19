@@ -107,7 +107,8 @@ private fun OpenSlotCardPreview() {
     MeetingTheme {
         OpenSlotCard(
             slot = FreeSession(
-                "coach-anna",
+                id = 1,
+                1,
                 LocalDate(2026, 6, 6),
                 LocalTime(15, 0),
                 LocalTime(16, 0)

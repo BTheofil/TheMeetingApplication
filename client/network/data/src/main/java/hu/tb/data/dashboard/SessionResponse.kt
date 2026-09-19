@@ -1,4 +1,4 @@
-package hu.tb.data.schedule
+package hu.tb.data.dashboard
 
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
@@ -10,5 +10,6 @@ data class SessionResponse(
     val date: LocalDate,
     val start: LocalTime,
     val end: LocalTime,
-    val counterpart: String?
+    // only a booked session has one: the coach for a normal account
+    val counterpart: String? = null
 )
