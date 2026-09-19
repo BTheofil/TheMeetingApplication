@@ -11,13 +11,24 @@ android {
         applicationId = "hu.tb.meeting"
         versionCode = 1
         versionName = "1.0"
+
+        buildConfigField("String", "REVENUECAT_API_KEY", "test_ophoMSGxNKRmyrtWuaWkiKwDKgw")
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 
     buildTypes {
         release {
             optimization {
-                enable = false
+                enable = true
             }
+
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
 }

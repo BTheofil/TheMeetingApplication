@@ -12,6 +12,7 @@ import hu.tb.notification.data.DeviceFidProvider
 import hu.tb.notification.data.FcmRegistration
 import hu.tb.notification.presentation.di.notificationModule
 import hu.tb.presentation.di.authModule
+import hu.tb.profile.presentation.di.initRevenueCat
 import hu.tb.profile.presentation.di.profileModule
 import hu.tb.schedule.presentation.di.scheduleModule
 import hu.tb.search.di.searchModule
@@ -24,6 +25,12 @@ import org.koin.dsl.module
 class MeetingApplication : Application() {
     override fun onCreate() {
         super.onCreate()
+
+        initRevenueCat(
+            context = this,
+            apiKey = BuildConfig.REVENUECAT_API_KEY,
+            isDebug = BuildConfig.DEBUG,
+        )
 
         startKoin {
             androidLogger()

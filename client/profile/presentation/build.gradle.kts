@@ -12,4 +12,5 @@ dependencies {
     implementation(projects.network)
 
     implementation(libs.bundles.koin)
+    implementation(libs.revenuecat)
 }

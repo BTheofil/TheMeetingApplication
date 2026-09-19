@@ -10,11 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -40,7 +37,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.skydoves.compose.stability.runtime.TraceRecomposition
+import hu.tb.datastore.ProfileType
 import hu.tb.design_system.Icons
+import hu.tb.design_system.component.CardComponent
 import hu.tb.design_system.component.CountdownSnackbar
 import hu.tb.design_system.component.CountdownSnackbarVisuals
 import hu.tb.design_system.component.DeleteProfileDialog
@@ -48,7 +47,6 @@ import hu.tb.design_system.component.LoadingDialog
 import hu.tb.design_system.modifier.glowBackground
 import hu.tb.design_system.modifier.screenPadding
 import hu.tb.design_system.theme.MeetingTheme
-import hu.tb.datastore.ProfileType
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
 
@@ -140,7 +138,12 @@ private fun ProfileScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Details(state = state)
+                state.profileType?.let {
+                    Details(name = state.name, profileType = it)
+                }
+                CardComponent {
+
+                }
                 Button(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -189,16 +192,10 @@ private fun ProfileScreen(
 
 @Composable
 private fun Details(
-    state: ProfileState
+    name: String,
+    profileType: ProfileType,
 ) {
-    ElevatedCard(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.85f)
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
-    ) {
+    CardComponent {
         Column(
             modifier = Modifier.padding(24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -210,14 +207,13 @@ private fun Details(
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.primary
             )
-            DetailRow(label = "Name", value = state.name)
+            DetailRow(label = "Name", value = name)
             HorizontalDivider()
             DetailRow(
                 label = "Account type",
-                value = when (state.profileType) {
+                value = when (profileType) {
                     ProfileType.COACH -> "Coach"
                     ProfileType.NORMAL -> "Normal"
-                    null -> "—"
                 }
             )
         }

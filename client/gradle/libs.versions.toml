@@ -1,15 +1,15 @@
 [versions]
-agp = "9.4.0"
-androidTools = "32.4.0"
+agp = "9.4.1"
+androidTools = "32.4.1"
 activityCompose = "1.13.0"
 koin = "4.2.2"
 kotlin = "2.4.20"
 composeBom = "2026.09.00"
-composeAnalyzer = "0.13.0"
+composeAnalyzer = "0.14.0"
 composeRuntime = "1.12.1"
 nav3Core = "1.1.7"
 lifecycleViewmodelNav3 = "2.11.0"
-ktor = "3.5.2"
+ktor = "3.6.0"
 kotlinxSerialization = "1.11.0"
 kotlinxDatetime = "0.8.0"
 datastoreVersion = "1.2.1"
@@ -17,6 +17,7 @@ coreSplashscreen = "1.2.0"
 androidxCore = "1.19.0"
 firebase = "34.19.0"
 googleServices = "4.5.0"
+revenueCat = "10.15.1"
 
 #Project settings
 minSdk = "26"
@@ -39,6 +40,7 @@ datastore = { group = "androidx.datastore", name = "datastore", version.ref = "d
 androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "coreSplashscreen" }
 androidx-core = { group = "androidx.core", name = "core", version.ref = "androidxCore" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
+revenuecat = { module = "com.revenuecat.purchases:purchases", version.ref = "revenueCat" }
 
 #Firebase
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase" }
