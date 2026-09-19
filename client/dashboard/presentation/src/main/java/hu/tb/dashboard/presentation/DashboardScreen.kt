@@ -73,6 +73,8 @@ fun DashboardScreen(
 
     RequestNotificationPermission(state.profileType)
 
+    LaunchedEffect(Unit) { viewModel.refresh() }
+
     LaunchedEffect(Unit) {
         viewModel.event.collectLatest {
             when (it) {

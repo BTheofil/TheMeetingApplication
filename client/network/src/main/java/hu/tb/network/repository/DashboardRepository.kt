@@ -7,6 +7,8 @@ import hu.tb.data.dashboard.BookFreeSessionSend
 import hu.tb.data.dashboard.FreeSessionSend
 import hu.tb.data.dashboard.MyCoachResponse
 import hu.tb.data.dashboard.SessionResponse
+import hu.tb.data.schedule.SessionResponse as CoachSessionResponse
+import hu.tb.data.schedule.SessionsSend
 import hu.tb.network.ApiResult
 import hu.tb.network.apiCall
 import hu.tb.network.map
@@ -60,6 +62,25 @@ class DashboardRepository(
                     start = it.start,
                     end = it.end
                 )
+            }
+        }
+
+    suspend fun getCoachSessions(date: LocalDate): ApiResult<List<SessionItem>> =
+        apiCall<List<CoachSessionResponse>> {
+            httpClient.post("/coachSessions") {
+                setBody(SessionsSend(date))
+            }
+        }.map { responses ->
+            responses.mapNotNull { response ->
+                response.counterpart?.let {
+                    SessionItem(
+                        id = response.id.toString(),
+                        counterpartName = it,
+                        date = response.date,
+                        start = response.start,
+                        end = response.end
+                    )
+                }
             }
         }
 
