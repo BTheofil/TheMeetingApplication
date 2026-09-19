@@ -17,12 +17,15 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -46,9 +49,12 @@ import hu.tb.dashboard.presentation.util.formatSectionLabel
 import hu.tb.datastore.ProfileType
 import hu.tb.design_system.Icons
 import hu.tb.design_system.component.CardComponent
+import hu.tb.design_system.component.CountdownSnackbar
+import hu.tb.design_system.component.CountdownSnackbarVisuals
 import hu.tb.design_system.modifier.glowBackground
 import hu.tb.design_system.modifier.screenPadding
 import hu.tb.design_system.theme.MeetingTheme
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
@@ -63,10 +69,23 @@ fun DashboardScreen(
     navigationRequest: (NavigationRequest) -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     RequestNotificationPermission(state.profileType)
 
+    LaunchedEffect(Unit) {
+        viewModel.event.collectLatest {
+            when (it) {
+                is DashboardEvent.Failed ->
+                    snackbarHostState.showSnackbar(
+                        visuals = CountdownSnackbarVisuals(message = it.errorMessage)
+                    )
+            }
+        }
+    }
+
     DashboardScreen(
+        snackbarHostState = snackbarHostState,
         state = state,
         action = { dashboardAction ->
             when (dashboardAction) {
@@ -101,6 +120,7 @@ private fun RequestNotificationPermission(profileType: ProfileType?) {
 @TraceRecomposition
 @Composable
 private fun DashboardScreen(
+    snackbarHostState: SnackbarHostState,
     state: DashboardState,
     action: (DashboardAction) -> Unit
 ) {
@@ -111,6 +131,11 @@ private fun DashboardScreen(
     ) {
         Scaffold(
             containerColor = Color.Transparent,
+            snackbarHost = {
+                SnackbarHost(hostState = snackbarHostState) { data ->
+                    CountdownSnackbar(snackbarData = data)
+                }
+            },
             topBar = {
                 TopAppBar(
                     colors = TopAppBarDefaults.topAppBarColors(
@@ -247,9 +272,9 @@ private fun SelectedDayFreeHours(
 }
 
 private val previewCoaches = listOf(
-    CoachItem(id = "coach-anna", name = "Anna Kovács"),
-    CoachItem(id = "coach-mark", name = "Márk Szabó"),
-    CoachItem(id = "coach-julia", name = "Júlia Papp")
+    CoachItem(id = 1, name = "Anna Kovács"),
+    CoachItem(id = 2, name = "Márk Szabó"),
+    CoachItem(id = 3, name = "Júlia Papp")
 )
 
 private fun previewState(
@@ -283,16 +308,18 @@ private fun previewState(
     )
     val slots = listOf(
         FreeSession(
-            "coach-anna",
-            today,
-            LocalTime(15, 0),
-            LocalTime(16, 0)
+            id = 1,
+            coachId = 1,
+            date = today,
+            start = LocalTime(15, 0),
+            end = LocalTime(16, 0)
         ),
         FreeSession(
-            "coach-mark",
-            today.plus(2, DateTimeUnit.DAY),
-            LocalTime(10, 0),
-            LocalTime(11, 0),
+            id = 2,
+            coachId = 2,
+            date = today.plus(2, DateTimeUnit.DAY),
+            start = LocalTime(10, 0),
+            end = LocalTime(11, 0),
         )
     )
 
@@ -311,6 +338,7 @@ private fun previewState(
 private fun DashboardScreenCoachPreview() {
     MeetingTheme {
         DashboardScreen(
+            snackbarHostState = SnackbarHostState(),
             state = previewState(ProfileType.COACH, coaches = emptyList()),
             action = {}
         )
@@ -321,7 +349,11 @@ private fun DashboardScreenCoachPreview() {
 @Composable
 private fun DashboardScreenClientPreview() {
     MeetingTheme {
-        DashboardScreen(state = previewState(ProfileType.NORMAL), action = {})
+        DashboardScreen(
+            snackbarHostState = SnackbarHostState(),
+            state = previewState(ProfileType.NORMAL),
+            action = {}
+        )
     }
 }
 
@@ -330,6 +362,7 @@ private fun DashboardScreenClientPreview() {
 private fun DashboardScreenNoCoachesPreview() {
     MeetingTheme {
         DashboardScreen(
+            snackbarHostState = SnackbarHostState(),
             state = previewState(ProfileType.NORMAL, coaches = emptyList()),
             action = {}
         )

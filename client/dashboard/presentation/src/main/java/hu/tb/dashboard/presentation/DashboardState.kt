@@ -26,6 +26,6 @@ data class DashboardState(
     fun getFreeSessions(date: LocalDate): List<FreeSession> =
         freeSessions.filter { it.date == date }.sortedBy { it.start }
 
-    fun coachNameOf(coachId: String): String? =
+    fun coachNameOf(coachId: Int): String? =
         myCoaches?.firstOrNull { it.id == coachId }?.name
 }

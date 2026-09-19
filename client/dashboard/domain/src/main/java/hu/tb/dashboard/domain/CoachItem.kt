@@ -4,7 +4,7 @@ import androidx.compose.runtime.Immutable
 
 @Immutable
 data class CoachItem(
-    val id: String,
+    val id: Int,
     val name: String,
 ) {
     val initials: String

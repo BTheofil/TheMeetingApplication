@@ -6,7 +6,8 @@ import kotlinx.datetime.LocalTime
 
 @Immutable
 data class FreeSession(
-    val coachId: String,
+    val id: Int,
+    val coachId: Int,
     val date: LocalDate,
     val start: LocalTime,
     val end: LocalTime,
