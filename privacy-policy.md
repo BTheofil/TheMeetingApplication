@@ -51,4 +51,4 @@ This policy may be updated if the app changes. The updated version will be poste
 
 ## Contact
 
-Questions about this policy: **[YOUR EMAIL]**
+Questions about this policy: **btheofil7@gmail.com**
