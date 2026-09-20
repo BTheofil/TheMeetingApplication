@@ -9,5 +9,4 @@ data class ProfileState(
     val name: String = "",
     val profileType: ProfileType? = null,
     val supportOptions: List<SupportInfo> = emptyList(),
-    val isDeleting: Boolean = false
 )

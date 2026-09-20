@@ -1,5 +1,6 @@
 package hu.tb.profile.presentation
 
+import android.app.Activity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import hu.tb.datastore.ProfileType
@@ -7,6 +8,8 @@ import hu.tb.datastore.UserDatastoreRepository
 import hu.tb.network.fold
 import hu.tb.network.repository.ProfileRepository
 import hu.tb.profile.data.PurchasesRepository
+import hu.tb.profile.domain.PurchaseOutcome
+import hu.tb.profile.domain.SupportInfo
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -44,21 +47,48 @@ class ProfileViewModel(
         }
     }
 
-    fun deleteProfile() {
-        if (state.value.isDeleting) return
+    fun supportOption(activity: Activity, option: SupportInfo) {
+        if (state.value.supportOptions.any { it.isPurchasing }) return
 
-        _state.update { it.copy(isDeleting = true) }
+        setPurchasing(option.id, isPurchasing = true)
         viewModelScope.launch {
+            when (val outcome = purchasesRepository.purchase(activity, option.id)) {
+                PurchaseOutcome.Success ->
+                    _event.send(ProfileEvent.ShowThankYouDialog)
+
+                PurchaseOutcome.Cancelled -> Unit
+
+                is PurchaseOutcome.Failed ->
+                    _event.send(ProfileEvent.Failed(outcome.message))
+            }
+
+            setPurchasing(option.id, isPurchasing = false)
+        }
+    }
+
+    private fun setPurchasing(optionId: String, isPurchasing: Boolean) {
+        _state.update { state ->
+            state.copy(
+                supportOptions = state.supportOptions.map { option ->
+                    if (option.id == optionId) option.copy(isPurchasing = isPurchasing)
+                    else option
+                }
+            )
+        }
+    }
+
+    fun deleteProfile() {
+        viewModelScope.launch {
+            _event.send(ProfileEvent.ShowDeleteLoadingDialog)
             profileRepository.unregisterDeviceFid()
             val event = profileRepository.deleteProfile().fold(
                 success = {
                     userDatastoreRepository.clearUserData()
-                    ProfileEvent.Cleared
+                    ProfileEvent.ProfileCleared
                 },
                 fail = { ProfileEvent.Failed(it.formatErrorMessage) }
             )
 
-            _state.update { it.copy(isDeleting = false) }
             _event.send(event)
         }
     }
@@ -67,7 +97,7 @@ class ProfileViewModel(
         viewModelScope.launch {
             profileRepository.unregisterDeviceFid()
             userDatastoreRepository.clearUserData()
-            _event.send(ProfileEvent.Cleared)
+            _event.send(ProfileEvent.ProfileCleared)
         }
     }
 }

@@ -1,5 +1,6 @@
 package hu.tb.profile.presentation
 
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -44,6 +45,7 @@ import hu.tb.design_system.component.CountdownSnackbar
 import hu.tb.design_system.component.CountdownSnackbarVisuals
 import hu.tb.design_system.component.DeleteProfileDialog
 import hu.tb.design_system.component.LoadingDialog
+import hu.tb.profile.presentation.component.SupportThanksDialog
 import hu.tb.design_system.modifier.glowBackground
 import hu.tb.design_system.modifier.screenPadding
 import hu.tb.design_system.theme.MeetingTheme
@@ -59,19 +61,27 @@ fun ProfileScreen(
     onClearedProfile: () -> Unit
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
+    var isThankYouDialogVisible by remember { mutableStateOf(false) }
+    var isDeleteLoadingDialogVisible by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.event.collectLatest {
             when (it) {
-                is ProfileEvent.Failed ->
+                is ProfileEvent.Failed -> {
+                    isDeleteLoadingDialogVisible = false
                     snackbarHostState.showSnackbar(
                         visuals = CountdownSnackbarVisuals(message = it.errorMessage)
                     )
+                }
 
-                ProfileEvent.Cleared -> onClearedProfile()
+                ProfileEvent.ProfileCleared -> onClearedProfile()
+                ProfileEvent.ShowDeleteLoadingDialog -> isDeleteLoadingDialogVisible = true
+                ProfileEvent.ShowThankYouDialog -> isThankYouDialogVisible = true
             }
         }
     }
+
+    val activity = LocalActivity.current
 
     ProfileScreen(
         snackbarHostState = snackbarHostState,
@@ -81,9 +91,24 @@ fun ProfileScreen(
                 ProfileAction.OnBackClick -> onBack()
                 ProfileAction.OnDeleteConfirmed -> viewModel.deleteProfile()
                 ProfileAction.OnLogoutClick -> viewModel.logout()
+                is ProfileAction.SupportOptionClick -> activity?.let { activity ->
+                    viewModel.supportOption(
+                        activity,
+                        it.supportInfo
+                    )
+                }
             }
         }
     )
+
+    if (isDeleteLoadingDialogVisible) {
+        LoadingDialog(text = "Deleting profile…")
+    }
+    if (isThankYouDialogVisible) {
+        SupportThanksDialog(
+            onDismiss = { isThankYouDialogVisible = false }
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -145,12 +170,13 @@ private fun ProfileScreen(
                 }
                 SupportSection(
                     options = state.supportOptions,
-                    onOptionClick = {}
+                    onOptionClick = {
+                        action(ProfileAction.SupportOptionClick(it))
+                    }
                 )
                 Button(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(52.dp),
+                        .fillMaxWidth(),
                     onClick = { action(ProfileAction.OnLogoutClick) },
                 ) {
                     Text(
@@ -161,10 +187,8 @@ private fun ProfileScreen(
                 Spacer(Modifier.height(8.dp))
                 Button(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(52.dp),
+                        .fillMaxWidth(),
                     onClick = { isDeleteDialogVisible = true },
-                    enabled = !state.isDeleting,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.error,
                         contentColor = MaterialTheme.colorScheme.onError
@@ -187,9 +211,6 @@ private fun ProfileScreen(
                 onDismiss = { isDeleteDialogVisible = false }
             )
         }
-        if (state.isDeleting) {
-            LoadingDialog(text = "Deleting profile…")
-        }
     }
 }
 
@@ -208,11 +229,15 @@ private fun SupportSection(
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+            val isAnyPurchasing = options.any { it.isPurchasing }
+
             options.forEachIndexed { index, option ->
                 SupportOption(
                     displayName = option.displayName,
                     description = option.description,
                     price = option.price,
+                    isPurchasing = option.isPurchasing,
+                    enabled = !isAnyPurchasing || option.isPurchasing,
                     onClick = { onOptionClick(option) }
                 )
                 if (index != options.lastIndex) {
@@ -289,13 +314,15 @@ private fun ProfileScreenPreview() {
                         id = "small_tip",
                         displayName = "Small tip",
                         description = "Buy me a coffee",
-                        price = "$1.99"
+                        price = "$1.99",
+                        isPurchasing = false
                     ),
                     SupportInfo(
                         id = "medium_tip",
                         displayName = "Medium tip",
                         description = "Keep the lights on for a week",
-                        price = "$4.99"
+                        price = "$4.99",
+                        isPurchasing = false
                     )
                 )
             ),
@@ -306,12 +333,28 @@ private fun ProfileScreenPreview() {
 
 @Preview
 @Composable
-private fun ProfileScreenDeletingPreview() {
+private fun ProfileScreenPurchasingPreview() {
     MeetingTheme {
         ProfileScreen(
             snackbarHostState = SnackbarHostState(),
             state = ProfileState(
-                isDeleting = true
+                name = "Theo",
+                profileType = ProfileType.COACH,
+                supportOptions = listOf(
+                    SupportInfo(
+                        id = "small_tip",
+                        displayName = "Small tip",
+                        description = "Buy me a coffee",
+                        price = "$1.99",
+                        isPurchasing = true
+                    ),
+                    SupportInfo(
+                        id = "medium_tip",
+                        displayName = "Medium tip",
+                        description = "Keep the lights on for a week",
+                        price = "$4.99",
+                    )
+                )
             ),
             action = {}
         )

@@ -8,4 +8,5 @@ data class SupportInfo(
     val displayName: String,
     val description: String?,
     val price: String,
+    val isPurchasing: Boolean = false
 )

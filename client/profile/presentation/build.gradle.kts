@@ -15,4 +15,5 @@ dependencies {
 
     implementation(libs.bundles.koin)
     implementation(libs.revenuecat)
+    implementation(libs.androidx.activity.compose)
 }

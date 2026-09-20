@@ -11,6 +11,7 @@ dependencies {
     implementation(projects.auth.domain)
     implementation(projects.dashboard.presentation)
     implementation(projects.profile.presentation)
+    implementation(projects.profile.data)
     implementation(projects.search.presentation)
     implementation(projects.notification.presentation)
     implementation(projects.schedule.presentation)
