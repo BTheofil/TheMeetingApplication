@@ -12,7 +12,7 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        buildConfigField("String", "REVENUECAT_API_KEY", "\"test_ophoMSGxNKRmyrtWuaWkiKwDKgw\"")
+        buildConfigField("String", "REVENUECAT_API_KEY", "\"goog_woFqVWSmuUGLXSybzVtkIlmqJHy\"")
     }
 
     buildFeatures {
