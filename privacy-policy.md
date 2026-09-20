@@ -1,12 +1,12 @@
 # Privacy Policy
 
-**App:** [APP NAME]
-**Developer:** [YOUR NAME OR COMPANY]
-**Last updated:** [DATE]
+**App:** Meeting
+**Developer:** Theofil Bodnar
+**Last updated:** 2026.09.20
 
 ## Short version
 
-[APP NAME] does not collect, store, or share your personal data. The only exception is if you choose to make a voluntary tip purchase, which is handled by Google Play and RevenueCat.
+Meeting does not collect, store, or share your personal data. The only exception is if you choose to make a voluntary tip purchase, which is handled by Google Play and RevenueCat.
 
 ## What the app collects
 
