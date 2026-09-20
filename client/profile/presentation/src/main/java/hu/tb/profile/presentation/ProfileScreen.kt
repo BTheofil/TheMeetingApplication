@@ -1,6 +1,6 @@
 package hu.tb.profile.presentation
 
-import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,11 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -37,18 +34,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.skydoves.compose.stability.runtime.TraceRecomposition
+import hu.tb.datastore.ProfileType
 import hu.tb.design_system.Icons
+import hu.tb.design_system.component.CardComponent
 import hu.tb.design_system.component.CountdownSnackbar
 import hu.tb.design_system.component.CountdownSnackbarVisuals
 import hu.tb.design_system.component.DeleteProfileDialog
 import hu.tb.design_system.component.LoadingDialog
+import hu.tb.profile.presentation.component.SupportThanksDialog
 import hu.tb.design_system.modifier.glowBackground
 import hu.tb.design_system.modifier.screenPadding
 import hu.tb.design_system.theme.MeetingTheme
-import hu.tb.datastore.ProfileType
+import hu.tb.profile.domain.SupportInfo
+import hu.tb.profile.presentation.component.SupportOption
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
 
@@ -59,19 +61,27 @@ fun ProfileScreen(
     onClearedProfile: () -> Unit
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
+    var isThankYouDialogVisible by remember { mutableStateOf(false) }
+    var isDeleteLoadingDialogVisible by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.event.collectLatest {
             when (it) {
-                is ProfileEvent.Failed ->
+                is ProfileEvent.Failed -> {
+                    isDeleteLoadingDialogVisible = false
                     snackbarHostState.showSnackbar(
                         visuals = CountdownSnackbarVisuals(message = it.errorMessage)
                     )
+                }
 
-                ProfileEvent.Cleared -> onClearedProfile()
+                ProfileEvent.ProfileCleared -> onClearedProfile()
+                ProfileEvent.ShowDeleteLoadingDialog -> isDeleteLoadingDialogVisible = true
+                ProfileEvent.ShowThankYouDialog -> isThankYouDialogVisible = true
             }
         }
     }
+
+    val activity = LocalActivity.current
 
     ProfileScreen(
         snackbarHostState = snackbarHostState,
@@ -81,9 +91,24 @@ fun ProfileScreen(
                 ProfileAction.OnBackClick -> onBack()
                 ProfileAction.OnDeleteConfirmed -> viewModel.deleteProfile()
                 ProfileAction.OnLogoutClick -> viewModel.logout()
+                is ProfileAction.SupportOptionClick -> activity?.let { activity ->
+                    viewModel.supportOption(
+                        activity,
+                        it.supportInfo
+                    )
+                }
             }
         }
     )
+
+    if (isDeleteLoadingDialogVisible) {
+        LoadingDialog(text = "Deleting profile…")
+    }
+    if (isThankYouDialogVisible) {
+        SupportThanksDialog(
+            onDismiss = { isThankYouDialogVisible = false }
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -140,11 +165,18 @@ private fun ProfileScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Details(state = state)
+                state.profileType?.let {
+                    Details(name = state.name, profileType = it)
+                }
+                SupportSection(
+                    options = state.supportOptions,
+                    onOptionClick = {
+                        action(ProfileAction.SupportOptionClick(it))
+                    }
+                )
                 Button(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(52.dp),
+                        .fillMaxWidth(),
                     onClick = { action(ProfileAction.OnLogoutClick) },
                 ) {
                     Text(
@@ -155,10 +187,8 @@ private fun ProfileScreen(
                 Spacer(Modifier.height(8.dp))
                 Button(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(52.dp),
+                        .fillMaxWidth(),
                     onClick = { isDeleteDialogVisible = true },
-                    enabled = !state.isDeleting,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.error,
                         contentColor = MaterialTheme.colorScheme.onError
@@ -181,24 +211,49 @@ private fun ProfileScreen(
                 onDismiss = { isDeleteDialogVisible = false }
             )
         }
-        if (state.isDeleting) {
-            LoadingDialog(text = "Deleting profile…")
+    }
+}
+
+@Composable
+private fun SupportSection(
+    options: List<SupportInfo>,
+    onOptionClick: (SupportInfo) -> Unit
+) {
+    if (options.isEmpty()) return
+
+    CardComponent {
+        Column(modifier = Modifier.padding(vertical = 8.dp)) {
+            Text(
+                modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp),
+                text = "Support the developer",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            val isAnyPurchasing = options.any { it.isPurchasing }
+
+            options.forEachIndexed { index, option ->
+                SupportOption(
+                    displayName = option.displayName,
+                    description = option.description,
+                    price = option.price,
+                    isPurchasing = option.isPurchasing,
+                    enabled = !isAnyPurchasing || option.isPurchasing,
+                    onClick = { onOptionClick(option) }
+                )
+                if (index != options.lastIndex) {
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 24.dp))
+                }
+            }
         }
     }
 }
 
 @Composable
 private fun Details(
-    state: ProfileState
+    name: String,
+    profileType: ProfileType,
 ) {
-    ElevatedCard(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.85f)
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
-    ) {
+    CardComponent {
         Column(
             modifier = Modifier.padding(24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -210,14 +265,13 @@ private fun Details(
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.primary
             )
-            DetailRow(label = "Name", value = state.name)
+            DetailRow(label = "Name", value = name)
             HorizontalDivider()
             DetailRow(
                 label = "Account type",
-                value = when (state.profileType) {
+                value = when (profileType) {
                     ProfileType.COACH -> "Coach"
                     ProfileType.NORMAL -> "Normal"
-                    null -> "—"
                 }
             )
         }
@@ -246,40 +300,61 @@ private fun DetailRow(
     }
 }
 
-@Preview(showBackground = true)
+@PreviewLightDark
 @Composable
 private fun ProfileScreenPreview() {
     MeetingTheme {
         ProfileScreen(
             snackbarHostState = SnackbarHostState(),
-            state = ProfileState(name = "Theo", profileType = ProfileType.COACH),
+            state = ProfileState(
+                name = "Theo",
+                profileType = ProfileType.COACH,
+                supportOptions = listOf(
+                    SupportInfo(
+                        id = "small_tip",
+                        displayName = "Small tip",
+                        description = "Buy me a coffee",
+                        price = "$1.99",
+                        isPurchasing = false
+                    ),
+                    SupportInfo(
+                        id = "medium_tip",
+                        displayName = "Medium tip",
+                        description = "Keep the lights on for a week",
+                        price = "$4.99",
+                        isPurchasing = false
+                    )
+                )
+            ),
             action = {}
         )
     }
 }
 
-@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
+@Preview
 @Composable
-private fun ProfileScreenDarkPreview() {
-    MeetingTheme {
-        ProfileScreen(
-            snackbarHostState = SnackbarHostState(),
-            state = ProfileState(name = "Theo", profileType = ProfileType.NORMAL),
-            action = {}
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun ProfileScreenDeletingPreview() {
+private fun ProfileScreenPurchasingPreview() {
     MeetingTheme {
         ProfileScreen(
             snackbarHostState = SnackbarHostState(),
             state = ProfileState(
                 name = "Theo",
-                profileType = ProfileType.NORMAL,
-                isDeleting = true
+                profileType = ProfileType.COACH,
+                supportOptions = listOf(
+                    SupportInfo(
+                        id = "small_tip",
+                        displayName = "Small tip",
+                        description = "Buy me a coffee",
+                        price = "$1.99",
+                        isPurchasing = true
+                    ),
+                    SupportInfo(
+                        id = "medium_tip",
+                        displayName = "Medium tip",
+                        description = "Keep the lights on for a week",
+                        price = "$4.99",
+                    )
+                )
             ),
             action = {}
         )

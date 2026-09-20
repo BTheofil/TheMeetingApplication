@@ -9,6 +9,7 @@ import hu.tb.domain.AuthMode
 import hu.tb.network.DataError
 import hu.tb.network.fold
 import hu.tb.network.repository.AuthRepository
+import hu.tb.profile.data.PurchasesRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
@@ -16,7 +17,8 @@ import kotlinx.coroutines.launch
 
 class NavigatorViewModel(
     private val userDatastoreRepository: UserDatastoreRepository,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val purchasesRepository: PurchasesRepository
 ) : ViewModel() {
 
     private val _session = MutableStateFlow<SessionState>(SessionState.Init)
@@ -29,6 +31,12 @@ class NavigatorViewModel(
             val userData = userDatastoreRepository.userdataFlow().first()
             _session.value =
                 if (userData.isLoggedIn) SessionState.LoggedIn else SessionState.NoUserSavedData
+        }
+
+        viewModelScope.launch {
+            userDatastoreRepository.userdataFlow().collect { userData ->
+                purchasesRepository.syncIdentity(userData.name.takeIf { userData.isLoggedIn })
+            }
         }
     }
 
