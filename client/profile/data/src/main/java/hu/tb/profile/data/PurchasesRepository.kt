@@ -28,7 +28,7 @@ class PurchasesRepository(
         return available.map { pack ->
             SupportInfo(
                 id = pack.identifier,
-                displayName = pack.product.title,
+                displayName = pack.product.name,
                 description = pack.product.description.ifBlank { null },
                 price = pack.product.price.formatted
             )

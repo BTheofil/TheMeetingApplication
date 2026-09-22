@@ -9,8 +9,8 @@ android {
 
     defaultConfig {
         applicationId = "hu.tb.meeting"
-        versionCode = 3
-        versionName = "1.0.2"
+        versionCode = 4
+        versionName = "1.0.3"
 
         buildConfigField("String", "REVENUECAT_API_KEY", "\"goog_woFqVWSmuUGLXSybzVtkIlmqJHy\"")
     }
