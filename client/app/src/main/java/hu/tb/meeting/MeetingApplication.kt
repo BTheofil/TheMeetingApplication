@@ -34,7 +34,7 @@ class MeetingApplication : Application() {
         )
 
         startKoin {
-            androidLogger()
+            if (BuildConfig.DEBUG) androidLogger()
             androidContext(this@MeetingApplication)
             modules(
                 module {
@@ -44,7 +44,7 @@ class MeetingApplication : Application() {
                     }
                     single<FidProvider> { DeviceFidProvider() }
                 },
-                networkModule,
+                networkModule(BuildConfig.DEBUG),
                 datastoreModule,
                 authModule,
                 profileModule,

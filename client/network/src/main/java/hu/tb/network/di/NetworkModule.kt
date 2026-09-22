@@ -22,7 +22,7 @@ import kotlinx.serialization.json.Json
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
-val networkModule = module {
+fun networkModule(isDebug: Boolean) = module {
     single<HttpClient> {
         val tokenProvider = get<TokenProvider>()
 
@@ -45,7 +45,7 @@ val networkModule = module {
                 }
             }
             install(Logging) {
-                level = LogLevel.HEADERS
+                level = if (isDebug) LogLevel.HEADERS else LogLevel.NONE
             }
             defaultRequest {
                 url("https://theohome-meeting.duckdns.org")

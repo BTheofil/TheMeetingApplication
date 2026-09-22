@@ -9,8 +9,8 @@ android {
 
     defaultConfig {
         applicationId = "hu.tb.meeting"
-        versionCode = 4
-        versionName = "1.0.3"
+        versionCode = 5
+        versionName = "1.0.4"
 
         buildConfigField("String", "REVENUECAT_API_KEY", "\"goog_woFqVWSmuUGLXSybzVtkIlmqJHy\"")
     }
@@ -23,9 +23,6 @@ android {
         release {
             optimization {
                 enable = true
-            }
-            ndk {
-                debugSymbolLevel = "SYMBOL_TABLE"
             }
 
             proguardFiles(
